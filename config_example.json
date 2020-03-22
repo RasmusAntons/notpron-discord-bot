@@ -1,0 +1,11 @@
+{
+	"discord": {
+		"token": ""
+	},
+	"channels": [634898954961813515],
+	"music": [627216768318046225],
+	"hints": {
+		"1": ["If this level is too hard, give up and go home."],
+		"2": ["Multiple lines", "lol"]
+	}
+}
