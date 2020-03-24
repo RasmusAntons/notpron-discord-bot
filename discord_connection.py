@@ -40,15 +40,18 @@ class DiscordConnection(discord.Client):
         if member.id != self.user.id and after.channel:
             ch = after.channel
             if ch.id in self.config.get_music_channels() and not self.playing:
+                for old_vc in self.voice_clients:
+                    await old_vc.disconnect()
                 vc = await ch.connect()
+                print(vc)
                 self.playing = True
                 def on_finished(err):
                     if len(ch.members) > 1:
                         vc.play(discord.FFmpegPCMAudio('res/mus1.mp3'), after=on_finished)
                     else:
                         self.playing = False
-                        asyncio.run_coroutine_threadsafe(vc.disconnect(), self.loop)
+                        asyncio.run_coroutine_threadsafe(vc.disconnect(), vc.loop)
 
                 vc.play(discord.FFmpegPCMAudio('res/mus1.mp3'), after=on_finished)
         elif member.id == self.user.id and not after.channel:
-	    self.playing = False
+            self.playing = False
