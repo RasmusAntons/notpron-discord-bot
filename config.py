@@ -16,3 +16,6 @@ class Config:
 
     def get_hint(self, level):
         return self.conf['hints'].get(f'{level}')
+
+    def get_antihint(self, level):
+        return self.conf['antihints'].get(f'{level}')

@@ -7,5 +7,9 @@
 	"hints": {
 		"1": ["If this level is too hard, give up and go home."],
 		"2": ["Multiple lines", "lol"]
+	},
+	"antihints": {
+		"1": ["anti hints"],
+		"2": ["from the 'walkthrough'"]
 	}
 }

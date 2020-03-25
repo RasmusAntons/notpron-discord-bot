@@ -15,18 +15,22 @@ class DiscordConnection(discord.Client):
     async def on_message(self, msg):
         if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:
             return
-        if msg.content.startswith('!hint'):
-            level = None
-            m = re.match(r'^!hint (\d\d?)', msg.content)
+        if msg.content.startswith('!hint') or msg.content.startswith('!antihint'):
+            hint = None
+            m = re.match(r'^!(?P<anti>anti)?hint (?P<level>\d\d?)$', msg.content)
             if (m):
-                n = int(m.group(1))
-                if 0 < n < 80:
-                    level = n
-            if level is None:
+                n = int(m.group('level'))
+                a = bool(m.group('anti'))
+                hint = self.config.get_hint(n) if not a else self.config.get_antihint(n)
+            if hint is None:
                 res = ['Type !hint <level number from 1-79> for a level specific hint. No hints for 80 and beyond!']
             else:
-                res = ['Official hints for Notpron']
-                res.extend(self.config.get_hint(level))
+                if not a:
+                    res = ['Official hints for Notpron']
+                else:
+                    res = ['Official antihints for Notpron.', 'These are not REAL hints, just from non-walkthrough.', 'In other words, for fun, not for real help.']
+                for line in hint:
+                    res.append(f'{n}: {line}')
             dm_channel = msg.author.dm_channel
             if dm_channel is None:
                 dm_channel = await msg.author.create_dm()
