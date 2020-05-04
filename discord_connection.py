@@ -42,17 +42,23 @@ class DiscordConnection(discord.Client):
 
     async def on_voice_state_update(self, member, before, after):
         if member.id != self.user.id and after.channel:
+            print(f'{member.name} switched from {before} to {after}')
             ch = after.channel
             if ch.id in self.config.get_music_channels() and not self.playing:
+                print(f'It\'s my music channel and I am not playing, connecting...')
                 for old_vc in self.voice_clients:
+                    print(f'Found old vc, trying to disconnect: {old_vc}')
                     await old_vc.disconnect()
                 vc = await ch.connect()
                 print(vc)
                 self.playing = True
                 def on_finished(err):
+                    print('finshed playing')
                     if len(ch.members) > 1:
+                        print('there is still someone here, playing again')
                         vc.play(discord.FFmpegPCMAudio('res/mus1.mp3'), after=on_finished)
                     else:
+                        print('all alone, I\'ll go too')
                         self.playing = False
                         asyncio.run_coroutine_threadsafe(vc.disconnect(), vc.loop)
 
