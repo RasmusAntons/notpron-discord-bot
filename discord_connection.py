@@ -15,7 +15,7 @@ class DiscordConnection(discord.Client):
         self.tts_queue = Queue()
 
     async def on_ready(self):
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.custom, name="!hint | !antihint"))
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint"))
         print('I\'m in.')
 
     async def on_message(self, msg):
