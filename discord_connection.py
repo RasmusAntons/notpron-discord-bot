@@ -1,6 +1,8 @@
 import discord
 import re
 import asyncio
+from gtts import gTTS
+from queue import Queue
 
 
 class DiscordConnection(discord.Client):
@@ -8,8 +10,12 @@ class DiscordConnection(discord.Client):
         super().__init__()
         self.config = config
         self.playing = False
+        self.tts_n = 0
+        self.post_tts_delay
+        self.tts_queue = Queue()
 
     async def on_ready(self):
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.custom, name="!hint | !antihint"))
         print('I\'m in.')
 
     async def on_message(self, msg):
@@ -39,6 +45,12 @@ class DiscordConnection(discord.Client):
                     await dm_channel.send(line)
             else:
                 await msg.channel.send(f'{msg.author.mention} failed to send dm, please check your settings')
+        elif msg.content.startswith('!tts '):
+            text = f'{msg.author.display_name} says: {msg.content}'
+            tts = gTTS(text=text, lang="de")
+            tts.save(f'voice_{self.tts_n}.mp3')
+            self.tts_queue.put(f'voice_{self.tts_n}.mp3')
+            self.tts_n += 1
 
     async def on_voice_state_update(self, member, before, after):
         if member.id != self.user.id and after.channel:
@@ -52,10 +64,17 @@ class DiscordConnection(discord.Client):
                 vc = await ch.connect()
                 print(vc)
                 self.playing = True
+                self.post_tts_delay = 15
                 def on_finished(err):
                     print('finshed playing')
                     if len(ch.members) > 1:
                         print('there is still someone here, playing again')
+                        while not self.tts_queue.empty():
+                            vc.play(discord.FFmpegPCMAudio(self.tts_queue.get()), after=on_finished)
+                            self.post_tts_delay = 15
+                        if self.post_tts_delay:
+                            self.post_tts_delay -= 1
+                            await asyncio.sleep(0.5)
                         vc.play(discord.FFmpegPCMAudio('res/mus1.mp3'), after=on_finished)
                     else:
                         print('all alone, I\'ll go too')
