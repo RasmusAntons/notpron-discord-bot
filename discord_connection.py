@@ -3,6 +3,7 @@ import re
 import asyncio
 from gtts import gTTS
 from queue import Queue
+import time
 
 
 class DiscordConnection(discord.Client):
@@ -11,7 +12,7 @@ class DiscordConnection(discord.Client):
         self.config = config
         self.playing = False
         self.tts_n = 0
-        self.post_tts_delay
+        self.post_tts_delay = None
         self.tts_queue = Queue()
 
     async def on_ready(self):
@@ -46,11 +47,13 @@ class DiscordConnection(discord.Client):
             else:
                 await msg.channel.send(f'{msg.author.mention} failed to send dm, please check your settings')
         elif msg.content.startswith('!tts '):
-            text = f'{msg.author.display_name} says: {msg.content}'
+            print(f'generating tts for {msg.author.display_name}')
+            text = f'{msg.author.display_name} hat geschrieben: {msg.content[5:]}'
             tts = gTTS(text=text, lang="de")
             tts.save(f'voice_{self.tts_n}.mp3')
             self.tts_queue.put(f'voice_{self.tts_n}.mp3')
             self.tts_n += 1
+            print('added voice to queue')
 
     async def on_voice_state_update(self, member, before, after):
         if member.id != self.user.id and after.channel:
@@ -70,11 +73,12 @@ class DiscordConnection(discord.Client):
                     if len(ch.members) > 1:
                         print('there is still someone here, playing again')
                         while not self.tts_queue.empty():
+                            print(f'found something in the tts queue')
                             vc.play(discord.FFmpegPCMAudio(self.tts_queue.get()), after=on_finished)
                             self.post_tts_delay = 15
                         if self.post_tts_delay:
                             self.post_tts_delay -= 1
-                            await asyncio.sleep(0.5)
+                            time.sleep(0.5)
                         vc.play(discord.FFmpegPCMAudio('res/mus1.mp3'), after=on_finished)
                     else:
                         print('all alone, I\'ll go too')
