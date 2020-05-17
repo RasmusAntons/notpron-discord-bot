@@ -46,9 +46,14 @@ class DiscordConnection(discord.Client):
                     await dm_channel.send(line)
             else:
                 await msg.channel.send(f'{msg.author.mention} failed to send dm, please check your settings')
-        elif msg.content.startswith('!tts '):
+        elif msg.content.startswith('!tts ') or msg.content.startswith('!tts_'):
+            lang='de'
+            off=5
+            if msg.content.startswith('!tts_'):
+                lang = msg.content.split(' ')[0][5:]
+                off = len(msg.content.split(' ')[0]) + 1
             print(f'generating tts for {msg.author.display_name}')
-            text = f'{msg.author.display_name} hat geschrieben: {msg.content[5:]}'
+            text = f'{msg.author.display_name}: {msg.content[5:]}'
             tts = gTTS(text=text, lang="de")
             tts.save(f'voice_{self.tts_n}.mp3')
             self.tts_queue.put(f'voice_{self.tts_n}.mp3')
