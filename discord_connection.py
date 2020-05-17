@@ -53,8 +53,8 @@ class DiscordConnection(discord.Client):
                 lang = msg.content.split(' ')[0][5:]
                 off = len(msg.content.split(' ')[0]) + 1
             print(f'generating tts for {msg.author.display_name}')
-            text = f'{msg.author.display_name}: {msg.content[5:]}'
-            tts = gTTS(text=text, lang="de")
+            text = f'{msg.author.display_name}: {msg.content[off:]}'
+            tts = gTTS(text=text, lang=lang)
             tts.save(f'voice_{self.tts_n}.mp3')
             self.tts_queue.put(f'voice_{self.tts_n}.mp3')
             self.tts_n += 1
