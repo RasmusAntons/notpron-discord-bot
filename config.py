@@ -14,6 +14,12 @@ class Config:
     def get_music_channels(self):
         return self.conf['music']
 
+    def get_control_channel(self):
+        return self.conf['control']
+
+    def get_markov_channels(self):
+        return self.conf['markov']
+
     def get_hint(self, level):
         return self.conf['hints'].get(f'{level}')
 

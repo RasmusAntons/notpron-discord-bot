@@ -3,6 +3,7 @@ import re
 import asyncio
 from gtts import gTTS
 from queue import Queue
+from markov import Markov
 import time
 
 
@@ -11,6 +12,7 @@ class DiscordConnection(discord.Client):
         super().__init__()
         self.config = config
         self.playing = False
+        self.markov = Markov(self, config)
         self.tts_n = 0
         self.post_tts_delay = None
         self.tts_queue = Queue()
@@ -18,10 +20,16 @@ class DiscordConnection(discord.Client):
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint"))
         print('I\'m in.')
+        await self.markov.load_model('all')
 
     async def on_message(self, msg):
         if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:
             return
+        if self.user.mentioned_in(msg):
+            await self.markov.talk(msg.channel)
+        elif msg.content.startswith("!imitate ") or msg.content.startswith('regenerate'):
+            cmd = msg.content[1:].strip()
+            await self.markov.on_command(msg, cmd)
         if msg.content.startswith('!hint') or msg.content.startswith('!antihint'):
             hint = None
             m = re.match(r'^!(?P<anti>anti)?hint (?P<level>\d\d?)$', msg.content)
