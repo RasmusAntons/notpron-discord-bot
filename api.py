@@ -39,12 +39,15 @@ class ApiServer:
         await ch.send(message)
 
     async def _get_mention(self, ch, uid):
-        member = await ch.guild.fetch_member(uid)
-        if member:
+        try:
+            member = await ch.guild.fetch_member(uid)
             return member.mention
-        else:
-            user = await self.client.fetch_user(uid)
-            return user.name if user else '?????'
+        except:
+            try:
+                user = await self.client.fetch_user(uid)
+                return user.name
+            except:
+                return '?????'
 
     async def send_weekly_solve(self, chid, uid):
         ch = self.client.get_channel(chid)
