@@ -5,6 +5,7 @@ from gtts import gTTS
 from queue import Queue
 from markov import Markov
 import time
+import api
 
 
 class DiscordConnection(discord.Client):
@@ -16,6 +17,7 @@ class DiscordConnection(discord.Client):
         self.tts_n = 0
         self.post_tts_delay = None
         self.tts_queue = Queue()
+        self.api_server = api.ApiServer(self, config)
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint"))

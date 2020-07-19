@@ -6,6 +6,7 @@ from discord_connection import DiscordConnection
 def run_bot(config):
     disc = DiscordConnection(config)
     disc.loop.run_until_complete(disc.login(config.get_discord_token()))
+    disc.loop.create_task(disc.api_server.coro)
     disc.loop.run_until_complete(disc.connect())
 
 
