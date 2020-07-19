@@ -20,6 +20,9 @@ class Config:
     def get_markov_channels(self):
         return self.conf['markov']
 
+    def get_api_port(self):
+        return self.conf['api_port']
+
     def get_hint(self, level):
         return self.conf['hints'].get(f'{level}')
 

@@ -3,6 +3,7 @@ import os
 import random
 from config import Config
 import asyncio
+from discord.utils import escape_mentions
 
 
 FILENAME = 'markov/{}.json'
@@ -69,6 +70,7 @@ class Markov:
             for i in range(100):
                 m = model.make_sentence()
                 if m:
+                    m = escape_mentions(m)
                     await channel.trigger_typing()
                     await asyncio.sleep(0.04 * len(m))
                     await channel.send(m)

@@ -26,8 +26,9 @@ class DiscordConnection(discord.Client):
         if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:
             return
         if self.user.mentioned_in(msg):
-            await self.markov.talk(msg.channel)
-        elif msg.content.startswith("!imitate ") or msg.content.startswith('regenerate'):
+            if not msg.content.contains('@everyone') and not msg.content.contains('@here'):
+                await self.markov.talk(msg.channel)
+        elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
             cmd = msg.content[1:].strip()
             await self.markov.on_command(msg, cmd)
         if msg.content.startswith('!hint') or msg.content.startswith('!antihint'):

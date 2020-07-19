@@ -2,6 +2,7 @@ import argparse
 from config import Config
 import discord
 from queue import Queue
+import api
 
 
 class ExecDiscordConnection(discord.Client):
@@ -12,6 +13,7 @@ class ExecDiscordConnection(discord.Client):
         self.tts_n = 0
         self.post_tts_delay = None
         self.tts_queue = Queue()
+        self.api_server = api.ApiServer(self, config)
 
     async def on_ready(self):
         print('I\'m in.')
@@ -44,7 +46,8 @@ class ExecDiscordConnection(discord.Client):
         #user = await self.fetch_user(200329561437765652)
         #txt = base64.b64encode(user.name.encode('utf-8'))
         #await self.user.edit(username="")
-        await ch.send('uwu')
+        # await ch.send('uwu')
+        print('uwu')
 
         #ch = self.get_channel(610041285633376276)
         #text = '```\nOwO what\'s this?\n```\n:grey_question: <https://weeklies.3po.ch/> :grey_question:\n\nAttention, @everyone! The **summer weekly riddles** by the Notpron Discord community have officially begun. Visit the website, read the "ABOUT" page, log in with your Discord account and solve the first riddle!'
@@ -54,6 +57,7 @@ class ExecDiscordConnection(discord.Client):
 def run_bot(config):
     disc = ExecDiscordConnection(config)
     disc.loop.run_until_complete(disc.login(config.get_discord_token()))
+    disc.loop.create_task(disc.api_server.coro)
     disc.loop.run_until_complete(disc.connect())
 
 
