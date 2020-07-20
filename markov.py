@@ -33,7 +33,7 @@ class Markov:
             else:
                 try:
                     uid = int(cmd[8:])
-                    if 100000000000000000 <= uid <= 999999999999999999:
+                    if 100000000000000 <= uid <= 9999999999999999999:
                         await self.talk(msg.channel, user=uid)
                 except:
                     pass
