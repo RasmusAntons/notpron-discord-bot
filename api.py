@@ -15,17 +15,29 @@ class ApiServer:
         res = "ok"
         if req.get('type') == 'raw':
             if type(req.get('chid')) == int and type(req.get('message')) == str:
+                writer.write(json.dumps(res).encode('utf-8'))
+                await writer.drain()
+                writer.close()
                 await self.send_raw(req.get('chid'), req.get('message'))
+                return
             else:
                 res = "invalid signature for raw"
         elif req.get('type') == 'weekly_solve':
             if type(req.get('chid')) == int and type(req.get('uid')) == str:
+                writer.write(json.dumps(res).encode('utf-8'))
+                await writer.drain()
+                writer.close()
                 await self.send_weekly_solve(req.get('chid'), req.get('uid'))
+                return
             else:
                 res = "invalid signature for weekly_solve"
         elif req.get('type') == 'weekly_announce':
             if type(req.get('chid')) == int and type(req.get('title')) == str and type(req.get('uid')) == str and type(req.get('icon')) == str:
+                writer.write(json.dumps(res).encode('utf-8'))
+                await writer.drain()
+                writer.close()
                 await self.send_weekly_announce(req.get('chid'), req.get('title'), req.get('uid'), req.get('icon'))
+                return
             else:
                 res = "invalid signature for weekly_announce"
         else:
