@@ -17,6 +17,8 @@ class ExecDiscordConnection(discord.Client):
 
     async def on_ready(self):
         print('I\'m in.')
+        #activity = discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint")
+        #await self.change_presence(activity=activity)
 
         """
         ch = self.get_channel(729417691206778910)

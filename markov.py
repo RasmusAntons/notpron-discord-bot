@@ -4,6 +4,7 @@ import random
 from config import Config
 import asyncio
 from discord.utils import escape_mentions
+import re
 
 
 FILENAME = 'markov/{}.json'
@@ -29,6 +30,13 @@ class Markov:
         elif cmd.startswith("imitate "):
             if msg.mentions:
                 await self.talk(msg.channel, user=int(msg.mentions[0].id))
+            else:
+                try:
+                    uid = int(cmd[8:])
+                    if 100000000000000000 <= uid <= 999999999999999999:
+                        await self.talk(msg.channel, user=uid)
+                except:
+                    pass
 
     async def regenerate(self, orig_msg):
         msgs = {'all': []}
