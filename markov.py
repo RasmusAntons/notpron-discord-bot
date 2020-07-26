@@ -31,12 +31,17 @@ class Markov:
             if msg.mentions:
                 await self.talk(msg.channel, user=int(msg.mentions[0].id))
             else:
-                try:
-                    uid = int(cmd[8:])
-                    if 100000000000000 <= uid <= 9999999999999999999:
-                        await self.talk(msg.channel, user=uid)
-                except:
-                    pass
+                uname = cmd[8:]
+                user = msg.channel.guild.get_member_named(uname)
+                if user:
+                    await self.talk(msg.channel, user=user.id)
+                else:
+                    try:
+                        uid = int(cmd[8:])
+                        if 100000000000000 <= uid <= 9999999999999999999:
+                            await self.talk(msg.channel, user=uid)
+                    except:
+                        pass
 
     async def regenerate(self, orig_msg):
         msgs = {'all': []}
@@ -66,6 +71,11 @@ class Markov:
                 await orig_msg.channel.send(str(e))
         return n
 
+    def replace_mentions(self, m):
+        for member in m.mentions:
+            m = m.replace(f'<!@{member.id}>', member.name)
+        return m
+
     async def talk(self, channel, user='all', cont_chance=0.5):
         model = self.models.get(user)
         if model is None:
@@ -78,7 +88,7 @@ class Markov:
             for i in range(100):
                 m = model.make_sentence()
                 if m:
-                    m = escape_mentions(m)
+                    m = self.replace_mentions(m)
                     await channel.trigger_typing()
                     await asyncio.sleep(0.04 * len(m))
                     await channel.send(m)
