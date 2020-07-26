@@ -72,8 +72,9 @@ class Markov:
         return n
 
     async def replace_mentions(self, m):
-        for uid in re.findall(r'<@!(\d+)>', m):
+        for uid in re.findall(r'<@!?(\d+)>', m):
             usr = await self.bot.fetch_user(int(uid))
+            m = m.replace(f'<@{uid}>', usr.name or '??????')
             m = m.replace(f'<@!{uid}>', usr.name or '??????')
         return m
 
