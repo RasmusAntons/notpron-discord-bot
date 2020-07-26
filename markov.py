@@ -3,6 +3,7 @@ import os
 import random
 from config import Config
 import asyncio
+from discord.utils import escape_mentions
 import re
 
 
@@ -73,7 +74,7 @@ class Markov:
     async def replace_mentions(self, m):
         for uid in re.findall(r'<@!(\d+)>', m):
             usr = await self.bot.fetch_user(int(uid))
-            m = m.replace(f'<!@{uid}>', usr.name or '??????')
+            m = m.replace(f'<@!{uid}>', usr.name or '??????')
         return m
 
     async def talk(self, channel, user='all', cont_chance=0.5):
@@ -89,6 +90,7 @@ class Markov:
                 m = model.make_sentence()
                 if m:
                     m = await self.replace_mentions(m)
+                    m = escape_mentions(m)
                     await channel.trigger_typing()
                     await asyncio.sleep(0.04 * len(m))
                     await channel.send(m)
