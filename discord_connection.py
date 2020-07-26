@@ -28,7 +28,7 @@ class DiscordConnection(discord.Client):
         if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:
             return
         if self.user.mentioned_in(msg):
-            if not msg.content.contains('@everyone') and not msg.content.contains('@here'):
+            if '@everyone' not in msg.content and '@here' not in msg.content:
                 await self.markov.talk(msg.channel)
         elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
             cmd = msg.content[1:].strip()
