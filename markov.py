@@ -3,7 +3,6 @@ import os
 import random
 from config import Config
 import asyncio
-from discord.utils import escape_mentions
 import re
 
 
@@ -72,8 +71,9 @@ class Markov:
         return n
 
     def replace_mentions(self, m):
-        for member in m.mentions:
-            m = m.replace(f'<!@{member.id}>', member.name)
+        for uid in re.findall(r'<@!(\d+)>', m):
+            usr = await self.bot.fetch_user(int(uid))
+            m = m.replace(f'<!@{uid}', usr.name or '??????')
         return m
 
     async def talk(self, channel, user='all', cont_chance=0.5):
