@@ -6,6 +6,8 @@ from queue import Queue
 from markov import Markov
 import time
 import api
+import random
+import json
 
 
 class DiscordConnection(discord.Client):
@@ -18,6 +20,10 @@ class DiscordConnection(discord.Client):
         self.post_tts_delay = None
         self.tts_queue = Queue()
         self.api_server = api.ApiServer(self, config)
+        self.word_prompt = None
+        self.correct_word = None
+        self.word_guesses = {}
+        self.num_reacts = ['1️⃣', '2️⃣', '3️⃣', '4️⃣']
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint"))
@@ -70,6 +76,43 @@ class DiscordConnection(discord.Client):
             self.tts_queue.put(f'voice_{self.tts_n}.mp3')
             self.tts_n += 1
             print('added voice to queue')
+        elif msg.content == '!botpronpleasestartthemultiplechoicewordguessinggame':
+            await self.start_word_game(msg)
+
+    async def start_word_game(self, orig_msg):
+        if self.word_prompt:
+            await orig_msg.channel.send('STFU AND WAIT FOR THE OLD ROUND TO END')
+            return
+        txt = 'WHAT IS THIS WORD?????? U HAVE 30 SECONDS!!!'
+        lines = [line for line in open('res/uwuwords.txt')]
+        words = [random.choice(lines).split(';') for _ in range(4)]
+        self.correct_word = random.randint(0, 4)
+        embed = discord.Embed(title=f'{words[self.correct_word][0]}', color=0xa6ce86)
+        for i, word in enumerate(words):
+            embed.add_field(name=f'{i + 1}', value=f'{word[1]}', inline=False)
+        embed.set_footer(text=f'difficulty {words[self.correct_word][4]}')
+        self.word_prompt = await orig_msg.channel.send(txt, embed=embed)
+        self.word_guesses = {}
+        for reaction in self.num_reacts:
+            await self.word_prompt.add_reaction(reaction)
+        await asyncio.sleep(30)
+        txt = f'GAME OVER!! CORRECT GUESSES: '
+        for uid, guess in self.word_guesses.items():
+            if guess == self.correct_word:
+                txt += f'{self.get_user(uid).display_name} '
+        await orig_msg.channel.send(txt)
+        self.word_prompt = None
+
+    async def on_reaction_add(self, reaction, user):
+        if user.id == self.user.id or not self.word_prompt or reaction.message.id != self.word_prompt.id:
+            return
+        try:
+            guess = self.num_reacts.index(reaction.emoji)
+            if user.id not in self.word_guesses.keys():
+                self.word_guesses[user.id] = guess
+        except ValueError:
+            print(f'what is this emoji? {reaction.emoji}')
+        print(self.word_guesses)
 
     async def on_voice_state_update(self, member, before, after):
         if member.id != self.user.id and after.channel:
