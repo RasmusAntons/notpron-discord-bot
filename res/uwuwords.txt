@@ -1,0 +1,438 @@
+accommodation;housing;;29 July 2020;0
+berth;a fixed bed or bunk on a ship, train, or other means of transport. / a ship's allotted place at a wharf or dock;;29 July 2020;0
+dismay;consternation and distress, typically that caused by something unexpected.;;29 July 2020;0
+brilliantine;scented oil used on men's hair to make it look glossy. / shiny dress fabric made from cotton and mohair or cotton and worsted.;;29 July 2020;0
+ebony;heavy blackish or very dark brown timber from a mainly tropical tree.;;29 July 2020;0
+monogram;a motif of two or more letters, typically a person's initials, usually interwoven or otherwise combined in a decorative design, used as a logo or to identify a personal possession.;;29 July 2020;0
+tactless;having or showing a lack of adroitness and sensitivity in dealing with others or with difficult issues.;;29 July 2020;0
+abroad;in or to a foreign country or countries. in different directions, over a wide area.;;29 July 2020;0
+exuberant;filled with or characterized by a lively energy and excitement.;;29 July 2020;0
+eloquent;fluent or persuasive in speaking or writing.;;29 July 2020;0
+disenfranchisement;the state of being deprived of a right or privilege, especially the right to vote.;;29 July 2020;0
+emancipation;the fact or process of being set free from legal, social, or political restrictions, liberation.;;29 July 2020;0
+agony;extreme physical or mental suffering.;;29 July 2020;0
+malice;the intention or desire to do evil, ill will.;;29 July 2020;0
+miscellanea;miscellaneous items, especially literary compositions, that have been collected together.;;29 July 2020;0
+woe;great sorrow or distress.;;29 July 2020;0
+soliloquy;an act of speaking one's thoughts aloud when by oneself or regardless of any hearers, especially by a character in a play.;;29 July 2020;0
+epistrophe;the repetition of a word at the end of successive clauses or sentences.;;29 July 2020;0
+anaphora;the repetition of a word or phrase at the beginning of successive clauses.;;29 July 2020;0
+introspection;the examination or observation of one's own mental and emotional processes.;;29 July 2020;0
+inquisitive;curious or inquiring.;;29 July 2020;0
+adhere;stick fast to (a surface or substance). believe in and follow the practices of.;;29 July 2020;0
+amplitude;breadth, range, or magnitude. the maximum extent of a vibration or oscillation, measured from the position of equilibrium.;;29 July 2020;0
+hedonism;the pursuit of pleasure, sensual self-indulgence.;;29 July 2020;0
+nepotism;favoritism;;29 July 2020;0
+fascism;far-right, authoritarian ultranationalism;;29 July 2020;0
+pursuit;the action of following or pursuing someone or something.;;29 July 2020;0
+indulge;allow oneself to enjoy the pleasure of.;;29 July 2020;0
+ableism;discrimination in favor of able-bodied people.;;29 July 2020;0
+epitome;a person or thing that is a perfect example of a particular quality or type.;;29 July 2020;0
+acquisition;an asset or object bought or obtained, typically by a library or museum.;;29 July 2020;0
+incarnation;a person who embodies in the flesh a deity, spirit, or abstract quality.;;29 July 2020;0
+pinnacle;the most successful point, the culmination. a high, pointed piece of rock.;;29 July 2020;0
+surrogate;a substitute, especially a person deputizing for another in a specific role or office.;;29 July 2020;0
+plagiarize;take (the work or an idea of someone else) and pass it off as one's own.;;29 July 2020;0
+sadomasochism;psychological tendency or sexual practice characterized by both sadism and masochism.;;29 July 2020;0
+acclaimed;praise enthusiastically and publicly.;;29 July 2020;0
+hygiene;conditions or practices conducive to maintaining health and preventing disease, especially through cleanliness.;;29 July 2020;0
+tutor;a private teacher, typically one who teaches a single student or a very small group. act as a tutor to (a single student or a very small group).;;29 July 2020;0
+cleanse;make (something, especially the skin) thoroughly clean.;;29 July 2020;0
+facade;an outward appearance that is maintained to conceal a less pleasant or creditable reality. the face of a building, especially the principal front that looks onto a street or open space.;;29 July 2020;0
+convict;declare (someone) to be guilty of a criminal offense by the verdict of a jury or the decision of a judge in a court of law.;;29 July 2020;0
+refined;with impurities or unwanted elements having been removed by processing.;;29 July 2020;0
+mitosis;a type of cell division that results in two daughter cells each having the same number and kind of chromosomes as the parent nucleus, typical of ordinary tissue growth.;;29 July 2020;0
+immersion;the action of immersing someone or something in a liquid. deep mental involvement.;;29 July 2020;0
+grimace;an ugly, twisted expression on a person's face, typically expressing disgust, pain, or wry amusement.;;29 July 2020;0
+yammer;loud and sustained or repetitive noise.;;29 July 2020;0
+sardonic;grimly mocking or cynical.;;29 July 2020;0
+asunder;apart, divided.;;29 July 2020;0
+diurnal;(of animals) active in the daytime. daily, of each day.;;29 July 2020;0
+metamorphosis;(in an insect or amphibian) the process of transformation from an immature form to an adult form in two or more distinct stages. a change of the form or nature of a thing or person into a completely different one, by natural or supernatural means.;;29 July 2020;0
+fraternity;a group of people sharing a common profession or interests.;;29 July 2020;0
+faithful;loyal, constant, and steadfast. true to the facts or the original.;;29 July 2020;0
+fanciful;(of a person or their thoughts and ideas) overimaginative and unrealistic.;;29 July 2020;0
+contemporary;living or occurring at the same time. belonging to or occurring in the present.;;29 July 2020;0
+unassailable;unable to be attacked, questioned, or defeated.;;29 July 2020;0
+sought;past and past participle of seek.;;29 July 2020;0
+rig;set up (equipment or a device or structure), typically hastily or in makeshift fashion. manage or conduct (something) fraudulently so as to produce a result or situation that is advantageous to a particular person.;;29 July 2020;0
+excerpt;a short extract from a film, broadcast, or piece of music or writing.;;29 July 2020;0
+prow;the portion of a ship's bow above water.;;29 July 2020;0
+fond;having an affection or liking for.;;29 July 2020;0
+stubble;the cut stalks of grain plants left sticking out of the ground after the grain is harvested. short, stiff hairs growing on a part of the body that has not been shaved for a while, especially on a man’s face.;;29 July 2020;0
+cleavage;a sharp division, a split.;;29 July 2020;0
+grimly;in a very serious, gloomy, or depressing manner.;;29 July 2020;0
+exasperating;intensely irritating and frustrating.;;29 July 2020;0
+rigid;unable to bend or be forced out of shape, not flexible.;;29 July 2020;0
+discipline;the practice of training people to obey rules or a code of behavior, using punishment to correct disobedience.;;29 July 2020;0
+despair;the complete loss or absence of hope.;;29 July 2020;0
+blaring;make or cause to make a loud, harsh sound.;;29 July 2020;0
+premonition;a strong feeling that something is about to happen, especially something unpleasant.;;29 July 2020;0
+paleolithic;relating to or denoting the early phase of the Stone Age, lasting about 2.5 million years, when primitive stone implements were used.;;29 July 2020;0
+labored;done with great effort and difficulty.;;29 July 2020;0
+aloof;not friendly or forthcoming, cool and distant.;;29 July 2020;0
+indifferent;having no particular interest or sympathy, unconcerned.;;29 July 2020;0
+sheared;have something cut off.;;29 July 2020;0
+gloomy;dark or poorly lit, especially so as to appear depressing or frightening.;;29 July 2020;0
+unkempt;(especially of a person) having an untidy or disheveled appearance.;;29 July 2020;0
+submissive;ready to conform to the authority or will of others, meekly obedient or passive.;;29 July 2020;0
+plethora;a large or excessive amount of (something).;;29 July 2020;0
+atone;make amends or reparation. be at one with something;;29 July 2020;0
+gist;the substance or essence of a speech or text.;;29 July 2020;0
+groggy;dazed, weak, or unsteady, especially from illness, intoxication, sleep, or a blow.;;29 July 2020;0
+pulchritudinous;beautiful (of a person);;29 July 2020;0
+viscous;having a thick, sticky consistency between solid and liquid, having a high viscosity.;;29 July 2020;0
+convoluted;(especially of an argument, story, or sentence) extremely complex and difficult to follow.;;29 July 2020;0
+petrichor;a pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.;;29 July 2020;0
+dichotomy;a division or contrast between two things that are or are represented as being opposed or entirely different.;;29 July 2020;0
+forsaken;abandoned or deserted.;;29 July 2020;0
+pathogen;a bacterium, virus, or other microorganism that can cause disease.;;29 July 2020;0
+culprit;a person who is responsible for a crime or other misdeed.;;29 July 2020;0
+epiphany;a moment of sudden revelation or insight.;;29 July 2020;0
+catering;the supplying of food and drink at a social event or other gathering, typically as a professional service.;;29 July 2020;0
+provision;the action of providing or supplying something for use.;;29 July 2020;0
+fumbling;use the hands clumsily while doing or handling something.;;29 July 2020;0
+torpedo;a cigar-shaped self-propelled underwater missile designed to be fired from a ship or submarine or dropped into the water from an aircraft and to explode on reaching a target.;;29 July 2020;0
+engulfs;(of a natural force) sweep over (something) so as to surround or cover it completely.;;29 July 2020;0
+climax;the most intense, exciting, or important point of something, a culmination or apex.;;29 July 2020;0
+tonsils;either of two small masses of lymphoid tissue in the throat, one on each side of the root of the tongue.;;29 July 2020;0
+connoisseur;an expert judge in matters of taste.;;29 July 2020;0
+coagulate;(of a fluid, especially blood) change to a solid or semisolid state.;;29 July 2020;0
+artery;any of the muscular-walled tubes forming part of the circulation system by which blood (mainly that which has been oxygenated) is conveyed from the heart to all parts of the body. an important route in a system of roads, rivers, or railroad lines.;;29 July 2020;0
+festering;(of a wound or sore) become septic, suppurate. (of food or garbage) become rotten and offensive to the senses.;;29 July 2020;0
+indoctrinate;teach (a person or group) to accept a set of beliefs uncritically.;;29 July 2020;0
+agile;able to move quickly and easily.;;29 July 2020;0
+mandoline;a musical instrument resembling a lute, having paired metal strings plucked with a plectrum. It is played with a characteristic tremolo on long sustained notes.;;29 July 2020;0
+equilibrium;a state in which opposing forces or influences are balanced. a calm state of mind.;;29 July 2020;0
+throbbing;beating with a strong, regular rhythm, pulsating.;;29 July 2020;0
+morose;sullen and ill-tempered.;;29 July 2020;0
+mediocre;of only moderate quality, not very good.;;29 July 2020;0
+omitted;leave out or exclude (someone or something), either intentionally or forgetfully.;;29 July 2020;0
+succulent;(of food) tender, juicy, and tasty. a type of plant;;29 July 2020;0
+membrane;a thin sheet of tissue or layer of cells acting as a boundary, lining, or partition in an organism.;;29 July 2020;0
+osmosis;a process by which molecules of a solvent tend to pass through a semipermeable membrane from a less concentrated solution into a more concentrated one, thus equalizing the concentrations on each side of the membrane. the process of gradual or unconscious assimilation of ideas, knowledge, etc.;;29 July 2020;0
+permeable;(of a material or membrane) allowing liquids or gases to pass through it.;;29 July 2020;0
+swell;(especially of a part of the body) become larger or rounder in size, typically as a result of an accumulation of fluid. a slow, regular movement of the sea in rolling waves that do not break.;;29 July 2020;0
+synopsis;a brief summary or general survey of something.;;29 July 2020;0
+defenestration;the action of throwing someone out of a window.;;29 July 2020;0
+intricate;very complicated or detailed.;;29 July 2020;0
+sophisticated;having, revealing, or proceeding from a great deal of worldly experience and knowledge of fashion and culture.;;29 July 2020;0
+thy;archaic or dialect form of your.;;29 July 2020;0
+thou;archaic or dialect form of you, as the singular subject of a verb.;;29 July 2020;0
+thee;archaic or dialect form of you, as the singular object of a verb or preposition.;;29 July 2020;0
+lecture;an educational talk to an audience, especially to students in a university or college.;;29 July 2020;0
+ply;a thickness or layer of a folded or laminated material. work with (a tool, especially one requiring steady, rhythmic movements).;;29 July 2020;0
+deduce;arrive at (a fact or a conclusion) by reasoning, draw as a logical conclusion.;;29 July 2020;0
+congregate;gather into a crowd or mass.;;29 July 2020;0
+literary;concerning the writing, study, or content of literature, especially of the kind valued for quality of form.;;29 July 2020;0
+suburb;an outlying district of a city, especially a residential one.;;29 July 2020;0
+overdraft;a deficit in a bank account caused by drawing more money than the account holds.;;29 July 2020;0
+hassle;harass, pester.;;29 July 2020;0
+garrison;the troops stationed in a fortress or town to defend it. provide (a place) with a body of troops.;;29 July 2020;0
+expletive;an oath or swear word. a word or phrase used to fill out a sentence or a line of verse without adding to the sense.;;29 July 2020;0
+rampant;(especially of something unwelcome or unpleasant) flourishing or spreading unchecked. uncontrolled;;29 July 2020;0
+appropriation;the action of taking something for one's own use, typically without the owner's permission.;;29 July 2020;0
+compelled;forced or obliged (by someone) to do something.;;29 July 2020;0
+succumbing;fail to resist pressure, temptation, or some other negative force.;;29 July 2020;0
+reception;the action or process of receiving something sent, given, or inflicted.;;29 July 2020;0
+enthusiasm;intense and eager enjoyment, interest, or approval.;;29 July 2020;0
+rugged;(of ground or terrain) having a broken, rocky, and uneven surface.;;29 July 2020;0
+plight;a dangerous, difficult, or otherwise unfortunate situation.;;29 July 2020;0
+essentially;used to emphasize the basic, fundamental, or intrinsic nature of a person, thing, or situation.;;29 July 2020;0
+impoverished;(of a person or area) made poor.;;29 July 2020;0
+avid;having or showing a keen interest in or enthusiasm for something.;;29 July 2020;0
+curfew;a regulation requiring people to remain indoors between specified hours, typically at night.;;29 July 2020;0
+kindred;one's family and relations.;;29 July 2020;0
+temperamental;(of a person) liable to unreasonable changes of mood.;;29 July 2020;0
+recreational;relating to or denoting activity done for enjoyment when one is not working.;;29 July 2020;0
+discombobulated;confused and disconcerted.;;29 July 2020;0
+innuendo;an allusive or oblique remark or hint, typically a suggestive or disparaging one.;;29 July 2020;0
+tender;showing gentleness and concern or sympathy. (of food) easy to cut or chew, not tough.;;29 July 2020;0
+lexical;relating to the words or vocabulary of a language.;;29 July 2020;0
+noxious;harmful, poisonous, or very unpleasant.;;29 July 2020;0
+meiosis;a type of cell division that results in four daughter cells each with half the number of chromosomes of the parent cell, as in the production of gametes and plant spores.;;29 July 2020;0
+conundrum;a confusing and difficult problem or question.;;29 July 2020;0
+entitle;give (someone) a legal right or a just claim to receive or do something.;;29 July 2020;0
+euphemism;a mild or indirect word or expression substituted for one considered to be too harsh or blunt when referring to something unpleasant or embarrassing.;;29 July 2020;0
+synthesis;the combination of ideas to form a theory or system.;;29 July 2020;0
+orthography;the conventional spelling system of a language.;;29 July 2020;0
+zeal;great energy or enthusiasm in pursuit of a cause or an objective.;;29 July 2020;0
+redundant;not or no longer needed or useful, superfluous.;;29 July 2020;0
+painstakingly;with great care and thoroughness.;;29 July 2020;0
+stereoscopic;relating to or denoting a process by which two photographs of the same object taken at slightly different angles are viewed together, creating an impression of depth and solidity.;;29 July 2020;0
+scrumptious;(of food) extremely tasty, delicious.;;29 July 2020;0
+dilate;make or become wider, larger, or more open.;;29 July 2020;0
+vehemently;in a forceful, passionate, or intense manner, with great feeling.;;29 July 2020;0
+mischievous;(of a person, animal, or their behavior) causing or showing a fondness for causing trouble in a playful way.;;29 July 2020;0
+whence;from what place or source.;;29 July 2020;0
+subtrahend;a quantity or number to be subtracted from another.;;29 July 2020;0
+minuend;a quantity or number from which another is to be subtracted.;;29 July 2020;0
+anecdote;a short amusing or interesting story about a real incident or person.;;29 July 2020;0
+pretentious;attempting to impress by affecting greater importance, talent, culture, etc., than is actually possessed.;;29 July 2020;0
+regurgitate;bring (swallowed food) up again to the mouth. repeat (information) without analyzing or comprehending it.;;29 July 2020;0
+belittle;make (someone or something) seem unimportant.;;29 July 2020;0
+immaterial;unimportant under the circumstances, irrelevant. spiritual, rather than physical.;;29 July 2020;0
+vista;a pleasing view, especially one seen through a long, narrow opening.;;29 July 2020;0
+eureka;a cry of joy or satisfaction when one finds or discovers something.;;29 July 2020;0
+endemic;(of a disease or condition) regularly found among particular people or in a certain area.;;29 July 2020;0
+dilapidated;(of a building or object) in a state of disrepair or ruin as a result of age or neglect.;;29 July 2020;0
+neonatal;relating to newborn children (or other mammals).;;29 July 2020;0
+paternity;fatherhood;;29 July 2020;0
+patriarchy;a system of society or government in which men hold the power and women are largely excluded from it.;;29 July 2020;0
+maternity;motherhood;;29 July 2020;0
+matriarchy;a system of society or government ruled by a woman or women.;;29 July 2020;0
+satiate;satisfied to the full, satiated.;;29 July 2020;0
+synergy;the interaction or cooperation of two or more organizations, substances, or other agents to produce a combined effect greater than the sum of their separate effects.;;29 July 2020;0
+formidable;inspiring fear or respect through being impressively large, powerful, intense, or capable.;;29 July 2020;0
+covet;yearn to possess or have (something).;;29 July 2020;0
+yearn;have an intense feeling of longing for something, typically something that one has lost or been separated from.;;29 July 2020;0
+wring;squeeze and twist (something) to force liquid from it.;;29 July 2020;0
+reap;cut or gather (a crop or harvest).;;29 July 2020;0
+boisterous;(of a person, event, or behavior) noisy, energetic, and cheerful, rowdy.;;29 July 2020;0
+adversary;one's opponent in a contest, conflict, or dispute.;;29 July 2020;0
+miasma;a highly unpleasant or unhealthy smell or vapor.;;29 July 2020;0
+permeate;spread throughout (something), pervade.;;29 July 2020;0
+billow;a large undulating mass of something, typically cloud, smoke, or steam. (of smoke, cloud, or steam) move or flow outward with an undulating motion.;;29 July 2020;0
+covenant;an agreement.;;29 July 2020;0
+exude;discharge (moisture or a smell) slowly and steadily.;;29 July 2020;0
+lethargic;affected by lethargy, sluggish and apathetic.;;29 July 2020;0
+apathetic;showing or feeling no interest, enthusiasm, or concern.;;29 July 2020;0
+shrewd;having or showing sharp powers of judgment, astute.;;29 July 2020;0
+interjection;an abrupt remark, made especially as an aside or interruption.;;29 July 2020;0
+sly;having or showing a cunning and deceitful nature.;;29 July 2020;0
+invigorating;making one feel strong, healthy, and full of energy.;;29 July 2020;0
+irrevocably;in a way that cannot be changed, reversed, or recovered.;;29 July 2020;0
+rue;regret;;29 July 2020;0
+irk;irritate, annoy.;;29 July 2020;0
+lackadaisical;lacking enthusiasm and determination, carelessly lazy.;;29 July 2020;0
+meek;quiet, gentle, and easily imposed on, submissive.;;29 July 2020;0
+coy;(especially with reference to a woman) making a pretense of shyness or modesty that is intended to be alluring.;;29 July 2020;0
+camaraderie;mutual trust and friendship among people who spend a lot of time together.;;29 July 2020;0
+platonic;(of love or friendship) intimate and affectionate but not sexual.;;29 July 2020;0
+consensus;a general agreement.;;29 July 2020;0
+unanimity;agreement by all people involved, consensus.;;29 July 2020;0
+solidarity;unity or agreement of feeling or action, especially among individuals with a common interest, mutual support within a group.;;29 July 2020;0
+esoteric;intended for or likely to be understood by only a small number of people with a specialized knowledge or interest.;;29 July 2020;0
+monozygotic;(of twins) derived from a single ovum, and so identical.;;29 July 2020;0
+calligraphy;decorative handwriting or handwritten lettering. the art of producing decorative handwriting or lettering with a pen or brush.;;29 July 2020;0
+heuristic;enabling a person to discover or learn something for themselves.;;29 July 2020;0
+speleothem;a structure formed in a cave by the deposition of minerals from water, e.g. a stalactite or stalagmite.;;29 July 2020;0
+barycenter;In astronomy, the barycenter is the center of mass of two or more bodies that orbit one another and is the point about which the bodies orbit.;;29 July 2020;0
+phantasmagoria;a sequence of real or imaginary images like those seen in a dream.;;29 July 2020;0
+inquiry;an act of asking for information.;;29 July 2020;0
+nihilistic;rejecting all religious and moral principles in the belief that life is meaningless.;;29 July 2020;0
+aperture;an opening, hole, or gap.;;29 July 2020;0
+saxicolous;living or growing on or among rocks.;;29 July 2020;0
+quotient;a result obtained by dividing one quantity by another.;;29 July 2020;0
+vernacular;the language or dialect spoken by the ordinary people in a particular country or region.;;29 July 2020;0
+alighting;descend from a train, bus, or other form of transport.;;29 July 2020;0
+trillium;a plant with a solitary three-petaled flower above a whorl of three leaves, native to North American and Asia.;;29 July 2020;0
+hyperbolic;(of language) exaggerated, hyperbolical.;;29 July 2020;0
+lexicon;the vocabulary of a person, language, or branch of knowledge.;;29 July 2020;0
+aficionado;a person who is very knowledgeable and enthusiastic about an activity, subject, or pastime.;;29 July 2020;0
+panoply;a complete or impressive collection of things.;;29 July 2020;0
+wherewithal;the money or other means needed for a particular purpose.;;29 July 2020;0
+forgo;omit or decline to take (something pleasant or valuable), go without.;;29 July 2020;0
+cognizant;having knowledge or being aware of.;;29 July 2020;0
+cunning;having or showing skill in achieving one's ends by deceit or evasion.;;29 July 2020;0
+artifact;an object made by a human being, typically an item of cultural or historical interest.;;29 July 2020;0
+frivolity;lack of seriousness, lightheartedness.;;29 July 2020;0
+stow;pack or store (an object) carefully and neatly in a particular place.;;29 July 2020;0
+copacetic;in excellent order.;;29 July 2020;0
+means;an action or system by which a result is brought about, a method.;;29 July 2020;0
+medium;an agency or means of doing something.;;29 July 2020;0
+dwell;think, speak, or write at length about (a particular subject, especially one that is a source of unhappiness, anxiety, or dissatisfaction). linger;;29 July 2020;0
+lousy;very poor or bad, disgusting. ill, in poor physical condition.;;29 July 2020;0
+unadvisable;likely to have unfortunate consequences, unwise.;;29 July 2020;0
+sleuth;a detective.;;29 July 2020;0
+beckon;make a gesture with the hand, arm, or head to encourage someone to come nearer or follow. seem to be appealing or inviting.;;29 July 2020;0
+genteel;polite, refined, or respectable, often in an affected or ostentatious way.;;29 July 2020;0
+homespun;simple and unsophisticated.;;29 July 2020;0
+impending;be about to happen.;;29 July 2020;0
+tout;attempt to sell (something), typically by pestering people in an aggressive or bold manner.;;29 July 2020;0
+titular;holding or constituting a purely formal position or title without any real authority.;;29 July 2020;0
+perpetuity;the state of being perpetual. constant, ongoing. a bond or other security with no fixed maturity date.;;29 July 2020;0
+rack;a framework, typically with rails, bars, hooks, or pegs, for holding or storing things.;;29 July 2020;0
+hefty;large, heavy, and powerful.;;29 July 2020;0
+dire;(of a situation or event) extremely serious or urgent.;;29 July 2020;0
+allocate;distribute (resources or duties) for a particular purpose.;;29 July 2020;0
+squandering;waste (something, especially money or time) in a reckless and foolish manner.;;29 July 2020;0
+expend;spend or use up (a resource such as money, time, or energy).;;29 July 2020;0
+brazen;bold and without shame.;;29 July 2020;0
+wafts;pass or cause to pass easily or gently through or as if through the air.;;29 July 2020;0
+conniving;given to or involved in conspiring to do something immoral, illegal, or harmful. secretly allow (something considered immoral, illegal, wrong, or harmful) to occur.;;29 July 2020;0
+urn;a tall, rounded vase with a base, and often a stem, especially one used for storing the ashes of a cremated person.;;29 July 2020;0
+unabridged;(of a text) not cut or shortened, complete.;;29 July 2020;0
+mull;think about (a fact, proposal, or request) deeply and at length. ponder, contemplate;;29 July 2020;0
+trope;a figurative or metaphorical use of a word or expression.;;29 July 2020;0
+portly;(especially of a man) having a stout body, somewhat fat.;;29 July 2020;0
+scorn;the feeling or belief that someone or something is worthless or despicable, contempt.;;29 July 2020;0
+elude;evade or escape from (a danger, enemy, or pursuer), typically in a skillful or cunning way.;;29 July 2020;0
+gander;look or glance at something. a male goose;;29 July 2020;0
+ruse;an action intended to deceive someone, a trick.;;29 July 2020;0
+confection;a dish or delicacy made with sweet ingredients.;;29 July 2020;0
+aggrieved;feeling resentment at having been unfairly treated.;;29 July 2020;0
+abjure;solemnly renounce (a belief, cause, or claim).;;29 July 2020;0
+abscond;leave hurriedly and secretly, typically to avoid detection of or arrest for an unlawful action such as theft.;;29 July 2020;0
+brandish;wave or flourish (something, especially a weapon) as a threat or in anger or excitement.;;29 July 2020;0
+ruthless;having or showing no pity or compassion for others.;;29 July 2020;0
+accede;assent or agree to a demand, request, or treaty.;;29 July 2020;0
+placating;intended to make someone less angry or hostile. make (someone) less angry or hostile.;;29 July 2020;0
+snag;an unexpected or hidden obstacle or drawback.;;29 July 2020;0
+juncture;a particular point in events or time.;;29 July 2020;0
+charisma;compelling attractiveness or charm that can inspire devotion in others.;;29 July 2020;0
+salvage;rescue (a wrecked or disabled ship or its cargo) from loss at sea. retrieve or preserve (something) from potential loss or adverse circumstances.;;29 July 2020;0
+heap;an untidy collection of things piled up haphazardly. a mound or pile of a particular substance.;;29 July 2020;0
+smoldering;the process of burning slowly with smoke but no flame.;;29 July 2020;0
+latent;(of a quality or state) existing but not yet developed or manifest, hidden or concealed.;;29 July 2020;0
+unsavory;disagreeable to taste, smell, or look at.;;29 July 2020;0
+savory;(of food) belonging to the category that is salty or spicy rather than sweet.;;29 July 2020;0
+gaunt;(of a person) lean and haggard, especially because of suffering, hunger, or age. (of a building or place) grim or desolate in appearance.;;29 July 2020;0
+tome;a book, especially a large, heavy, scholarly one.;;29 July 2020;0
+ornery;bad-tempered and combative.;;29 July 2020;0
+loitering;stand or wait around idly or without apparent purpose.;;29 July 2020;0
+expelling;deprive (someone) of membership of or involvement in a school or other organization.;;29 July 2020;0
+soot;a black powdery or flaky substance consisting largely of amorphous carbon, produced by the incomplete burning of organic matter.;;29 July 2020;0
+tattered;old and torn, in poor condition.;;29 July 2020;0
+wretched;(of a person) in a very unhappy or unfortunate state.;;29 July 2020;0
+ensconced;establish or settle (someone) in a comfortable, safe, or secret place.;;29 July 2020;0
+meddlesome;fond of meddling, interfering.;;29 July 2020;0
+revise;re-examine and make alterations to (written or printed matter).;;29 July 2020;0
+lathe;a machine for shaping wood, metal, or other material by means of a rotating drive which turns the piece being worked on against changeable cutting tools.;;29 July 2020;0
+incur;become subject to (something unwelcome or unpleasant) as a result of one's own behavior or actions.;;29 July 2020;0
+freebies;a thing given free of charge.;;29 July 2020;0
+fussing;show unnecessary or excessive concern about something.;;29 July 2020;0
+gizmo;a gadget, especially one whose name the speaker does not know or cannot recall.;;29 July 2020;0
+derision;contemptuous ridicule or mockery.;;29 July 2020;0
+jester;a professional joker or “fool” at a medieval court, typically wearing a cap with bells on it and carrying a mock scepter.;;29 July 2020;0
+lurid;very vivid in color, especially so as to create an unpleasantly harsh or unnatural effect.;;29 July 2020;0
+maim;wound or injure (someone) so that part of the body is permanently damaged.;;29 July 2020;0
+freight;goods transported in bulk by truck, train, ship, or aircraft. cargo;;29 July 2020;0
+asinine;extremely stupid or foolish.;;29 July 2020;0
+unmitigated;absolute, unqualified.;;29 July 2020;0
+tinkering;attempt to repair or improve something in a casual or desultory way, often to no useful effect.;;29 July 2020;0
+jettisoned;throw or drop (something) from an aircraft or ship. abandon or discard (someone or something that is no longer wanted).;;29 July 2020;0
+imminent;about to happen.;;29 July 2020;0
+aphrodisiac;a food, drink, or drug that stimulates sexual desire.;;29 July 2020;0
+malapropism;the mistaken use of a word in place of a similar-sounding one, often with unintentionally amusing effect, as in, for example, “dance a flamingo ” (instead of flamenco ).;;29 July 2020;0
+spoonerism;a verbal error in which a speaker accidentally transposes the initial sounds or letters of two or more words, often to humorous effect, as in the sentence you have hissed the mystery lectures, accidentally spoken instead of the intended sentence you have missed the history lectures.;;29 July 2020;0
+paraphernalia;miscellaneous articles, especially the equipment needed for a particular activity.;;29 July 2020;0
+trite;(of a remark, opinion, or idea) overused and consequently of little import, lacking originality or freshness.;;29 July 2020;0
+ostentatious;characterized by vulgar or pretentious display, designed to impress or attract notice.;;29 July 2020;0
+succinct;(especially of something written or spoken) briefly and clearly expressed.;;29 July 2020;0
+ajar;(of a door or other opening) slightly open.;;29 July 2020;0
+atrium;an open-roofed entrance hall or central court in an ancient Roman house.;;29 July 2020;0
+obliquely;not in a direct way, indirectly.;;29 July 2020;0
+matrimonial;relating to marriage or married people.;;29 July 2020;0
+proselytize;convert or attempt to convert (someone) from one religion, belief, or opinion to another.;;29 July 2020;0
+coercive;relating to or using force or threats.;;29 July 2020;0
+penultimate;last but one in a series of things, second last.;;29 July 2020;0
+antepenultimate;last but two in a series, third last.;;29 July 2020;0
+reminiscent;tending to remind one of something.;;29 July 2020;0
+antediluvian;of or belonging to the time before the biblical Flood. ridiculously old-fashioned.;;29 July 2020;0
+cathartic;providing psychological relief through the open expression of strong emotions, causing catharsis.;;29 July 2020;0
+elusive;difficult to find, catch, or achieve. difficult to remember or recall.;;29 July 2020;0
+tether;tie (an animal) with a rope or chain so as to restrict its movement. a rope or chain with which an animal is tied to restrict its movement.;;29 July 2020;0
+deride;express contempt for, ridicule.;;29 July 2020;0
+incapacitate;prevent from functioning in a normal way.;;29 July 2020;0
+mitigate;make less severe, serious, or painful.;;29 July 2020;0
+scintillating;sparkling or shining brightly.;;29 July 2020;0
+wyvern;a winged two-legged dragon with a barbed tail.;;29 July 2020;0
+nocturne;a short composition of a romantic or dreamy character suggestive of night, typically for piano. a picture of a night scene.;;29 July 2020;0
+gargoyle;a grotesque carved human or animal face or figure projecting from the gutter of a building, typically acting as a spout to carry water clear of a wall.;;29 July 2020;0
+wry;using or expressing dry, especially mocking, humor.;;29 July 2020;0
+obsolete;no longer produced or used, out of date.;;29 July 2020;0
+attain;succeed in achieving (something that one desires and has worked for).;;29 July 2020;0
+snuffle;breathe noisily through the nose due to a cold or crying. a sniff or sniffing sound.;;29 July 2020;0
+girth;the measurement around the middle of something, especially a person's waist.;;29 July 2020;0
+onomatopoeia;the formation of a word from a sound associated with what is named (e.g. cuckoo, sizzle ).;;29 July 2020;0
+isogram;a word or phrase without a repeating letter. or a word or phrase where every letter appears the same number of times.;;29 July 2020;0
+heteronym;each of two or more words that are spelled identically but have different sounds and meanings, such as tear meaning “rip” and tear meaning “liquid from the eye.”.;;29 July 2020;0
+homophone;each of two or more words having the same pronunciation but different meanings, origins, or spelling.;;29 July 2020;0
+homonym;each of two or more words having the same spelling or pronunciation but different meanings and origins.;;29 July 2020;0
+logogram;a sign or character representing a word or phrase, such as those used in shorthand and some writing systems.;;29 July 2020;0
+octothorpe;another term for the pound sign (#).;;29 July 2020;0
+articulate;express (an idea or feeling) fluently and coherently.;;29 July 2020;0
+coherently;(with reference to an argument, theory, or policy) in a logical and consistent way. (with reference to speech) in a clear and understandable way.;;29 July 2020;0
+minx;an impudent, cunning, or boldly flirtatious girl or young woman.;;29 July 2020;0
+oligarchy;a small group of people having control of a country, organization, or institution.;;29 July 2020;0
+repose;a state of rest, sleep, or tranquility. be lying, situated, or kept in a particular place.;;29 July 2020;0
+recline;lean or lie back in a relaxed position with the back supported.;;29 July 2020;0
+recliner;an upholstered armchair that can be tilted backward, especially one with a footrest that simultaneously extends from the front.;;29 July 2020;0
+awe;a feeling of reverential respect mixed with fear or wonder.;;29 July 2020;0
+reverence;deep respect for someone or something.;;29 July 2020;0
+fluorescence;the visible or invisible radiation emitted by certain substances as a result of incident radiation of a shorter wavelength such as X-rays or ultraviolet light.;;29 July 2020;0
+biofluroescence;the absorption and reemission of light from living organisms.;;29 July 2020;0
+bioluminescence;the production and emission of light by a living organism.;;29 July 2020;0
+phosphorescence;light emitted by a substance without combustion or perceptible heat.;;29 July 2020;0
+candescent;glowing with, or as with, heat.;;29 July 2020;0
+mesh;material made of a network of wire or thread.;;29 July 2020;0
+protean;tending or able to change frequently or easily. able to do many different things, versatile.;;29 July 2020;0
+versatile;able to adapt or be adapted to many different functions or activities.;;29 July 2020;0
+latch;a metal bar with a catch and lever used for fastening a door or gate. fasten (a door or gate) with a latch.;;29 July 2020;0
+tenacious;tending to keep a firm hold of something, clinging or adhering closely. not readily relinquishing a position, principle, or course of action, determined. persisting in existence, not easily dispelled.;;29 July 2020;0
+limber;(of a person or body part) lithe or supple. flexible. warm up in preparation for exercise or activity, especially sports.;;29 July 2020;0
+shaft;a long, narrow part or section forming the handle of a tool or club, the body of a spear or arrow, or a similar implement. a ray of light or bolt of lightning. a long, narrow, typically vertical hole that gives access to a mine, accommodates an elevator in a building, or provides ventilation.;;29 July 2020;0
+barred;closed or secured with a long rod or rigid piece of wood, metal, or similar material.;;29 July 2020;0
+crude;in a natural or raw state, not yet processed or refined. constructed in a rudimentary or makeshift way.;;29 July 2020;0
+don;put on (an item of clothing).;;29 July 2020;0
+splicing;join or connect (a rope or ropes) by interweaving the strands. join or insert (a gene or gene fragment).;;29 July 2020;0
+murky;dark and gloomy, especially due to thick mist. (of liquid) dark and dirty, not clear.;;29 July 2020;0
+opus;any artistic work, especially one on a large scale.;;29 July 2020;0
+grate;reduce (something, especially food) to small shreds by rubbing it on a grater. make an unpleasant rasping sound.;;29 July 2020;0
+pout;push one's lips or one's bottom lip forward as an expression of petulant annoyance or in order to make oneself look sexually attractive.;;29 July 2020;0
+prying;excessively interested in a person's private affairs, too inquisitive. use force in order to move or open (something) or to separate (something) from something else.;;29 July 2020;0
+ravage;cause severe and extensive damage to. acts of destruction.;;29 July 2020;0
+absently;in an absentminded way, vaguely.;;29 July 2020;0
+markedly;to an extent which is clearly noticeable, significantly.;;29 July 2020;0
+mangle;severely mutilate, disfigure, or damage by cutting, tearing, or crushing.;;29 July 2020;0
+futile;incapable of producing any useful result, pointless.;;29 July 2020;0
+reek;smell strongly and unpleasantly, stink.;;29 July 2020;0
+promptly;with little or no delay, immediately. used to express surprise, and slight disapproval, when someone does something shortly after something else.;;29 July 2020;0
+symbiosis;interaction between two different organisms living in close physical association, typically to the advantage of both.;;29 July 2020;0
+loquacious;tending to talk a great deal, talkative.;;29 July 2020;0
+unearthly;unnatural or mysterious, especially in a disturbing way.;;29 July 2020;0
+anthropomorphism;the attribution of human characteristics or behavior to a god, animal, or object.;;29 July 2020;0
+worn;damaged and shabby as a result of much use. very tired;;29 July 2020;0
+competent;having the necessary ability, knowledge, or skill to do something successfully.;;29 July 2020;0
+incompetent;not having or showing the necessary skills to do something successfully.;;29 July 2020;0
+extraneous;irrelevant or unrelated to the subject being dealt with. separate from the object to which it is attached.;;29 July 2020;0
+cannibalizing;use (a machine) as a source of spare parts for another, similar machine. (of an animal) eat (a member of the same species).;;29 July 2020;0
+epitaph;a phrase or form of words written in memory of a person who has died, especially as an inscription on a tombstone.;;29 July 2020;0
+incarceration;the state of being confined in prison, imprisonment.;;29 July 2020;0
+ramifications;a consequence of an action or event, especially when complex or unwelcome.;;29 July 2020;0
+contemporaries;a person or thing living or existing at the same time as another.;;29 July 2020;0
+contemplate;look thoughtfully for a long time at.;;29 July 2020;0
+monetary;relating to money or currency.;;29 July 2020;0
+negates;nullify, make ineffective.;;29 July 2020;0
+anatidaephobia;the fear that at any point, somewhere in the world, a duck or goose may be watching the person who is suffering from the phobia.;;29 July 2020;0
+pareidolia;Pareidolia is the tendency for incorrect perception of a stimulus as an object, pattern or meaning known to the observer, such as seeing shapes in clouds, seeing faces in inanimate objects or abstract patterns.;;29 July 2020;0
+admirably;in a way that arouses or deserves respect and approval;;29 July 2020;0
+vicariously;in a way that is experienced in the imagination through the actions of another person.;;29 July 2020;0
+essence;the intrinsic nature or indispensable quality of something, especially something abstract, that determines its character.;;29 July 2020;0
+commensalism;an association between two organisms in which one benefits and the other derives neither benefit nor harm.;;29 July 2020;0
+mutualism;the doctrine that mutual dependence is necessary to social well-being. symbiosis that is beneficial to both organisms involved.;;29 July 2020;0
+parasitism;the practice of living as a parasite in or on another organism.;;29 July 2020;0
+cognition;the mental action or process of acquiring knowledge and understanding through thought, experience, and the senses.;;29 July 2020;0
+dissonance;lack of harmony among musical notes.;;29 July 2020;0
+anguilliform;having the form of an eel;;29 July 2020;0
+quadruped;an animal which has four feet, especially an ungulate mammal.;;29 July 2020;0
+monarchy;a form of government with a monarch at the head.;;29 July 2020;0
+illicit;forbidden by law, rules, or custom.;;29 July 2020;0
+elicit;evoke or draw out (a response, answer, or fact) from someone in reaction to one's own actions or questions.;;29 July 2020;0
+blasphemy;the act or offense of speaking sacrilegiously about God or sacred things, profane talk.;;29 July 2020;0
+condescending;having or showing a feeling of patronizing superiority.;;29 July 2020;0
+situated;fix or build (something) in a certain place or position.;;29 July 2020;0
+compensate;give (someone) something, typically money, in recognition of loss, suffering, or injury incurred, recompense.;;29 July 2020;0
+thaw;(of ice, snow, or another frozen substance, such as food) become liquid or soft as a result of warming.;;29 July 2020;0
+coax;gently and persistently persuade (someone) to do something.;;29 July 2020;0
+disparaging;expressing the opinion that something is of little worth, derogatory.;;29 July 2020;0
+allusive;(of a remark or reference) working by suggestion rather than explicit mention.;;29 July 2020;0
+sullen;bad-tempered and sulky, gloomy.;;29 July 2020;0
+sulk;be silent, morose, and bad-tempered out of annoyance or disappointment.;;29 July 2020;0
+taupe;gray with a tinge of brown.;;29 July 2020;0
+tinge;Color slightly. Tint;;29 July 2020;0
+conflate;Combine (two or more texts, ideas, etc.) into one.;;29 July 2020;0
+stern;(of a person or their manner) serious and unrelenting, especially in the assertion of authority and exercise of discipline.;;29 July 2020;0
+haphazardly;in a manner lacking any obvious principle of organization.;;29 July 2020;0
+magnanimous;generous or forgiving, especially toward a rival or less powerful person.;;29 July 2020;0
