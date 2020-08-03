@@ -7,6 +7,7 @@ from markov import Markov
 import time
 import api
 import random
+import datetime
 import json
 
 
@@ -24,11 +25,29 @@ class DiscordConnection(discord.Client):
         self.correct_word = None
         self.word_guesses = {}
         self.num_reacts = ['1️⃣', '2️⃣', '3️⃣', '4️⃣']
+        self.name_check = None
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint"))
         print('I\'m in.')
         await self.markov.load_model('all')
+        self.loop.create_task(self.background_task())
+
+    async def background_task(self):
+        while True:
+            ts = datetime.datetime.utcnow()
+            if self.name_check is None or ts.hour != self.name_check.hour:
+                for id, names in self.config.get_names().items():
+                    new_name = names.get(str(ts.hour))
+                    if new_name:
+                        try:
+                            guild = self.get_guild(363692038002180097)
+                            member = await guild.fetch_member(int(id))
+                            await member.edit(nick=new_name)
+                        except discord.HTTPException as e:
+                            print(e)
+            self.name_check = ts
+            await asyncio.sleep(10)
 
     async def on_message(self, msg):
         if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:

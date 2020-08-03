@@ -44,11 +44,11 @@ class ExecDiscordConnection(discord.Client):
         await oldmsg.delete()
         """
 
-        ch = self.get_channel(722966982454149171)
+        ch = self.get_channel(453284405402927104)
         #user = await self.fetch_user(200329561437765652)
         #txt = base64.b64encode(user.name.encode('utf-8'))
         #await self.user.edit(username="")
-        # await ch.send('uwu')
+        await ch.send('!s')
         print('uwu')
 
         #ch = self.get_channel(610041285633376276)

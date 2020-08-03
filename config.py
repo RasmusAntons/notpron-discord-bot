@@ -28,3 +28,6 @@ class Config:
 
     def get_antihint(self, level):
         return self.conf['antihints'].get(f'{level}')
+
+    def get_names(self):
+        return self.conf['names']

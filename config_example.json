@@ -7,6 +7,13 @@
 	"control": 722966982454149171,
 	"markov": [363692038002180099, 531994184320548865, 448278340693000202, 708269985180418071],
 	"api_port": 8147,
+	"names": {
+		"586321204047249423": {
+			"3": "Yoon (daddy)",
+			"15": "Yoon (dad)",
+			"21": "Yoon (test)"
+		}
+	},
 	"hints": {
 		"1": ["If this level is too hard, give up and go home."],
 		"2": ["Multiple lines", "lol"]
