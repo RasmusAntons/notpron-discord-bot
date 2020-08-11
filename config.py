@@ -31,3 +31,6 @@ class Config:
 
     def get_names(self):
         return self.conf['names']
+
+    def get_owm_key(self):
+        return self.conf['owm_key']

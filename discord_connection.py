@@ -8,7 +8,9 @@ import time
 import api
 import random
 import datetime
+import weather
 import json
+import pyowm.commons.exceptions
 
 
 class DiscordConnection(discord.Client):
@@ -95,6 +97,14 @@ class DiscordConnection(discord.Client):
             self.tts_queue.put(f'voice_{self.tts_n}.mp3')
             self.tts_n += 1
             print('added voice to queue')
+        elif msg.content.startswith('!weather'):
+            if len(msg.content) < 10:
+                return
+            query = msg.content[9:]
+            try:
+                await msg.channel.send(embed=weather.get_weather_msg(query, self.config.get_owm_key()))
+            except pyowm.commons.exceptions.NotFoundError:
+                await msg.channel.send(f'{msg.author.mention} I don\'t know that place')
         elif msg.content == '!botpronpleasestartthemultiplechoicewordguessinggame':
             await self.start_word_game(msg)
 

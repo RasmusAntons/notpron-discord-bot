@@ -3,6 +3,7 @@ from config import Config
 import discord
 from queue import Queue
 import api
+import weather
 
 
 class ExecDiscordConnection(discord.Client):
@@ -48,8 +49,7 @@ class ExecDiscordConnection(discord.Client):
         #user = await self.fetch_user(200329561437765652)
         #txt = base64.b64encode(user.name.encode('utf-8'))
         #await self.user.edit(username="")
-        await ch.send('!s')
-        print('uwu')
+        await ch.send(embed=weather.get_weather_msg('Braunschweig', self.config.get_owm_key()))
 
         #ch = self.get_channel(610041285633376276)
         #text = '```\nOwO what\'s this?\n```\n:grey_question: <https://weeklies.3po.ch/> :grey_question:\n\nAttention, @everyone! The **summer weekly riddles** by the Notpron Discord community have officially begun. Visit the website, read the "ABOUT" page, log in with your Discord account and solve the first riddle!'
