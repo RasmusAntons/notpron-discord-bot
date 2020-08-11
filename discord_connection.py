@@ -115,7 +115,7 @@ class DiscordConnection(discord.Client):
         txt = 'WHAT IS THIS WORD?????? U HAVE 30 SECONDS!!!'
         lines = [line for line in open('res/uwuwords.txt')]
         words = [random.choice(lines).split(';') for _ in range(4)]
-        self.correct_word = random.randint(0, 4)
+        self.correct_word = random.randint(0, 3)
         embed = discord.Embed(title=f'{words[self.correct_word][0]}', color=0xa6ce86)
         for i, word in enumerate(words):
             embed.add_field(name=f'{i + 1}', value=f'{word[1]}', inline=False)
