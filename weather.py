@@ -18,19 +18,18 @@ def get_weather_msg(query, owm_key):
     embed.set_thumbnail(url=f'https://openweathermap.org/img/wn/{weather.weather_icon_name}@2x.png')
     temp_c = weather.temperature('celsius').get('temp')
     temp_f = weather.temperature('fahrenheit').get('temp')
-    status = f'{weather.detailed_status}'
+    status = f'*{weather.detailed_status}*'
     wind_eu = weather.wind('km_hour')
     wind_eu_speed = wind_eu.get('speed')
     wind_us = weather.wind('miles_hour')
     wind_us_speed = wind_us.get('speed')
     wind_deg = wind_eu.get('deg')
-    print(wind_eu)
     wind = f'Wind: {wind_eu_speed:0.2f}kph ({wind_us_speed:0.2f}mph) {degrees_to_cardinal(wind_deg)}'
-    if obs.location.name == 'Donji grad':
-        humidity = 'Humidity: ????????'
-    else:
-        humidity = f'Humidity: {weather.humidity}%'
-    embed.add_field(name=f'{temp_c}°C ({temp_f}°F)', value='\n'.join([status, wind, humidity]), inline=False)
-    local_time = datetime.datetime.fromtimestamp(obs.current_time + weather.utc_offset).strftime('%b %d %Y %H:%M:%S')
-    embed.set_footer(text=f'Local time: ')
+    humidity = f'Humidity: {weather.humidity}%'
+    srise = datetime.datetime.utcfromtimestamp(weather.sunrise_time() + weather.utc_offset).strftime('%H:%M')
+    sset = datetime.datetime.utcfromtimestamp(weather.sunset_time() + weather.utc_offset).strftime('%H:%M')
+    sun_info = f'Sunrise/Sunset: {srise}/{sset}'
+    embed.add_field(name=f'{temp_c}°C ({temp_f}°F)', value='\n'.join([status, wind, humidity, sun_info]), inline=False)
+    local_time = datetime.datetime.utcfromtimestamp(obs.rec_time + weather.utc_offset).strftime('%b %d %H:%M')
+    embed.set_footer(text=f'Local time: {local_time}')
     return embed
