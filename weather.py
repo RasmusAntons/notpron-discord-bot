@@ -1,5 +1,6 @@
 import discord
 import pyowm
+import datetime
 
 
 def degrees_to_cardinal(d):
@@ -30,4 +31,6 @@ def get_weather_msg(query, owm_key):
     else:
         humidity = f'Humidity: {weather.humidity}%'
     embed.add_field(name=f'{temp_c}°C ({temp_f}°F)', value='\n'.join([status, wind, humidity]), inline=False)
+    local_time = datetime.datetime.fromtimestamp(obs.current_time + weather.utc_offset).strftime('%b %d %Y %H:%M:%S')
+    embed.set_footer(text=f'Local time: ')
     return embed

@@ -54,6 +54,13 @@ class DiscordConnection(discord.Client):
     async def on_message(self, msg):
         if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:
             return
+        if '<:tyteok:743847838097866842>' in msg.content:
+            user = await self.fetch_user(305983034799161344)
+            dm_channel = user.dm_channel
+            if dm_channel is None:
+                dm_channel = await msg.author.create_dm()
+            if dm_channel is not None:
+                await dm_channel.send('ok')
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await self.markov.talk(msg.channel)
