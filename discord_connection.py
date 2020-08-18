@@ -58,7 +58,7 @@ class DiscordConnection(discord.Client):
             user = await self.fetch_user(305983034799161344)
             dm_channel = user.dm_channel
             if dm_channel is None:
-                dm_channel = await msg.author.create_dm()
+                dm_channel = await user.create_dm()
             if dm_channel is not None:
                 await dm_channel.send('ok')
         if self.user.mentioned_in(msg):
