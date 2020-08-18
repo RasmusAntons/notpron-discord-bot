@@ -91,6 +91,20 @@ class DiscordConnection(discord.Client):
                     await dm_channel.send(line)
             else:
                 await msg.channel.send(f'{msg.author.mention} failed to send dm, please check your settings')
+        elif msg.content.startswith('!thread'):
+            n = msg.content[7:].strip().replace('-', 'minus ')
+            thread = self.config.get_thread(n)
+            if thread is None:
+                res = "No thread with that name found"
+            else:
+                res = f'Level {n}: {thread}'
+            dm_channel = msg.author.dm_channel
+            if dm_channel is None:
+                dm_channel = await msg.author.create_dm()
+            if dm_channel is not None:
+                await dm_channel.send(res)
+            else:
+                await msg.channel.send(f'{msg.author.mention} failed to send dm, please check your settings')
         elif msg.content.startswith('!tts ') or msg.content.startswith('!tts_'):
             lang='de'
             off=5

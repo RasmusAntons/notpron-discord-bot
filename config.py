@@ -29,6 +29,9 @@ class Config:
     def get_antihint(self, level):
         return self.conf['antihints'].get(f'{level}')
 
+    def get_thread(self, thread):
+        return self.conf['threads'].get(thread)
+
     def get_names(self):
         return self.conf['names']
 
