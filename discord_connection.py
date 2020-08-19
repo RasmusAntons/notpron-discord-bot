@@ -28,6 +28,7 @@ class DiscordConnection(discord.Client):
         self.word_guesses = {}
         self.num_reacts = ['1️⃣', '2️⃣', '3️⃣', '4️⃣']
         self.name_check = None
+        self.rr = 0
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint"))
@@ -128,6 +129,17 @@ class DiscordConnection(discord.Client):
                 await msg.channel.send(f'{msg.author.mention} I don\'t know that place')
         elif msg.content == '!botpronpleasestartthemultiplechoicewordguessinggame':
             await self.start_word_game(msg)
+        elif msg.content == '!rr':
+            loadtxt = ' loads one bullet into the revolver and' if self.rr == 0 else ''
+            await msg.channel.send(f'{msg.author.display_name}{loadtxt} slowly pulls the trigger...')
+            await msg.channel.trigger_typing()
+            await asyncio.sleep(1)
+            if random.randrange(6 - self.rr) == 0:
+                await msg.author.edit(nick=f'dead')
+                self.rr = 0
+            else:
+                self.rr += 1
+                await msg.channel.send(f'*click* - empty chamber. {msg.author.display_name} will live another day. Who\'s next? Misses since last death: {self.rr}')
 
     async def start_word_game(self, orig_msg):
         if self.word_prompt:
