@@ -146,7 +146,10 @@ class DiscordConnection(discord.Client):
                 self.rr += 1
                 await msg.channel.send(f'*click* - empty chamber. {msg.author.display_name} will live another day. Who\'s next? Misses since last death: {self.rr}')
         elif msg.content.startswith('!conv'):
-            _, amount, origin, destination = msg.content.split(' ')
+            try:
+                _, amount, origin, destination = msg.content.split(' ')
+            except ValueError:
+                await msg.channel.send('use !convert <amount> <origin unit> <destination unit>')
             try:
                 amount = float(amount)
                 q = quantities.Quantity(amount, origin)
