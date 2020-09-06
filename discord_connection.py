@@ -55,13 +55,13 @@ class DiscordConnection(discord.Client):
     async def on_message(self, msg):
         if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:
             return
-        if '<:tyteok:743847838097866842>' in msg.content:
-            user = await self.fetch_user(305983034799161344)
-            dm_channel = user.dm_channel
-            if dm_channel is None:
-                dm_channel = await user.create_dm()
-            if dm_channel is not None:
-                await dm_channel.send('ok')
+        #if '<:tyteok:743847838097866842>' in msg.content:
+        #    user = await self.fetch_user(305983034799161344)
+        #    dm_channel = user.dm_channel
+        #    if dm_channel is None:
+        #        dm_channel = await user.create_dm()
+        #    if dm_channel is not None:
+        #        await dm_channel.send('ok')
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await self.markov.talk(msg.channel)
@@ -135,7 +135,11 @@ class DiscordConnection(discord.Client):
             await msg.channel.trigger_typing()
             await asyncio.sleep(1)
             if random.randrange(6 - self.rr) == 0:
-                await msg.author.edit(nick=f'dead')
+                await msg.channel.send(f'{msg.author.display_name} **died**')
+                try:
+                    await msg.author.edit(nick=f'dead')
+                except:
+                    pass
                 self.rr = 0
             else:
                 self.rr += 1
