@@ -11,6 +11,7 @@ import datetime
 import weather
 import json
 import pyowm.commons.exceptions
+import quantities
 
 
 class DiscordConnection(discord.Client):
@@ -144,6 +145,20 @@ class DiscordConnection(discord.Client):
             else:
                 self.rr += 1
                 await msg.channel.send(f'*click* - empty chamber. {msg.author.display_name} will live another day. Who\'s next? Misses since last death: {self.rr}')
+        elif msg.content.startswith('!conv'):
+            _, amount, origin, destination = msg.content.split(' ')
+            try:
+                amount = float(amount)
+                q = quantities.Quantity(amount, origin)
+                ou = str(q.units)[4:]
+                q.units = destination
+                r = q.item()
+                du = str(q.units)[4:]
+                await msg.channel.send(f'{amount}{ou} = {r}{du}')
+            except ValueError as e:
+                await msg.channel.send(str(e))
+            except LookupError as e:
+                await msg.channel.send(str(e))
 
     async def start_word_game(self, orig_msg):
         if self.word_prompt:

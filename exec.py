@@ -4,6 +4,8 @@ import discord
 from queue import Queue
 import api
 import weather
+import asyncio
+from markov import Markov
 
 
 class ExecDiscordConnection(discord.Client):
@@ -14,10 +16,20 @@ class ExecDiscordConnection(discord.Client):
         self.tts_n = 0
         self.post_tts_delay = None
         self.tts_queue = Queue()
+        self.markov = Markov(self, config)
         self.api_server = api.ApiServer(self, config)
+
+    async def background_task(self):
+        ch = self.get_channel(453284405402927104)
+        usr = await ch.guild.fetch_member(441958578962694144)
+        while True:
+            await ch.send(f'{usr.mention}')
+            await self.markov.talk(ch, user=441958578962694144, cont_chance=0)
+            await asyncio.sleep(60)
 
     async def on_ready(self):
         print('I\'m in.')
+        # self.loop.create_task(self.background_task())
         #activity = discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint")
         #await self.change_presence(activity=activity)
 
@@ -45,11 +57,14 @@ class ExecDiscordConnection(discord.Client):
         await oldmsg.delete()
         """
 
-        ch = self.get_channel(453284405402927104)
+        #ch = self.get_channel(363692038002180099)
+        #user = await self.fetch_user(720786426660388925)
+        #msg = await ch.fetch_message(750017650708709427)
+        #await msg.edit(content=f"てめぇは少し基本的だと思います {user.mention}")
         #user = await self.fetch_user(200329561437765652)
         #txt = base64.b64encode(user.name.encode('utf-8'))
         #await self.user.edit(username="")
-        await ch.send(embed=weather.get_weather_msg('Braunschweig', self.config.get_owm_key()))
+        #await ch.send(embed=weather.get_weather_msg('Braunschweig', self.config.get_owm_key()))
 
         #ch = self.get_channel(610041285633376276)
         #text = '```\nOwO what\'s this?\n```\n:grey_question: <https://weeklies.3po.ch/> :grey_question:\n\nAttention, @everyone! The **summer weekly riddles** by the Notpron Discord community have officially begun. Visit the website, read the "ABOUT" page, log in with your Discord account and solve the first riddle!'
