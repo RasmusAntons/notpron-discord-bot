@@ -150,12 +150,13 @@ class DiscordConnection(discord.Client):
                 _, amount, origin, destination = msg.content.split(' ')
             except ValueError:
                 await msg.channel.send('use !convert <amount> <origin unit> <destination unit>')
+                return
             try:
                 amount = float(amount)
                 q = quantities.Quantity(amount, origin)
                 ou = str(q.units)[4:]
                 q.units = destination
-                r = q.item()
+                r = round(q.item(), 2)
                 du = str(q.units)[4:]
                 await msg.channel.send(f'{amount}{ou} = {r}{du}')
             except ValueError as e:
