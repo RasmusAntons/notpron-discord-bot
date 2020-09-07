@@ -12,6 +12,7 @@ import weather
 import json
 import pyowm.commons.exceptions
 import quantities
+from PIL import Image
 
 
 class DiscordConnection(discord.Client):
@@ -156,13 +157,24 @@ class DiscordConnection(discord.Client):
                 q = quantities.Quantity(amount, origin)
                 ou = str(q.units)[4:]
                 q.units = destination
-                r = round(q.item(), 2)
+                r = q.item()
                 du = str(q.units)[4:]
                 await msg.channel.send(f'{amount}{ou} = {r}{du}')
             except ValueError as e:
                 await msg.channel.send(str(e))
             except LookupError as e:
                 await msg.channel.send(str(e))
+        elif msg.content.startswith('!colour ') or msg.content.startswith('!color '):
+            try:
+                col = msg.content.split(' ')[1].replace('#', '')
+                if len(col) != 6:
+                    await msg.channel.send('Use !colour #000000')
+                col = int(col, 16)
+                im = Image.new("RGB", (128, 128), f'#{col:06X}')
+                im.save('colour.png')
+                await msg.channel.send(file=discord.File('colour.png'))
+            except ValueError as e:
+                await msg.channel.send('Use !colour #000000')
 
     async def start_word_game(self, orig_msg):
         if self.word_prompt:
