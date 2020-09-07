@@ -169,6 +169,7 @@ class DiscordConnection(discord.Client):
                 col = msg.content.split(' ')[1].replace('#', '')
                 if len(col) != 6:
                     await msg.channel.send('Use !colour #000000')
+                    return
                 col = int(col, 16)
                 im = Image.new("RGB", (128, 128), f'#{col:06X}')
                 im.save('colour.png')
