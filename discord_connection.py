@@ -173,7 +173,7 @@ class DiscordConnection(discord.Client):
                 col = int(col, 16)
                 im = Image.new("RGB", (128, 128), f'#{col:06X}')
                 im.save('colour.png')
-                await msg.channel.send(file=discord.File('colour.png'))
+                await msg.channel.send(file=discord.File('colour.png', filename=f'{col:06x}.png'))
             except ValueError as e:
                 await msg.channel.send('Use !colour #000000')
 
