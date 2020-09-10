@@ -64,6 +64,9 @@ class DiscordConnection(discord.Client):
         #        dm_channel = await user.create_dm()
         #    if dm_channel is not None:
         #        await dm_channel.send('ok')
+        if msg.author.id == 704372346995081246:
+            if random.randint(0, 500) == 0:
+                await msg.channel.send('get some sleep, Alessa')
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await self.markov.talk(msg.channel)
