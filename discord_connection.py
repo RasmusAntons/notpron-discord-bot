@@ -186,6 +186,7 @@ class DiscordConnection(discord.Client):
             params = msg.content[8:].split(' ')
             if len(params) != 2:
                 await msg.channel.send('Use !solver <user id> <solver number>')
+                return
             try:
                 guild = self.get_guild(self.config.get_guild())
                 solver = await guild.fetch_member(int(params[0]))
