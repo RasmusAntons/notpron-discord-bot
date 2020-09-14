@@ -11,11 +11,20 @@ class Config:
     def get_channels(self):
         return self.conf['channels']
 
+    def get_guild(self):
+        return self.conf['guild']
+
     def get_music_channels(self):
         return self.conf['music']
 
     def get_control_channel(self):
         return self.conf['control']
+
+    def get_announcements_channel(self):
+        return self.conf['announcements']
+
+    def get_mod_role(self):
+        return self.conf['mod_role']
 
     def get_markov_channels(self):
         return self.conf['markov']

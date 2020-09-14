@@ -46,7 +46,7 @@ class DiscordConnection(discord.Client):
                     new_name = names.get(str(ts.hour))
                     if new_name:
                         try:
-                            guild = self.get_guild(363692038002180097)
+                            guild = self.get_guild(self.config.get_guild())
                             member = await guild.fetch_member(int(id))
                             await member.edit(nick=new_name)
                         except discord.HTTPException as e:
@@ -179,6 +179,26 @@ class DiscordConnection(discord.Client):
                 await msg.channel.send(file=discord.File('colour.png', filename=f'{col:06x}.png'))
             except ValueError as e:
                 await msg.channel.send('Use !colour #000000')
+        elif msg.content.startswith('!solver '):
+            if self.config.get_mod_role() not in [role.id for role in msg.author.roles]:
+                await msg.channel.send('Gotta have the moderator role to do this, sorry.')
+                return
+            params = msg.content[8:].split(' ')
+            if len(params) != 2:
+                await msg.channel.send('Use !solver <user id> <solver number>')
+            try:
+                guild = self.get_guild(self.config.get_guild())
+                solver = await guild.fetch_member(int(params[0]))
+                solver_nr = int(params[1])
+                ordinal = lambda n: "%d%s" % (n, "tsnrhtdd"[(n // 10 % 10 != 1) * (n % 10 < 4) * n % 10::4])
+                description = f'Congratulations {solver.mention}, the {ordinal(solver_nr)} person to complete Notpron.'
+                embed = discord.Embed(title=f'New Solver', description=description, color=0xa6ce86)
+                embed.set_thumbnail(url=solver.avatar_url_as(size=128))
+                await self.get_channel(self.config.get_announcements_channel()).send(embed=embed)
+            except discord.HTTPException as e:
+                await msg.channel.send(str(e))
+            except ValueError as e:
+                await msg.channel.send(str(e))
 
     async def start_word_game(self, orig_msg):
         if self.word_prompt:
