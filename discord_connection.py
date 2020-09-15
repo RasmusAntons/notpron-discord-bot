@@ -202,7 +202,7 @@ class DiscordConnection(discord.Client):
             except ValueError as e:
                 await msg.channel.send(str(e))
         elif msg.content.startswith('!imagine '):
-            keyword = msg.content[9:].strip()
+            keyword = msg.content[9:].strip() + ' -notpron'
             adult = msg.channel.is_nsfw()
             if not re.match(r'^[A-Za-z0-9 ÄÖÜaöäß]+$', keyword):
                 return await msg.channel.send(f'{msg.author.mention} please give me words like /^[A-Za-z0-9 ÄÖÜaöäß]+$/')
