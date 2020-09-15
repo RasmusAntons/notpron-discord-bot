@@ -13,6 +13,7 @@ import json
 import pyowm.commons.exceptions
 import quantities
 from PIL import Image
+import imagine
 
 
 class DiscordConnection(discord.Client):
@@ -200,6 +201,17 @@ class DiscordConnection(discord.Client):
                 await msg.channel.send(str(e))
             except ValueError as e:
                 await msg.channel.send(str(e))
+        elif msg.content.startswith('!imagine '):
+            keyword = msg.content[9:].strip()
+            adult = msg.channel.is_nsfw()
+            if not re.match(r'^[A-Za-z ÄÖÜaöäß]+$', keyword):
+                return await msg.channel.send(f'{msg.author.mention} please give me words like /^[A-Za-z ÄÖÜaöäß]+$/')
+            print(f'Searching for "{keyword}"')
+            img_path = await imagine.rv_image(keyword, adult)
+            if not img_path:
+                excuses = ['I cannot imagine that', 'I don\'t even know what that is']
+                return await msg.channel.send(f'{msg.author.mention} {random.choice(excuses)}')
+            await msg.channel.send(file=discord.File(img_path, f'{keyword}.jpg'))
 
     async def start_word_game(self, orig_msg):
         if self.word_prompt:
