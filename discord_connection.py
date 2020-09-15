@@ -204,8 +204,8 @@ class DiscordConnection(discord.Client):
         elif msg.content.startswith('!imagine '):
             keyword = msg.content[9:].strip()
             adult = msg.channel.is_nsfw()
-            if not re.match(r'^[A-Za-z ÄÖÜaöäß]+$', keyword):
-                return await msg.channel.send(f'{msg.author.mention} please give me words like /^[A-Za-z ÄÖÜaöäß]+$/')
+            if not re.match(r'^[A-Za-z0-9 ÄÖÜaöäß]+$', keyword):
+                return await msg.channel.send(f'{msg.author.mention} please give me words like /^[A-Za-z0-9 ÄÖÜaöäß]+$/')
             print(f'Searching for "{keyword}"')
             img_path = await imagine.rv_image(keyword, adult)
             if not img_path:
