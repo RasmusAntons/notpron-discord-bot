@@ -32,6 +32,7 @@ class DiscordConnection(discord.Client):
         self.num_reacts = ['1️⃣', '2️⃣', '3️⃣', '4️⃣']
         self.name_check = None
         self.rr = 0
+        self.unconfirmed = {}
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint"))
@@ -184,28 +185,37 @@ class DiscordConnection(discord.Client):
             if self.config.get_mod_role() not in [role.id for role in msg.author.roles]:
                 await msg.channel.send('Gotta have the moderator role to do this, sorry.')
                 return
-            params = msg.content[8:].split(' ')
-            if len(params) != 2:
+            params = msg.content.split(' ')[1:]
+            if len(params) < 2:
                 await msg.channel.send('Use !solver <user id> <solver number>')
                 return
             try:
-                guild = self.get_guild(self.config.get_guild())
-                solver = await guild.fetch_member(int(params[0]))
-                solver_nr = int(params[1])
-                ordinal = lambda n: "%d%s" % (n, "tsnrhtdd"[(n // 10 % 10 != 1) * (n % 10 < 4) * n % 10::4])
-                description = f'Congratulations {solver.mention}, the {ordinal(solver_nr)} person to complete Notpron.'
-                embed = discord.Embed(title=f'New Solver', description=description, color=0xa6ce86)
-                embed.set_thumbnail(url=solver.avatar_url_as(size=128))
-                await self.get_channel(self.config.get_announcements_channel()).send(embed=embed)
-            except discord.HTTPException as e:
-                await msg.channel.send(str(e))
+                solver_nr = int(params[-1])
             except ValueError as e:
                 await msg.channel.send(str(e))
+                return
+            ordinal = lambda n: "%d%s" % (n, "tsnrhtdd"[(n // 10 % 10 != 1) * (n % 10 < 4) * n % 10::4])
+            try:
+                guild = self.get_guild(self.config.get_guild())
+                solver = await guild.fetch_member(int(params[0]))
+                description = f'Congratulations {solver.mention}, the {ordinal(solver_nr)} person to complete Notpron.'
+            except (discord.HTTPException, ValueError) as e:
+                name = discord.utils.escape_markdown(' '.join(params[:-1]))
+                description = f'Congratulations **{name}**, the {ordinal(solver_nr)} person to complete Notpron.'
+                solver = None
+            embed = discord.Embed(title=f'New Solver', description=description, color=0xa6ce86)
+            if solver:
+                embed.set_thumbnail(url=solver.avatar_url_as(size=128))
+            announce_ch = self.get_channel(self.config.get_announcements_channel())
+            prompt = await msg.channel.send(f'send this to {announce_ch.mention}, {msg.author.mention}?', embed=embed)
+            await prompt.add_reaction('✅')
+            await prompt.add_reaction('❌')
+            self.unconfirmed[prompt.id] = {'text': None, 'channel': announce_ch, 'embed': embed, 'author': msg.author}
         elif msg.content.startswith('!imagine '):
             keyword = msg.content[9:].strip() + ' -notpron'
             adult = msg.channel.is_nsfw()
-            if not re.match(r'^[A-Za-z0-9 \-+ÄÖÜaöäß]+$', keyword):
-                return await msg.channel.send(f'{msg.author.mention} please give me words like /^[A-Za-z0-9 ÄÖÜaöäß]+$/')
+            if not re.match(r'^[A-Za-z0-9 \-+ÄÖÜäöüß]+$', keyword):
+                return await msg.channel.send(f'{msg.author.mention} please give me words like /^[A-Za-z0-9 ÄÖÜäöüß]+$/')
             await msg.channel.trigger_typing()
             print(f'Searching for "{keyword}"')
             img_path = await imagine.rv_image(keyword, adult)
@@ -239,6 +249,22 @@ class DiscordConnection(discord.Client):
         self.word_prompt = None
 
     async def on_reaction_add(self, reaction, user):
+        if user.id == self.user.id:
+            return
+        confirming = self.unconfirmed.get(reaction.message.id)
+        if confirming and user.id == confirming.get('author').id:
+            if reaction.emoji == '❌':
+                del self.unconfirmed[reaction.message.id]
+                await reaction.message.delete()
+            elif reaction.emoji == '✅':
+                await confirming['channel'].send(confirming.get('text'), embed=confirming.get('embed'))
+                del self.unconfirmed[reaction.message.id]
+                await reaction.message.delete()
+            else:
+                await reaction.message.channel.send(f'that\'s a stupid emoji???')
+            return
+        elif confirming:
+            await reaction.message.channel.send(f'{user.mention}, you are {user.id} and not {confirming.get("author").id}!')
         if user.id == self.user.id or not self.word_prompt or reaction.message.id != self.word_prompt.id:
             return
         try:
