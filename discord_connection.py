@@ -181,12 +181,12 @@ class DiscordConnection(discord.Client):
                 await msg.channel.send(file=discord.File('colour.png', filename=f'{col:06x}.png'))
             except ValueError as e:
                 await msg.channel.send('Use !colour #000000')
-        elif msg.content.startswith('!solver '):
+        elif msg.content.startswith('!testsolver'):
             if self.config.get_mod_role() not in [role.id for role in msg.author.roles]:
                 await msg.channel.send('Gotta have the moderator role to do this, sorry.')
                 return
             params = msg.content.split(' ')[1:]
-            if len(params) < 2:
+            if len(params) == 0:
                 await msg.channel.send('Use !solver <user id> <solver number>')
                 return
             try:
@@ -195,14 +195,18 @@ class DiscordConnection(discord.Client):
                 await msg.channel.send(str(e))
                 return
             ordinal = lambda n: "%d%s" % (n, "tsnrhtdd"[(n // 10 % 10 != 1) * (n % 10 < 4) * n % 10::4])
-            try:
-                guild = self.get_guild(self.config.get_guild())
-                solver = await guild.fetch_member(int(params[0]))
-                description = f'Congratulations {solver.mention}, the {ordinal(solver_nr)} person to complete Notpron.'
-            except (discord.HTTPException, ValueError) as e:
-                name = discord.utils.escape_markdown(' '.join(params[:-1]))
-                description = f'Congratulations **{name}**, the {ordinal(solver_nr)} person to complete Notpron.'
+            if len(params) == 1:
+                description = f'Notpron has just been completed for the {ordinal(solver_nr)} time! Congratulations'
                 solver = None
+            else:
+                try:
+                    guild = self.get_guild(self.config.get_guild())
+                    solver = await guild.fetch_member(int(params[0]))
+                    description = f'Congratulations {solver.mention}, the {ordinal(solver_nr)} person to complete Notpron.'
+                except (discord.HTTPException, ValueError) as e:
+                    name = discord.utils.escape_markdown(' '.join(params[:-1]))
+                    description = f'Congratulations **{name}**, the {ordinal(solver_nr)} person to complete Notpron.'
+                    solver = None
             embed = discord.Embed(title=f'New Solver', description=description, color=0xa6ce86)
             if solver:
                 embed.set_thumbnail(url=solver.avatar_url_as(size=128))
