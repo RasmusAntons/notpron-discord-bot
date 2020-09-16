@@ -181,7 +181,7 @@ class DiscordConnection(discord.Client):
                 await msg.channel.send(file=discord.File('colour.png', filename=f'{col:06x}.png'))
             except ValueError as e:
                 await msg.channel.send('Use !colour #000000')
-        elif msg.content.startswith('!testsolver'):
+        elif msg.content.startswith('!solver'):
             if self.config.get_mod_role() not in [role.id for role in msg.author.roles]:
                 await msg.channel.send('Gotta have the moderator role to do this, sorry.')
                 return
