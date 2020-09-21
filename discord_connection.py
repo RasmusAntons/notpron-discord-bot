@@ -74,17 +74,7 @@ class DiscordConnection(discord.Client):
                 await self.markov.talk(msg.channel)
         if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
             if '@everyone' not in msg.content and '@here' not in msg.content:
-                await msg.channel.send(f'''. 　　　。　　　　•　 　ﾟ　　。 　　.
-
-　　　.　　　 　　.　　　　　。　　 。　. 　
-
-.　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
-
-　　ﾟ　 {msg.mentions[0].name} was not An Impostor.　 。　.
-
-　　'　　　 1 Impostor remains 　 　　。
-
-　　ﾟ　　　.　　　. ,　　　　.　 .''')
+                await msg.channel.send(self.sus_resp(msg.mentions[0].name))
         elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
             cmd = msg.content[1:].strip()
             await self.markov.on_command(msg, cmd)
@@ -291,6 +281,37 @@ class DiscordConnection(discord.Client):
         except ValueError:
             print(f'what is this emoji? {reaction.emoji}')
         print(self.word_guesses)
+
+    def sus_resp(self, userName):
+        fChoice = random.randint(1, 2)
+        sChoice = random.randint(0, 1)
+        choice = [f"""
+    . 　　　。　　　　•　 　ﾟ　　。 　　.
+
+    　　　.　　　 　　.　　　　　。　　 。　. 　
+
+    .　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
+
+    　　ﾟ　　 {userName} was not {"An" if fChoice == 2 else "The"} Impostor.　 。　.
+
+    　　'　　　 {fChoice} Impostor{"s" if fChoice == 2 else ""} remain{"s" if fChoice != 2 else ""} 　 　　。
+
+    　　ﾟ　　　.　　　. ,　　　　.　 .
+    """,
+                  f"""
+    . 　　　。　　　　•　 　ﾟ　　。 　　.
+
+    　　　.　　　 　　.　　　　　。　　 。　. 　
+
+    .　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
+
+    　　ﾟ　　 {userName} was {"An" if sChoice == 1 else "The"} Impostor.　 。　.
+
+    　　'　　　 {sChoice} Impostor remains 　 　　。
+
+    　　ﾟ　　　.　　　. ,　　　　.　 .
+    """]
+        return random.choice(choice)
 
     async def on_voice_state_update(self, member, before, after):
         if member.id != self.user.id and after.channel:
