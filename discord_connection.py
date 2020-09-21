@@ -72,6 +72,19 @@ class DiscordConnection(discord.Client):
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await self.markov.talk(msg.channel)
+        if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
+            if '@everyone' not in msg.content and '@here' not in msg.content:
+                await msg.channel.send(f'''. 　　　。　　　　•　 　ﾟ　　。 　　.
+
+　　　.　　　 　　.　　　　　。　　 。　. 　
+
+.　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
+
+　　ﾟ　 {msg.mentions[0].name} was not An Impostor.　 。　.
+
+　　'　　　 1 Impostor remains 　 　　。
+
+　　ﾟ　　　.　　　. ,　　　　.　 .''')
         elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
             cmd = msg.content[1:].strip()
             await self.markov.on_command(msg, cmd)
