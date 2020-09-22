@@ -285,6 +285,7 @@ class DiscordConnection(discord.Client):
     def sus_resp(self, userName):
         fChoice = random.randint(1, 2)
         sChoice = random.randint(0, 1)
+        n = max(1, (len(userName) - 8) // 2)
         choice = [f"""
     . 　　　。　　　　•　 　ﾟ　　。 　　.
 
@@ -292,7 +293,7 @@ class DiscordConnection(discord.Client):
 
     .　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
 
-    　　ﾟ　　 {userName} was not {"An" if fChoice == 2 else "The"} Impostor.　 。　.
+{"    　　ﾟ　　  "[:-n]}{userName} was not {"An" if fChoice == 2 else "The"} Impostor.{"　 。　."[:-n]}
 
     　　'　　　 {fChoice} Impostor{"s" if fChoice == 2 else ""} remain{"s" if fChoice != 2 else ""} 　 　　。
 
@@ -305,7 +306,7 @@ class DiscordConnection(discord.Client):
 
     .　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
 
-    　　ﾟ　　 {userName} was {"An" if sChoice == 1 else "The"} Impostor.　 。　.
+{"    　　ﾟ　　  "[:-n]}{userName} was {"An" if sChoice == 1 else "The"} Impostor.{"　 。　."[:-n]}
 
     　　'　　　 {sChoice} Impostor remains 　 　　。
 
