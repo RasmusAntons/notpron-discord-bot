@@ -64,6 +64,9 @@ class DiscordConnection(discord.Client):
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await self.markov.talk(msg.channel)
+        if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
+            if '@everyone' not in msg.content and '@here' not in msg.content:
+                await msg.channel.send(self.sus_resp(msg.mentions[0].name))
         elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
             cmd = msg.content[1:].strip()
             await self.markov.on_command(msg, cmd)
@@ -101,6 +104,38 @@ class DiscordConnection(discord.Client):
             return
         for reaction_listener in self.reaction_listeners:
             await reaction_listener.on_reaction_add(reaction, user)
+
+    def sus_resp(self, userName):
+        fChoice = random.randint(1, 2)
+        sChoice = random.randint(0, 1)
+        n = max(1, (len(userName) - 8) // 2)
+        choice = [f"""
+    . 　　　。　　　　•　 　ﾟ　　。 　　.
+
+    　　　.　　　 　　.　　　　　。　　 。　. 　
+
+    .　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
+
+{"    　　ﾟ　　  "[:-n]}{userName} was not {"An" if fChoice == 2 else "The"} Impostor.{"　 。　."[:-n]}
+
+    　　'　　　 {fChoice} Impostor{"s" if fChoice == 2 else ""} remain{"s" if fChoice != 2 else ""} 　 　　。
+
+    　　ﾟ　　　.　　　. ,　　　　.　 .
+    """,
+                  f"""
+    . 　　　。　　　　•　 　ﾟ　　。 　　.
+
+    　　　.　　　 　　.　　　　　。　　 。　. 　
+
+    .　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
+
+{"    　　ﾟ　　  "[:-n]}{userName} was {"An" if sChoice == 1 else "The"} Impostor.{"　 。　."[:-n]}
+
+    　　'　　　 {sChoice} Impostor remains 　 　　。
+
+    　　ﾟ　　　.　　　. ,　　　　.　 .
+    """]
+        return random.choice(choice)
 
     async def on_voice_state_update(self, member, before, after):
         for vc_listener in self.voice_state_listeners:
