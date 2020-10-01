@@ -8,6 +8,9 @@ class Config:
     def get_discord_token(self):
         return self.conf['discord']['token']
 
+    def get_prefix(self):
+        return self.conf['prefix']
+
     def get_channels(self):
         return self.conf['channels']
 
@@ -46,3 +49,6 @@ class Config:
 
     def get_owm_key(self):
         return self.conf['owm_key']
+
+    def get_embed_colour(self):
+        return 0xa6ce86

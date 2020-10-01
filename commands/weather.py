@@ -1,6 +1,22 @@
+from commands.command import Command
 import discord
 import pyowm
 import datetime
+import pyowm.commons.exceptions
+
+
+class WeatherCommand(Command):
+    name = 'weather'
+    arg_range = (0, 99)
+    description = 'get the current weather at a location'
+    arg_desc = '<location>'
+
+    async def execute(self, args, msg):
+        query = ''.join(args)
+        try:
+            await msg.channel.send(embed=get_weather_msg(query, self.bot.config.get_owm_key()))
+        except pyowm.commons.exceptions.NotFoundError:
+            await msg.channel.send(f'{msg.author.mention} I don\'t know that place')
 
 
 def degrees_to_cardinal(d):
