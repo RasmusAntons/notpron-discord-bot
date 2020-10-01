@@ -95,7 +95,7 @@ class DiscordConnection(discord.Client):
         # todo: check if user has dms disabled
         dm_channel = user.dm_channel
         if dm_channel is None:
-            dm_channel = await user.author.create_dm()
+            dm_channel = await user.create_dm()
         if dm_channel is None:
             raise RuntimeError('Failed to create dm channel')
         return dm_channel
