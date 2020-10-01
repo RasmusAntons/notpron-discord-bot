@@ -75,4 +75,6 @@ class ApiServer:
         embed.set_thumbnail(url=icon)
         embed.set_footer(text='To learn how to turn these notifications off, look at the message above.')
         await ch.purge(limit=1, check=lambda m: m.author == self.client.user)
-        await ch.send('@everyone', embed=embed)
+        msg = await ch.send('@everyone', embed=embed)
+        if ch.is_news():
+            await msg.publish()

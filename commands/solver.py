@@ -50,7 +50,10 @@ class SolverCommand(Command):
                 del self.unconfirmed[reaction.message.id]
                 await reaction.message.delete()
             elif reaction.emoji == '✅':
-                await confirming['channel'].send(confirming.get('text'), embed=confirming.get('embed'))
+                ch = confirming['channel']
+                msg = await ch.send(confirming.get('text'), embed=confirming.get('embed'))
+                if ch.is_news():
+                    await msg.publish()
                 del self.unconfirmed[reaction.message.id]
                 await reaction.message.delete()
             else:
