@@ -3,6 +3,7 @@ import asyncio
 from markov import Markov
 import api
 import datetime
+import random
 from discord.utils import escape_markdown, escape_mentions
 from commands.hint import HintCommand
 from commands.antihint import AntiHintCommand
