@@ -25,4 +25,4 @@ class RrCommand(Command):
         else:
             self.state += 1
             await msg.channel.send(
-                f'*click* - empty chamber. {msg.author.display_name} will live another day. Who\'s next? Misses since last death: {self.rr}')
+                f'*click* - empty chamber. {msg.author.display_name} will live another day. Who\'s next? Misses since last death: {self.state}')
