@@ -17,11 +17,13 @@ from commands.solver import SolverCommand
 from commands.imagine import ImagineCommand
 from commands.guessing_game import GuessingGameCommand
 from commands.tts import TtsCommand
+from commands.font import FontCommand
 
 
 class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
-                        WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand]
+                        WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
+                        FontCommand]
 
     def __init__(self, config):
         super().__init__()
