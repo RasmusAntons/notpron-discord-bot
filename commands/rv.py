@@ -62,7 +62,8 @@ class RvCommand(Command):
                     ratio, user_stats = best.get()
                     uid, correct, total = user_stats
                     user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
-                    best_users.append(f'{i + 1}. {100 * -ratio:02.2f}% ({correct:03d}/{total:03d}) {user.name}')
+                    ratio = correct / total
+                    best_users.append(f'{i + 1}. {100 * ratio:02.2f}% ({correct:03d}/{total:03d}) {user.name}')
                     i += 1
                 embed.add_field(name=f'Most successful', value='\n'.join(best_users) or '', inline=False)
                 await msg.channel.send(embed=embed)
