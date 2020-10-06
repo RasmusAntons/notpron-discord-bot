@@ -50,5 +50,8 @@ class Config:
     def get_owm_key(self):
         return self.conf['owm_key']
 
+    def get_rv_path(self):
+        return self.conf['rv_path']
+
     def get_embed_colour(self):
         return 0xa6ce86

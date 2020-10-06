@@ -6,7 +6,7 @@ class ConvertCommand(Command):
     name = 'convert'
     aliases = ['conv']
     arg_range = (3, 3)
-    description = 'convert between two unite'
+    description = 'convert between two units'
     arg_desc = '<amount> <origin unit> <destination unit>'
 
     async def execute(self, args, msg):

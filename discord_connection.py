@@ -18,12 +18,13 @@ from commands.imagine import ImagineCommand
 from commands.guessing_game import GuessingGameCommand
 from commands.tts import TtsCommand
 from commands.font import FontCommand
+from commands.rv import RvCommand
 
 
 class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
-                        FontCommand]
+                        FontCommand, RvCommand]
 
     def __init__(self, config):
         super().__init__()
@@ -86,6 +87,7 @@ class DiscordConnection(discord.Client):
                             await command.execute(args, msg)
                     except Exception as e:
                         await msg.channel.send(escape_markdown(escape_mentions(str(e))))
+                        raise e
                 else:
                     usage = f'Usage: `{self.prefix}{command.name}'
                     if command.arg_desc:
