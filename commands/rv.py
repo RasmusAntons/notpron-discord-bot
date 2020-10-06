@@ -51,7 +51,7 @@ class RvCommand(Command):
                 for uid, usr_stats in stats.items():
                     total += usr_stats['total']
                     correct += usr_stats['correct']
-                    best.put((correct / total, [uid, correct, total]))
+                    best.put((usr_stats['correct'] / usr_stats['total'], [uid, usr_stats['correct'], usr_stats['total']]))
                 embed = discord.Embed(title=f'RV Stats', color=self.bot.config.get_embed_colour())
                 global_stats = f'{total} total attempts\n{correct} successful attempts' \
                                f'\n{100 * correct / total:2.2f}% success rate'
@@ -63,6 +63,7 @@ class RvCommand(Command):
                     uid, correct, total = user_stats
                     user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
                     best_users.append(f'{i + 1}. {100 * ratio:02.2f}% ({correct:03d}/{total:03d}) {user.name}')
+                    i += 1
                 embed.add_field(name=f'Most successful', value='\n'.join(best_users) or '', inline=False)
                 await msg.channel.send(embed=embed)
             elif args[0] == 'init':
