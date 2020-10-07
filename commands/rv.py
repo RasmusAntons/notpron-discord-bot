@@ -7,6 +7,7 @@ import shutil
 import math
 import time
 import queue
+import datetime
 from PIL import Image, ImageOps, ImageDraw, ImageFont
 
 
@@ -36,7 +37,7 @@ class RvCommand(Command):
     name = 'rv'
     arg_range = (1, 2)
     description = 'remote view some images'
-    arg_desc = 'init | done | show <id> | solve <id> | stats'
+    arg_desc = 'init | done | show <id> | cancel | solve <id> | stats | log'
 
     async def execute(self, args, msg):
         rv_path = self.bot.config.get_rv_path()
@@ -48,18 +49,21 @@ class RvCommand(Command):
                 stats = rvdb.get('stats', {})
                 total = 0
                 correct = 0
+                cancelled = 0
                 for uid, usr_stats in stats.items():
-                    total += usr_stats['total']
-                    correct += usr_stats['correct']
+                    total += usr_stats.get('total', 0)
+                    correct += usr_stats.get('correct', 0)
+                    cancelled += usr_stats.get('cancelled', 0)
                     if usr_stats['total'] >= 10:
-                        best.put((-usr_stats['correct'] / usr_stats['total'], [uid, usr_stats['correct'], usr_stats['total']]))
+                        usr_ratio = -usr_stats['correct'] / usr_stats['total']
+                        best.put((usr_ratio, [uid, usr_stats['correct'], usr_stats['total']]))
                 embed = discord.Embed(title=f'RV Stats', color=self.bot.config.get_embed_colour())
                 global_stats = f'{total} total attempts\n{correct} successful attempts' \
-                               f'\n{100 * correct / total:5.2f}% success rate'
+                               f'\n{cancelled} cancelled attempts\n{100 * correct / total:5.2f}% success rate'
                 embed.add_field(name=f'Global', value=global_stats, inline=False)
                 best_users = []
                 i = 0
-                while i < 5 and not best.empty():
+                while i < 15 and not best.empty():
                     ratio, user_stats = best.get()
                     uid, correct, total = user_stats
                     user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
@@ -105,13 +109,20 @@ class RvCommand(Command):
                     text = f'{msg.author.mention} please identify your target image and enter its number with' \
                            f' `{self.bot.prefix}{self.name} solve <id>` where <id> is the number shown above' \
                            f' the image. Use `{self.bot.prefix}{self.name} show <id>` to see an image in its' \
-                           f' full resolution.'
+                           f' full resolution. If there are multiple matching images, you can use' \
+                           f' `{self.bot.prefix}{self.name} cancel` to cancel and try another target.'
                     await msg.channel.send(text, file=discord.File(f'rv/{code}.png'))
                 else:
                     await msg.channel.send(f'{msg.author.mention} you don\'t have a target yet.'
                                            f' Use `{self.bot.prefix}{self.name} init` to request one.')
             elif args[0] == 'show':
                 if session and session.get('target'):
+                    selection = session.get('selection')
+                    if selection is None:
+                        await msg.channel.send(f'{msg.author.mention} you don\'t have a target selection yet.'
+                                               f' Use `{self.bot.prefix}{self.name} done` to get images to select'
+                                               f' your target from.')
+                        return
                     if len(args) < 2:
                         await msg.channel.send(f' Use `{self.bot.prefix}{self.name} show <id>`'
                                                f' to view one specific image.')
@@ -119,12 +130,6 @@ class RvCommand(Command):
                     img_id = int(args[1])
                     if not 1 <= img_id <= 20:
                         raise ValueError('image id must be between 1 and 20')
-                    selection = session.get('selection')
-                    if selection is None:
-                        await msg.channel.send(f'{msg.author.mention} you don\'t have a target selection yet.'
-                                               f' Use `{self.bot.prefix}{self.name} done` to get images to select'
-                                               f' your target from.')
-                        return
                     text = f'{msg.author.mention}, this is your option {img_id}'
                     await msg.channel.send(text, file=discord.File(selection[img_id - 1]))
                 else:
@@ -132,12 +137,6 @@ class RvCommand(Command):
                                            f' Use `{self.bot.prefix}{self.name} init` to request one.')
             elif args[0] == 'solve':
                 if session and session.get('target'):
-                    if len(args) < 2:
-                        await msg.channel.send(f' Use `{self.bot.prefix}{self.name} solve <id>` to enter your choice.')
-                        return
-                    img_id = int(args[1])
-                    if not 1 <= img_id <= 20:
-                        raise ValueError('image id must be between 1 and 20')
                     code = session['code']
                     selection = session.get('selection')
                     if selection is None:
@@ -145,9 +144,15 @@ class RvCommand(Command):
                                                f' Use `{self.bot.prefix}{self.name} done` to get images to select'
                                                f' your target from.')
                         return
+                    if len(args) < 2:
+                        await msg.channel.send(f' Use `{self.bot.prefix}{self.name} solve <id>` to enter your choice.')
+                        return
+                    img_id = int(args[1])
+                    if not 1 <= img_id <= 20:
+                        raise ValueError('image id must be between 1 and 20')
                     choice = selection[img_id - 1]
                     stats = rvdb.get('stats', {})
-                    usr_stats = stats.get(msg.author.id, {'total': 0, 'correct': 0})
+                    usr_stats = stats.get(msg.author.id, {'total': 0, 'correct': 0, 'cancelled': 0})
                     correct = choice == session['target']
                     log_entry = {'uid': msg.author.id, 'correct': correct, 'target': session['target'],
                                  'selection': selection, 't_start': session['t_start'], 't_end': time.time()}
@@ -173,5 +178,45 @@ class RvCommand(Command):
                 else:
                     await msg.channel.send(f'{msg.author.mention} you don\'t have a target yet.'
                                            f' Use `{self.bot.prefix}{self.name} init` to request one.')
+            elif args[0] == 'cancel':
+                if session and session.get('target'):
+                    code = session['code']
+                    selection = session.get('selection')
+                    if selection is None:
+                        await msg.channel.send(f'{msg.author.mention} you don\'t have a target selection yet.'
+                                               f' Use `{self.bot.prefix}{self.name} done` to get images to select'
+                                               f' your target from.')
+                        return
+                    stats = rvdb.get('stats', {})
+                    usr_stats = stats.get(msg.author.id, {'total': 0, 'correct': 0, 'cancelled': 0})
+                    log_entry = {'uid': msg.author.id, 'target': session['target'], 'selection': selection,
+                                 't_start': session['t_start'], 't_end': time.time()}
+                    usr_stats['cancelled'] = usr_stats.get('cancelled', 0) + 1
+                    await msg.channel.send(f'{msg.author.mention} Cancelled. This was your target. Use'
+                                           f' `{self.bot.prefix}{self.name} init` to get another target.',
+                                           file=discord.File(f'rv/{code}.jpg'))
+                    stats[msg.author.id] = usr_stats
+                    rvdb['stats'] = stats
+                    log = rvdb.get('log', [])
+                    log.append(log_entry)
+                    rvdb['log'] = log
+                    del rvdb[msg.author.id]
+                    rvdb.commit()
+                    os.remove(f'rv/{code}.jpg')
+                else:
+                    await msg.channel.send(f'{msg.author.mention} you don\'t have a target yet.'
+                                           f' Use `{self.bot.prefix}{self.name} init` to request one.')
+            elif args[0] == 'log':
+                log = rvdb.get('log', [])
+                fn = f'rv/rv_log_{datetime.datetime.utcnow().isoformat()}.csv'
+                with open(fn, 'w') as f:
+                    f.write('Time(UTC),UserID,Success,Duration(s)\n')
+                    for log_entry in log:
+                        t_end = datetime.datetime.utcfromtimestamp(log_entry.get('t_end')).replace(microsecond=0)
+                        uid = f'"{log_entry.get("uid")}"'
+                        suc = str(log_entry.get('correct', 'cancelled')).upper()
+                        dur = int(log_entry.get('t_end') - log_entry.get('t_start'))
+                        f.write(f'{t_end.isoformat()},{uid},{suc},{dur}\n')
+                await msg.channel.send(file=discord.File(fn))
             else:
                 raise RuntimeError('valid operators are: ' + self.arg_desc)
