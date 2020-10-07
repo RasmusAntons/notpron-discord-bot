@@ -66,7 +66,7 @@ class RvCommand(Command):
                     ratio = correct / total
                     best_users.append(f'{i + 1}. {100 * ratio:05.2f}% ({correct:2d}/{total:2d}) {user.name}')
                     i += 1
-                embed.add_field(name=f'Most successful', value='\n'.join(best_users) or '', inline=False)
+                embed.add_field(name=f'Most successful', value='\n'.join(best_users) or '-', inline=False)
                 embed.set_footer(text=f'Only users with at least 10 total attempts are shown.')
                 await msg.channel.send(embed=embed)
             elif args[0] == 'init':
