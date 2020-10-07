@@ -51,7 +51,7 @@ class RvCommand(Command):
                 for uid, usr_stats in stats.items():
                     total += usr_stats['total']
                     correct += usr_stats['correct']
-                    if total >= 10:
+                    if usr_stats['total'] >= 10:
                         best.put((-usr_stats['correct'] / usr_stats['total'], [uid, usr_stats['correct'], usr_stats['total']]))
                 embed = discord.Embed(title=f'RV Stats', color=self.bot.config.get_embed_colour())
                 global_stats = f'{total} total attempts\n{correct} successful attempts' \
