@@ -38,6 +38,7 @@ class RvCommand(Command):
     arg_range = (1, 2)
     description = 'remote view some images'
     arg_desc = 'init | done | show <id> | cancel | solve <id> | stats | log'
+    n_choices = 4
 
     async def execute(self, args, msg):
         rv_path = self.bot.config.get_rv_path()
@@ -96,7 +97,7 @@ class RvCommand(Command):
                     if selection is None:
                         choices = os.listdir(rv_path)
                         selection = [session['target']]
-                        while len(selection) < 20:
+                        while len(selection) < self.n_choices:
                             new_image = os.path.join(rv_path, random.choice(choices))
                             if new_image not in selection:
                                 selection.append(new_image)
@@ -104,7 +105,7 @@ class RvCommand(Command):
                         session['selection'] = selection
                         rvdb[msg.author.id] = session
                         rvdb.commit()
-                    im = gen_thumbs(selection, 5)
+                    im = gen_thumbs(selection, min(5, self.n_choices), (320, 320))
                     im.save(f'rv/{code}.png')
                     text = f'{msg.author.mention} please identify your target image and enter its number with' \
                            f' `{self.bot.prefix}{self.name} solve <id>` where <id> is the number shown above' \
@@ -128,7 +129,7 @@ class RvCommand(Command):
                                                f' to view one specific image.')
                         return
                     img_id = int(args[1])
-                    if not 1 <= img_id <= 20:
+                    if not 1 <= img_id <= self.n_choices:
                         raise ValueError('image id must be between 1 and 20')
                     text = f'{msg.author.mention}, this is your option {img_id}'
                     await msg.channel.send(text, file=discord.File(selection[img_id - 1]))
@@ -148,7 +149,7 @@ class RvCommand(Command):
                         await msg.channel.send(f' Use `{self.bot.prefix}{self.name} solve <id>` to enter your choice.')
                         return
                     img_id = int(args[1])
-                    if not 1 <= img_id <= 20:
+                    if not 1 <= img_id <= self.n_choices:
                         raise ValueError('image id must be between 1 and 20')
                     choice = selection[img_id - 1]
                     stats = rvdb.get('stats', {})
@@ -175,6 +176,7 @@ class RvCommand(Command):
                     del rvdb[msg.author.id]
                     rvdb.commit()
                     os.remove(f'rv/{code}.jpg')
+                    os.remove(f'rv/{code}.png')
                 else:
                     await msg.channel.send(f'{msg.author.mention} you don\'t have a target yet.'
                                            f' Use `{self.bot.prefix}{self.name} init` to request one.')
@@ -203,6 +205,7 @@ class RvCommand(Command):
                     del rvdb[msg.author.id]
                     rvdb.commit()
                     os.remove(f'rv/{code}.jpg')
+                    os.remove(f'rv/{code}.png')
                 else:
                     await msg.channel.send(f'{msg.author.mention} you don\'t have a target yet.'
                                            f' Use `{self.bot.prefix}{self.name} init` to request one.')
@@ -218,5 +221,6 @@ class RvCommand(Command):
                         dur = int(log_entry.get('t_end') - log_entry.get('t_start'))
                         f.write(f'{t_end.isoformat()},{uid},{suc},{dur}\n')
                 await msg.channel.send(file=discord.File(fn))
+                os.remove(fn)
             else:
                 raise RuntimeError('valid operators are: ' + self.arg_desc)
