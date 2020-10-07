@@ -46,33 +46,43 @@ class RvCommand(Command):
             session = rvdb.get(msg.author.id)
             await msg.channel.trigger_typing()
             if args[0] == 'stats':
-                best = queue.PriorityQueue()
                 stats = rvdb.get('stats', {})
-                total = 0
-                correct = 0
-                cancelled = 0
-                for uid, usr_stats in stats.items():
-                    total += usr_stats.get('total', 0)
-                    correct += usr_stats.get('correct', 0)
-                    cancelled += usr_stats.get('cancelled', 0)
-                    if usr_stats['total'] >= 10:
-                        usr_ratio = -usr_stats['correct'] / usr_stats['total']
-                        best.put((usr_ratio, [uid, usr_stats['correct'], usr_stats['total']]))
                 embed = discord.Embed(title=f'RV Stats', color=self.bot.config.get_embed_colour())
-                global_stats = f'{total} total attempts\n{correct} successful attempts' \
-                               f'\n{cancelled} cancelled attempts\n{100 * correct / total:5.2f}% success rate'
-                embed.add_field(name=f'Global', value=global_stats, inline=False)
-                best_users = []
-                i = 0
-                while i < 15 and not best.empty():
-                    ratio, user_stats = best.get()
-                    uid, correct, total = user_stats
-                    user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
-                    ratio = correct / total
-                    best_users.append(f'{i + 1}. {100 * ratio:05.2f}% ({correct:2d}/{total:2d}) {user.name}')
-                    i += 1
-                embed.add_field(name=f'Most successful', value='\n'.join(best_users) or '-', inline=False)
-                embed.set_footer(text=f'Only users with at least 10 total attempts are shown.')
+                if len(msg.mentions) == 1:
+                    usr = msg.mentions[0]
+                    usr_stats = stats.get(usr.id, {})
+                    usr_total = usr_stats.get('total', 0)
+                    usr_correct = usr_stats.get('correct', 0)
+                    usr_cancelled = usr_stats.get('cancelled', 0)
+                    usr_text = f'{usr_total} total attempts\n{usr_correct} successful attempts\n{usr_cancelled}' \
+                               f' cancelled attempts\n{100 * usr_correct / usr_total:5.2f}% success rate'
+                    embed.add_field(name=usr.display_name, value=usr_text, inline=False)
+                else:
+                    best = queue.PriorityQueue()
+                    total = 0
+                    correct = 0
+                    cancelled = 0
+                    for uid, usr_stats in stats.items():
+                        total += usr_stats.get('total', 0)
+                        correct += usr_stats.get('correct', 0)
+                        cancelled += usr_stats.get('cancelled', 0)
+                        if usr_stats['total'] >= 10:
+                            usr_ratio = -usr_stats['correct'] / usr_stats['total']
+                            best.put((usr_ratio, [uid, usr_stats['correct'], usr_stats['total']]))
+                    global_stats = f'{total} total attempts\n{correct} successful attempts' \
+                                   f'\n{cancelled} cancelled attempts\n{100 * correct / total:5.2f}% success rate'
+                    embed.add_field(name=f'Global', value=global_stats, inline=False)
+                    best_users = []
+                    i = 0
+                    while i < 15 and not best.empty():
+                        ratio, user_stats = best.get()
+                        uid, correct, total = user_stats
+                        user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
+                        ratio = correct / total
+                        best_users.append(f'{i + 1}. {100 * ratio:05.2f}% ({correct:2d}/{total:2d}) {user.name}')
+                        i += 1
+                    embed.add_field(name=f'Most successful', value='\n'.join(best_users) or '-', inline=False)
+                    embed.set_footer(text=f'Only users with at least 10 total attempts are shown.')
                 await msg.channel.send(embed=embed)
             elif args[0] == 'init':
                 if session:
