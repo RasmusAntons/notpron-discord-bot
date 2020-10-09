@@ -9,7 +9,7 @@ class ThreadCommand(Command):
 
     async def execute(self, args, msg):
         n = ''.join(args).replace('-', 'minus ')
-        thread = self.config.get_thread(n)
+        thread = self.bot.config.get_thread(n)
         if thread is None:
             res = "No thread with that name found"
         else:
