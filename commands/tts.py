@@ -19,7 +19,6 @@ class TtsCommand(Command):
     tts_queue = Queue()
     tts_n = 0
     playing = None
-    post_tts_delay = None
     vc = None
     halloween_state = 0
 
@@ -34,7 +33,7 @@ class TtsCommand(Command):
         tts = gTTS(text=text, lang=lang)
         tts.save(f'voice_{self.tts_n}.mp3')
         self.tts_queue.put(f'voice_{self.tts_n}.mp3')
-        self.tts_n += 1
+        self.tts_n = (self.tts_n + 1) % 25
         print('added voice to queue')
 
     def get_halloween_song(self):
@@ -73,6 +72,12 @@ class TtsCommand(Command):
                 else:
                     next_fn = 'res/mus1.mp3' if self.playing == mus1_ch else self.get_halloween_song()
                     np_str = next_fn.replace('res/', '').replace('halloween/', '')
+                    if random.random() < 0.25:
+                        txt = self.bot.markov.get_sentence()
+                        tts = gTTS(text=txt, lang='en-gb')
+                        tts.save(f'voice_{self.tts_n}.mp3')
+                        self.tts_queue.put(f'voice_{self.tts_n}.mp3')
+                        self.tts_n = (self.tts_n + 1) % 25
 
                 async def play():
                     await asyncio.sleep(1)
@@ -93,7 +98,6 @@ class TtsCommand(Command):
                     await old_vc.disconnect()
                 self.vc = await ch.connect()
                 self.playing = ch
-                self.post_tts_delay = 15
                 fn = 'res/mus1.mp3' if ch == mus1_ch else self.get_halloween_song()
                 np_str = fn.replace('res/', '').replace('halloween/', '')
                 self.vc.play(discord.FFmpegPCMAudio(fn), after=on_finished)

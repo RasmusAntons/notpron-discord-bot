@@ -78,6 +78,14 @@ class Markov:
             m = m.replace(f'<@!{uid}>', usr.name or '??????')
         return m
 
+    def get_sentence(self):
+        model = self.models.get('all')
+        for i in range(100):
+            m = model.make_sentence()
+            if m:
+                return m
+        return ''
+
     async def talk(self, channel, user='all', cont_chance=0.5, query=None):
         model = self.models.get(user)
         if model is None:
