@@ -75,9 +75,6 @@ class TtsCommand(Command):
                     self.vc.play(discord.FFmpegPCMAudio(next_fn), after=on_finished)
                 asyncio.run_coroutine_threadsafe(play(), self.vc.loop)
 
-            print(f'{self.playing=}')
-            if self.playing:
-                print(f'{self.playing.members=}')
             if self.playing and ch == self.playing:
                 return
             elif self.vc and ch == mus1_ch:
