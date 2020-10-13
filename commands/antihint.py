@@ -11,7 +11,7 @@ class AntiHintCommand(Command):
         hint = None
         try:
             n = int(args[0])
-            hint = self.bot.config.get_hint(n)
+            hint = self.bot.config.get_antihint(n)
         except ValueError:
             pass
         if hint is None:
