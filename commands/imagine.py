@@ -17,14 +17,15 @@ class ImagineCommand(Command):
     async def rv_image(self, keyword, adult=False):
         n = (self.state.get(keyword, 0) % 9) + 1
         self.state[keyword] = n
-        fn = f'download/{keyword}/Image_{n}.jpg'
+        prefix = 'adult_' if adult else ''
+        fn = f'download/{prefix}{keyword}/Image_{n}.jpg'
         if os.path.isfile(fn):
             return fn
         downloader.download(keyword, limit=9, output_dir='download', adult_filter_off=adult, force_replace=True,
                             timeout=10)
         if os.path.isfile(fn):
             return fn
-        files = glob.glob(f'download/{keyword}/Image_*')
+        files = glob.glob(f'download/{prefix}{keyword}/Image_*')
         if len(files) > 0:
             return files[-1]
         return None
