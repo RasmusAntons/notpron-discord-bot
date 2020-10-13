@@ -16,15 +16,16 @@ from commands.colour import ColourCommand
 from commands.solver import SolverCommand
 from commands.imagine import ImagineCommand
 from commands.guessing_game import GuessingGameCommand
-from commands.tts import TtsCommand
+from commands.tts import TtsCommand, NpCommand
 from commands.font import FontCommand
 from commands.rv import RvCommand
+from commands.hw import HwCommand
 
 
 class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
-                        FontCommand, RvCommand]
+                        FontCommand, RvCommand, HwCommand, NpCommand]
 
     def __init__(self, config):
         super().__init__()
@@ -34,6 +35,7 @@ class DiscordConnection(discord.Client):
         self.name_check = None
         self.prefix = self.config.get_prefix()
         self.commands = {}
+        self.commands_flat = []
         self.reaction_listeners = set()
         self.voice_state_listeners = set()
         # self.ENABLED_COMMANDS.sort(key=lambda e: e.name) # todo: idk, should they be sorted?
@@ -85,6 +87,8 @@ class DiscordConnection(discord.Client):
                     try:
                         if await command.check(args, msg):
                             await command.execute(args, msg)
+                        else:
+                            await msg.channel.send(f'{msg.author.mention} please don\'t do that')
                     except Exception as e:
                         await msg.channel.send(escape_markdown(escape_mentions(str(e))))
                         raise e

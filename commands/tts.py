@@ -8,6 +8,9 @@ import random
 import glob
 
 
+np_str = ''
+
+
 class TtsCommand(Command):
     name = 'tts'
     arg_range = (1, 99999)
@@ -40,6 +43,7 @@ class TtsCommand(Command):
         return songs[self.halloween_state]
 
     async def on_voice_state_update(self, member, before, after):
+        global np_str
         mus1_ch = self.bot.get_channel(self.bot.config.get_music_channels()[0])
         halloween_ch = self.bot.get_channel(self.bot.config.get_music_channels()[-1])
         if member.id != self.bot.user.id:
@@ -47,6 +51,7 @@ class TtsCommand(Command):
             ch = after.channel
 
             def on_finished(err):
+                global np_str
                 print('stopped playing')
                 for mus_ch in [mus1_ch, halloween_ch]:
                     if self.playing != mus_ch and len(mus_ch.members) > 0:
@@ -57,14 +62,17 @@ class TtsCommand(Command):
                         break
                 else:
                     self.playing = None
+                    np_str = ''
                     asyncio.run_coroutine_threadsafe(self.vc.disconnect(), self.vc.loop)
                     self.vc = None
                     return
                 print('there is still someone here, playing again')
                 if not self.tts_queue.empty():
                     next_fn = self.tts_queue.get()
+                    np_str = 'text to speech'
                 else:
                     next_fn = 'res/mus1.mp3' if self.playing == mus1_ch else self.get_halloween_song()
+                    np_str = next_fn.replace('res/', '').replace('halloween/', '')
 
                 async def play():
                     await asyncio.sleep(1)
@@ -87,9 +95,20 @@ class TtsCommand(Command):
                 self.playing = ch
                 self.post_tts_delay = 15
                 fn = 'res/mus1.mp3' if ch == mus1_ch else self.get_halloween_song()
+                np_str = fn.replace('res/', '').replace('halloween/', '')
                 self.vc.play(discord.FFmpegPCMAudio(fn), after=on_finished)
         elif member.id == self.bot.user.id and not after.channel:
             self.playing = None
+            np_str = ''
             if self.vc:
                 await self.vc.disconnect()
                 self.vc = None
+
+
+class NpCommand(Command):
+    name = 'np'
+    arg_range = (0, 0)
+    description = 'show what\'s currently playing'
+
+    async def execute(self, args, msg):
+        await msg.channel.send(f'Now playing: {np_str}')

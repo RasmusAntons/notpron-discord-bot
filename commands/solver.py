@@ -15,7 +15,6 @@ class SolverCommand(Command):
 
     async def check(self, args, msg):
         if self.bot.config.get_mod_role() not in [role.id for role in msg.author.roles]:
-            await msg.channel.send('Gotta have the moderator role to do this, sorry.')
             return False
         return True
 

@@ -26,6 +26,7 @@ class Command(ABC):
             if name in self.bot.commands.keys():
                 raise RuntimeError(f'Duplicate command: {name} is already registered')
             self.bot.commands[name] = self
+        self.bot.commands_flat.append(self)
 
     async def check(self, args, msg):
         return True

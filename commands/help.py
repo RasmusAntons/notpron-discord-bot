@@ -10,7 +10,9 @@ class HelpCommand(Command):
 
     async def execute(self, args, msg):
         embed = discord.Embed(title='Botpron Commands', color=self.bot.config.get_embed_colour())
-        for cmd in self.bot.ENABLED_COMMANDS:
+        for cmd in self.bot.commands_flat:
+            if not cmd.check([], msg):
+                continue
             desc = f'*{escape_markdown(cmd.description)}*' if cmd.description else '-'
             if cmd.arg_desc:
                 desc += f'\n`{self.bot.prefix}{cmd.name} {cmd.arg_desc}`'
