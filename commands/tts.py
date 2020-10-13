@@ -61,14 +61,10 @@ class TtsCommand(Command):
                     self.vc = None
                     return
                 print('there is still someone here, playing again')
-                while not self.tts_queue.empty():
-                    print(f'found something in the tts queue')
-                    self.vc.play(discord.FFmpegPCMAudio(self.tts_queue.get()), after=on_finished)
-                    self.post_tts_delay = 15
-                if self.post_tts_delay:
-                    self.post_tts_delay -= 1
-                    time.sleep(0.5)
-                next_fn = 'res/mus1.mp3' if self.playing == mus1_ch else self.get_halloween_song()
+                if not self.tts_queue.empty():
+                    next_fn = self.tts_queue.get()
+                else:
+                    next_fn = 'res/mus1.mp3' if self.playing == mus1_ch else self.get_halloween_song()
 
                 async def play():
                     await asyncio.sleep(1)
