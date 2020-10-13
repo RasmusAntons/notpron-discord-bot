@@ -17,7 +17,7 @@ class ImagineCommand(Command):
     async def rv_image(self, keyword, adult=False):
         n = (self.state.get(keyword, 0) % 9) + 1
         self.state[keyword] = n
-        fn = f'download/{keyword}/Image_{n}'
+        fn = f'download/{keyword}/Image_{n}.jpg'
         if os.path.isfile(fn):
             return fn
         downloader.download(keyword, limit=9, output_dir='download', adult_filter_off=adult, force_replace=True,
