@@ -78,7 +78,7 @@ class Markov:
             m = m.replace(f'<@!{uid}>', usr.name or '??????')
         return m
 
-    async def talk(self, channel, user='all', cont_chance=0.5):
+    async def talk(self, channel, user='all', cont_chance=0.5, query=None):
         model = self.models.get(user)
         if model is None:
             await self.load_model(user)
@@ -88,7 +88,18 @@ class Markov:
         keep_talking = True
         while keep_talking:
             for i in range(100):
-                m = model.make_sentence()
+                if query:
+                    query = re.sub(r'<@!?\d+>', '', query)
+                    query = re.sub(r'[\'":;,\.?]', '', query)
+                    query = re.sub(r'\s+', ' ', query).strip()
+                    lcw = model.least_common_word(query)
+                    if lcw:
+                        m = model.make_sentence_that_contains(lcw)
+                        query = query.replace(lcw, '')
+                    else:
+                        m = model.make_sentence()
+                else:
+                    m = model.make_sentence()
                 if m:
                     m = await self.replace_mentions(m)
                     m = escape_mentions(m)

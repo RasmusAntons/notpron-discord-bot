@@ -67,7 +67,7 @@ class DiscordConnection(discord.Client):
             return
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
-                await self.markov.talk(msg.channel)
+                await self.markov.talk(msg.channel, query=msg.content)
         if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
