@@ -4,6 +4,7 @@ import glob
 import random
 import discord
 import re
+import os
 
 
 class ImagineCommand(Command):
@@ -14,12 +15,13 @@ class ImagineCommand(Command):
     state = {}
 
     async def rv_image(self, keyword, adult=False):
-        n = (self.state.get(keyword, 0) % 9) + 1
+        n = (self.state.get(keyword, 0) % 15) + 1
         self.state[keyword] = n
         downloader.download(keyword, limit=n, output_dir='download', adult_filter_off=adult, force_replace=True,
                             timeout=10)
+        if os.path.isfile(f'download/{keyword}/Image_{n}'):
+            return f'download/{keyword}/Image_{n}'
         files = glob.glob(f'download/{keyword}/Image_*')
-        files.sort()
         if len(files) > 0:
             return files[-1]
         return None
