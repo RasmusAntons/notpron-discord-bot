@@ -48,11 +48,10 @@ class TtsCommand(Command):
         if member.id != self.bot.user.id:
             print(f'{member.name} switched from {before.channel} to {after.channel}')
             ch = after.channel
-            volume = 1.0
 
             def on_finished(err):
                 global np_str
-                nonlocal volume
+                volume = 1.0
                 print('stopped playing')
                 for mus_ch in [mus1_ch, halloween_ch]:
                     if self.playing != mus_ch and len(mus_ch.members) > 0:
