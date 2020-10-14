@@ -48,9 +48,11 @@ class TtsCommand(Command):
         if member.id != self.bot.user.id:
             print(f'{member.name} switched from {before.channel} to {after.channel}')
             ch = after.channel
+            volume = 1.0
 
             def on_finished(err):
                 global np_str
+                nonlocal volume
                 print('stopped playing')
                 for mus_ch in [mus1_ch, halloween_ch]:
                     if self.playing != mus_ch and len(mus_ch.members) > 0:
@@ -69,6 +71,7 @@ class TtsCommand(Command):
                 if not self.tts_queue.empty():
                     next_fn = self.tts_queue.get()
                     np_str = 'text to speech'
+                    volume = 2.0
                 else:
                     next_fn = 'res/mus1.mp3' if self.playing == mus1_ch else self.get_halloween_song()
                     np_str = next_fn.replace('res/', '').replace('halloween/', '')
@@ -81,7 +84,8 @@ class TtsCommand(Command):
 
                 async def play():
                     await asyncio.sleep(1)
-                    self.vc.play(discord.FFmpegPCMAudio(next_fn), after=on_finished)
+                    self.vc.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(next_fn), volume=volume),
+                                 after=on_finished)
                 asyncio.run_coroutine_threadsafe(play(), self.vc.loop)
 
             if self.playing and ch == self.playing:
