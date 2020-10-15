@@ -75,11 +75,14 @@ class TtsCommand(Command):
                     next_fn = 'res/mus1.mp3' if self.playing == mus1_ch else self.get_halloween_song()
                     np_str = next_fn.replace('res/', '').replace('halloween/', '')
                     if random.random() < 0.25:
-                        txt = self.bot.markov.get_sentence()
-                        tts = gTTS(text=txt, lang='en-gb')
-                        tts.save(f'voice_{self.tts_n}.mp3')
-                        self.tts_queue.put(f'voice_{self.tts_n}.mp3')
-                        self.tts_n = (self.tts_n + 1) % 25
+                        try:
+                            txt = self.bot.markov.get_sentence()
+                            tts = gTTS(text=txt, lang='en-gb')
+                            tts.save(f'voice_{self.tts_n}.mp3')
+                            self.tts_queue.put(f'voice_{self.tts_n}.mp3')
+                            self.tts_n = (self.tts_n + 1) % 25
+                        except Exception as e:
+                            print(e)
 
                 async def play():
                     await asyncio.sleep(1)
