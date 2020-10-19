@@ -90,6 +90,8 @@ class DiscordConnection(discord.Client):
                 else:
                     self.ratelimit[msg.channel.id][msg.author.id] = t_hist[1:] + [t_now]
                     return True
+            else:
+                return True
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 if not await check_limit():
