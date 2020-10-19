@@ -73,24 +73,31 @@ class DiscordConnection(discord.Client):
         if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
-        limit = self.config.get_ratelimit(msg.channel.id)
-        if limit > 0:
-            if msg.channel.id not in self.ratelimit:
-                self.ratelimit[msg.channel.id] = {}
-            if msg.author.id not in self.ratelimit[msg.channel.id]:
-                self.ratelimit[msg.channel.id][msg.author.id] = [0] * limit
-            t_now = time.time()
-            t_hist = self.ratelimit[msg.channel.id][msg.author.id]
-            if t_now - t_hist[0] < 24 * 60 * 60:
-                for emoji in ['👉', '#️⃣', '🤖']:
-                    await msg.add_reaction(emoji)
-                return
-            else:
-                self.ratelimit[msg.channel.id][msg.author.id] = t_hist[1:] + [t_now]
+
+        def check_limit():
+            limit = self.config.get_ratelimit(msg.channel.id)
+            if limit > 0:
+                if msg.channel.id not in self.ratelimit:
+                    self.ratelimit[msg.channel.id] = {}
+                if msg.author.id not in self.ratelimit[msg.channel.id]:
+                    self.ratelimit[msg.channel.id][msg.author.id] = [0] * limit
+                t_now = time.time()
+                t_hist = self.ratelimit[msg.channel.id][msg.author.id]
+                if t_now - t_hist[0] < 24 * 60 * 60:
+                    for emoji in ['👉', '#️⃣', '🤖']:
+                        await msg.add_reaction(emoji)
+                    return False
+                else:
+                    self.ratelimit[msg.channel.id][msg.author.id] = t_hist[1:] + [t_now]
+                    return True
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
+                if not check_limit():
+                    return
                 await self.markov.talk(msg.channel, query=msg.content)
         elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
+            if not check_limit():
+                return
             cmd = msg.content[1:].strip()
             await self.markov.on_command(msg, cmd)
 
@@ -100,6 +107,8 @@ class DiscordConnection(discord.Client):
             args = content[1:]
             command = self.commands.get(cmd)
             if command:
+                if not check_limit():
+                    return
                 if command.arg_range[0] <= len(args) <= command.arg_range[1]:
                     try:
                         if await command.check(args, msg):
