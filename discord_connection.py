@@ -2,6 +2,7 @@ import discord
 import asyncio
 from markov import Markov
 import api
+import time
 import datetime
 import random
 from discord.utils import escape_markdown, escape_mentions
@@ -38,6 +39,7 @@ class DiscordConnection(discord.Client):
         self.commands_flat = []
         self.reaction_listeners = set()
         self.voice_state_listeners = set()
+        self.ratelimit = {}
         # self.ENABLED_COMMANDS.sort(key=lambda e: e.name) # todo: idk, should they be sorted?
         for cmd in self.ENABLED_COMMANDS:
             cmd(self).register()
@@ -67,12 +69,27 @@ class DiscordConnection(discord.Client):
     async def on_message(self, msg):
         if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:
             return
-        if self.user.mentioned_in(msg):
-            if '@everyone' not in msg.content and '@here' not in msg.content:
-                await self.markov.talk(msg.channel, query=msg.content)
+        # todo: remove when Among Us is over
         if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
+        limit = self.config.get_ratelimit(msg.channel.id)
+        if limit > 0:
+            if msg.channel.id not in self.ratelimit:
+                self.ratelimit[msg.channel.id] = {}
+            if msg.author.id not in self.ratelimit[msg.channel.id]:
+                self.ratelimit[msg.channel.id][msg.author.id] = [0] * limit
+            t_now = time.time()
+            t_hist = self.ratelimit[msg.channel.id][msg.author.id]
+            if t_now - t_hist[0] < 24 * 60 * 60:
+                for emoji in ['👉', '#️⃣', '🤖']:
+                    await msg.add_reaction(emoji)
+                return
+            else:
+                self.ratelimit[msg.channel.id][msg.author.id] = t_hist[1:] + [t_now]
+        if self.user.mentioned_in(msg):
+            if '@everyone' not in msg.content and '@here' not in msg.content:
+                await self.markov.talk(msg.channel, query=msg.content)
         elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
             cmd = msg.content[1:].strip()
             await self.markov.on_command(msg, cmd)

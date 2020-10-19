@@ -53,5 +53,8 @@ class Config:
     def get_rv_path(self):
         return self.conf['rv_path']
 
+    def get_ratelimit(self, chid):
+        return self.conf['ratelimit'].get(str(chid), 0)
+
     def get_embed_colour(self):
         return 0xa6ce86
