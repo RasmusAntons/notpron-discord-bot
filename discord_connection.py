@@ -74,7 +74,7 @@ class DiscordConnection(discord.Client):
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
 
-        def check_limit():
+        async def check_limit():
             limit = self.config.get_ratelimit(msg.channel.id)
             if limit > 0:
                 if msg.channel.id not in self.ratelimit:
@@ -92,11 +92,11 @@ class DiscordConnection(discord.Client):
                     return True
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
-                if not check_limit():
+                if not await check_limit():
                     return
                 await self.markov.talk(msg.channel, query=msg.content)
         elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
-            if not check_limit():
+            if not await check_limit():
                 return
             cmd = msg.content[1:].strip()
             await self.markov.on_command(msg, cmd)
@@ -107,7 +107,7 @@ class DiscordConnection(discord.Client):
             args = content[1:]
             command = self.commands.get(cmd)
             if command:
-                if not check_limit():
+                if not await check_limit():
                     return
                 if command.arg_range[0] <= len(args) <= command.arg_range[1]:
                     try:
