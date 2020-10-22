@@ -3,7 +3,6 @@ from config import Config
 import discord
 from queue import Queue
 import api
-import weather
 import asyncio
 from markov import Markov
 
@@ -33,29 +32,33 @@ class ExecDiscordConnection(discord.Client):
         #activity = discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint")
         #await self.change_presence(activity=activity)
 
+
         """
-        ch = self.get_channel(729417691206778910)
-        # msg = await ch.fetch_message(722981667488399420)
-        # roles = [722970084359798816, 722970087518371880, 722970089804136518, 722970091955814476, 722970093960691733, 722970096204644365, 722970102370140271]
-        # description = '\n'.join([discord.utils.get(ch.guild.roles, id=role).mention for role in roles])
-        user = self.get_user(586321204047249423)
-        description = f'`too many hints` by {user.mention}'
-        embed = discord.Embed(title='ɴᴇᴡ ᴡᴇᴇᴋʟʏ ᴘᴜᴢᴢʟᴇ', description=description, color=0xa6ce86)
-        embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/586321204047249423/bf58bbd2ee7c9e2df2e00501879aa9f2.png?size=128')
-        #embed.add_field(name="Week 3", value=f"`Sol` by {user.mention}", inline=False)
-        #embed.add_field(name="portuguese", value=":flag_br:", inline=False)
-        #embed.add_field(name="(18+) nsfw (sexual content)", value=":underage:", inline=False)
-        #embed.add_field(name="(18+) wasteland (scarcely moderated content, cursed images)", value=":nauseated_face:", inline=False)
-        embed.set_footer(text='To learn how to turn these notifications off, look at the message above.')
-        msg = await ch.send('@everyone', embed=embed)
-        # await msg.edit(embed=embed)
+        ch = self.get_channel(721487932606906399)
+        msg = await ch.fetch_message(722981667488399420)
+        roles = [722970084359798816, 722970087518371880, 722970089804136518, 722970091955814476, 722970093960691733, 722970096204644365, 722970102370140271]
+        description = '\n'.join([discord.utils.get(ch.guild.roles, id=role).mention for role in roles])
+        # user = self.get_user(586321204047249423)
+        # description = f'`too many hints` by {user.mention}'
+        embed = discord.Embed(title='Channel Select', description=description, color=0xa6ce86)
+        embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/722266017752940685/722965566708514846/pic2.png')
+        embed.add_field(name="minecraft", value=f"<:mc:721206165605974019>", inline=False)
+        embed.add_field(name="portuguese", value=":flag_br:", inline=False)
+        embed.add_field(name="(18+) nsfw (sexual content)", value=":underage:", inline=False)
+        embed.add_field(name="(18+) wasteland (scarcely moderated content, cursed images)", value=":nauseated_face:", inline=False)
+        embed.add_field(name="adult-lounge (sensitive topics, not porn)", value=":coffee:", inline=False)
+        # embed.set_footer(text='To learn how to turn these notifications off, look at the messagce above.')
+        # msg = await ch.send('@everyone', embed=embed)
+        await msg.edit(embed=embed)
         #await msg.add_reaction('<:mc:721206165605974019>')
         #await msg.add_reaction('🇧🇷')
         #await msg.add_reaction('🔞')
         #await msg.add_reaction('🤢')
-        oldmsg = await ch.fetch_message(729486803324764180)
-        await oldmsg.delete()
+        # await msg.add_reaction('☕')
+        #oldmsg = await ch.fetch_message(729486803324764180)
+        #await oldmsg.delete()
         """
+
 
         #ch = self.get_channel(363692038002180099)
         #user = await self.fetch_user(720786426660388925)
