@@ -21,12 +21,13 @@ from commands.tts import TtsCommand, NpCommand
 from commands.font import FontCommand
 from commands.rv import RvCommand
 from commands.hw import HwCommand
+from commands.translate import TranslateCommand
 
 
 class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
-                        FontCommand, RvCommand, HwCommand, NpCommand]
+                        FontCommand, RvCommand, HwCommand, NpCommand, TranslateCommand]
 
     def __init__(self, config):
         super().__init__()
