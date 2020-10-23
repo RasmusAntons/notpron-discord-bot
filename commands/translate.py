@@ -37,6 +37,8 @@ class TranslateCommand(Command):
         embed.add_field(name=dest_str, value=escape_markdown(escape_mentions(r.text)), inline=False)
         confidence = r.extra_data.get('confidence')
         possible_mistakes = r.extra_data.get('possible-mistakes')
+        if type(possible_mistakes) == list and len(possible_mistakes) >= 2:
+            possible_mistakes = possible_mistakes[1]
         ft = f'confidence: {confidence}, possible mistakes: {possible_mistakes}'
         embed.set_footer(text=ft)
         await msg.channel.send(embed=embed)
