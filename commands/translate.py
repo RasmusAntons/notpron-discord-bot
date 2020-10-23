@@ -32,7 +32,7 @@ class TranslateCommand(Command):
         src_str = f'{real_src.name} ({real_src.alpha_2})'
         real_dest = pycountry.languages.get(alpha_2=r.dest)
         dest_str = f'{real_dest.name} ({real_dest.alpha_2})'
-        embed = discord.Embed(title=f'Translate', color=self.bot.config.get_embed_colour())
+        embed = discord.Embed(color=self.bot.config.get_embed_colour())
         embed.add_field(name=src_str, value=escape_markdown(escape_mentions(text)), inline=False)
         embed.add_field(name=dest_str, value=escape_markdown(escape_mentions(r.text)), inline=False)
         confidence = r.extra_data.get('confidence')
