@@ -31,6 +31,15 @@ class ApiServer:
                 return
             else:
                 res = "invalid signature for weekly_solve"
+        elif req.get('type') == 'event_solve':
+            if type(req.get('chid')) == int and type(req.get('uid')) == str:
+                writer.write(json.dumps(res).encode('utf-8'))
+                await writer.drain()
+                writer.close()
+                await self.send_halloween_solve(req.get('chid'), req.get('uid'))
+                return
+            else:
+                res = "invalid signature for event_solve"
         elif req.get('type') == 'weekly_announce':
             if type(req.get('chid')) == int and type(req.get('title')) == str and type(req.get('uid')) == str and type(req.get('icon')) == str:
                 writer.write(json.dumps(res).encode('utf-8'))
@@ -65,6 +74,11 @@ class ApiServer:
         ch = self.client.get_channel(chid)
         mention = await self._get_mention(ch, uid)
         await ch.send(f'Congratulations {mention} for solving the weekly riddle!')
+
+    async def send_halloween_solve(self, chid, uid):
+        ch = self.client.get_channel(chid)
+        mention = await self._get_mention(ch, uid)
+        await ch.send(f'Congratulations {mention} for completing the Halloween event! :jack_o_lantern:')
 
     async def send_weekly_announce(self, chid, title, uid, icon):
         ch = self.client.get_channel(chid)
