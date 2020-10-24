@@ -78,7 +78,7 @@ class ApiServer:
     async def send_halloween_solve(self, chid, uid):
         ch = self.client.get_channel(chid)
         mention = await self._get_mention(ch, uid)
-        await ch.send(f'Congratulations {mention} for completing the Halloween event! :jack_o_lantern:')
+        await ch.send(f'Congratulations {mention} for completing the Halloween event! :jack_o_lantern: :ghost:')
 
     async def send_weekly_announce(self, chid, title, uid, icon):
         ch = self.client.get_channel(chid)
