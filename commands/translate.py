@@ -10,6 +10,12 @@ class TranslateCommand(Command):
     arg_range = (0, 99)
     description = 'translate text'
     arg_desc = '<text...> [src=<language>] [dest=<language>]'
+    subst_google = {
+        'he': 'iw'
+    }
+    subst_pycountry = {
+        'iw': 'he'
+    }
 
     async def execute(self, args, msg):
         src = None
@@ -17,9 +23,11 @@ class TranslateCommand(Command):
         text = []
         for arg in args:
             if arg.startswith('src='):
-                src = arg[4:]
+                src = self.subst_google.get(arg[4:]) or arg[4:]
             elif arg.startswith('dest='):
-                dest = arg[5:]
+                dest = self.subst_google.get(arg[5:]) or arg[5:]
+                if src in self.subst_google:
+                    src = self.subst_google[src]
             else:
                 text.append(arg)
         text = ' '.join(text)
@@ -28,10 +36,10 @@ class TranslateCommand(Command):
             r = translator.translate(text, src=src, dest=dest)
         else:
             r = translator.translate(text, dest=dest)
-        real_src = pycountry.languages.get(alpha_2=r.src)
-        src_str = f'{real_src.name} ({real_src.alpha_2})'
-        real_dest = pycountry.languages.get(alpha_2=r.dest)
-        dest_str = f'{real_dest.name} ({real_dest.alpha_2})'
+        real_src = pycountry.languages.get(alpha_2=self.subst_pycountry.get(r.src) or r.src)
+        src_str = f'{real_src.name} ({real_src.alpha_2})' if real_src else f'{r.src}'
+        real_dest = pycountry.languages.get(alpha_2=self.subst_pycountry.get(r.dest) or r.dest)
+        dest_str = f'{real_dest.name} ({real_dest.alpha_2})' if real_dest else f'{r.dest}'
         embed = discord.Embed(color=self.bot.config.get_embed_colour())
         embed.add_field(name=src_str, value=escape_markdown(escape_mentions(text)), inline=False)
         embed.add_field(name=dest_str, value=escape_markdown(escape_mentions(r.text)), inline=False)
