@@ -7,6 +7,7 @@ from discord.utils import escape_markdown, escape_mentions
 
 class TranslateCommand(Command):
     name = 'translate'
+    aliases = ['t']
     arg_range = (0, 99)
     description = 'translate text'
     arg_desc = '<text...> [src=<language>] [dest=<language>]'
