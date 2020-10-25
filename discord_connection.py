@@ -76,6 +76,9 @@ class DiscordConnection(discord.Client):
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
 
         async def check_limit():
+            for role in msg.author.roles:
+                if role.name.lower() in ['moderator', 'tech support', 'undercover cop']:
+                    return True
             limit = self.config.get_ratelimit(msg.channel.id)
             if limit > 0:
                 if msg.channel.id not in self.ratelimit:
