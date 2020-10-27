@@ -87,7 +87,7 @@ class DiscordConnection(discord.Client):
                     self.ratelimit[msg.channel.id][msg.author.id] = [0] * limit
                 t_now = time.time()
                 t_hist = self.ratelimit[msg.channel.id][msg.author.id]
-                if t_now - t_hist[0] < 24 * 60 * 60:
+                if t_now - t_hist[0] < 60 * 60:
                     dm_channel = await self.get_dm_channel(msg.author)
                     await dm_channel.send('Ratelimit exceeded! :robot: Please avoid using too many bot commands in the improper channels and use #bots-and-spam instead!')
                     for emoji in ['👉', '#️⃣', '🤖']:
