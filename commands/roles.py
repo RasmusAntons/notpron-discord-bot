@@ -27,7 +27,7 @@ class UnderageCommand(Command):
             user = await msg.guild.fetch_member(int(args[0]))
             t = timeparse(' '.join(args[1:]))
             self.add_blocked_user(user.id, t)
-            for rid in [721469067680022541, 721469037753794560, 768857774573617153]:
+            for rid in [721469067680022541, 768857774573617153]:
                 await user.remove_roles(discord.utils.get(msg.guild.roles, id=rid))
             await msg.channel.send(f'blocked {user.display_name} from nsfw channels for {t} seconds')
         except (discord.HTTPException, ValueError) as e:
