@@ -22,12 +22,14 @@ from commands.font import FontCommand
 from commands.rv import RvCommand
 from commands.hw import HwCommand
 from commands.translate import TranslateCommand
+from commands.roles import UnderageCommand
+import reactions
 
 
 class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
-                        FontCommand, RvCommand, HwCommand, NpCommand, TranslateCommand]
+                        FontCommand, RvCommand, HwCommand, NpCommand, TranslateCommand, UnderageCommand]
 
     def __init__(self, config):
         super().__init__()
@@ -39,6 +41,7 @@ class DiscordConnection(discord.Client):
         self.commands = {}
         self.commands_flat = []
         self.reaction_listeners = set()
+        self.raw_reaction_listeners = set()
         self.voice_state_listeners = set()
         self.ratelimit = {}
         # self.ENABLED_COMMANDS.sort(key=lambda e: e.name) # todo: idk, should they be sorted?
@@ -74,6 +77,12 @@ class DiscordConnection(discord.Client):
         if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
+
+        try:
+            await reactions.on_message(self, msg)
+        except Exception as e:
+            await msg.channel.send(escape_markdown(escape_mentions(str(e))))
+            raise e
 
         async def check_limit():
             for role in msg.author.roles:
@@ -146,7 +155,29 @@ class DiscordConnection(discord.Client):
         if user.id == self.user.id:
             return
         for reaction_listener in self.reaction_listeners:
-            await reaction_listener.on_reaction_add(reaction, user)
+            if reaction_listener.on_reaction_add:
+                await reaction_listener.on_reaction_add(reaction, user)
+
+    async def on_reaction_remove(self, reaction, user):
+        if user.id == self.user.id:
+            return
+        for reaction_listener in self.reaction_listeners:
+            if reaction_listener.on_reaction_remove:
+                await reaction_listener.on_reaction_remove(reaction, user)
+
+    async def on_raw_reaction_add(self, payload):
+        ch = self.get_channel(payload.channel_id)
+        user = ch.guild.get_member(payload.user_id) or await ch.guild.fetch_member(payload.user_id)
+        for raw_reaction_listener in self.raw_reaction_listeners:
+            if raw_reaction_listener.on_raw_reaction_add:
+                await raw_reaction_listener.on_raw_reaction_add(ch, user, payload)
+
+    async def on_raw_reaction_remove(self, payload):
+        ch = self.get_channel(payload.channel_id)
+        user = ch.guild.get_member(payload.user_id) or await ch.guild.fetch_member(payload.user_id)
+        for raw_reaction_listener in self.raw_reaction_listeners:
+            if raw_reaction_listener.on_raw_reaction_remove:
+                await raw_reaction_listener.on_raw_reaction_remove(ch, user, payload)
 
     def sus_resp(self, userName):
         fChoice = random.randint(1, 2)
