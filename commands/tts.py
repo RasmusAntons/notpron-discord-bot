@@ -98,7 +98,7 @@ class TtsCommand(Command):
                     self.vc.stop()
             elif self.playing and len(self.playing.members) <= 1:
                 self.vc.stop()
-            elif ch and ch.id in self.bot.config.get_music_channels() and not self.playing:
+            elif ch and ch.id in [mus1_ch] and not self.playing:
                 print(f'It\'s my music channel and I am not playing, connecting...')
                 for old_vc in self.bot.voice_clients:
                     print(f'Found old vc, trying to disconnect: {old_vc}')
