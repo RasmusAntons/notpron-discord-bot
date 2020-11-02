@@ -53,7 +53,8 @@ class TtsCommand(Command):
                 global np_str
                 volume = 1.0
                 print('stopped playing')
-                for mus_ch in [mus1_ch, halloween_ch]:
+                # for mus_ch in [mus1_ch, halloween_ch]:
+                for mus_ch in [mus1_ch]:
                     if self.playing != mus_ch and len(mus_ch.members) > 0:
                         asyncio.run_coroutine_threadsafe(self.vc.move_to(mus_ch), self.vc.loop)
                         self.playing = mus_ch

@@ -45,7 +45,7 @@ class ExecDiscordConnection(discord.Client):
         embed.add_field(name="portuguese", value=":flag_br:", inline=False)
         #yembed.add_field(name="(18+) nsfw (sexual content)", value=":underage:", inline=False)
         embed.add_field(name="(18+) wasteland (scarcely moderated content, cursed images)", value=":nauseated_face:", inline=False)
-        embed.add_field(name="adult-lounge (sensitive topics, not porn)", value=":coffee:", inline=False)
+        embed.add_field(name="(18+) adult-lounge (sensitive topics, not porn)", value=":coffee:", inline=False)
         embed.add_field(name="tech", value=":robot:", inline=False)
         # embed.set_footer(text='To learn how to turn these notifications off, look at the messagce above.')
         # msg = await ch.send('@everyone', embed=embed)
