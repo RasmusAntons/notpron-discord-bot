@@ -76,4 +76,4 @@ class HighlightCommand(Command):
                 except re.error as e:
                     user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
                     ch = await self.bot.get_dm_channel(user)
-                    await ch.send(escape_markdown(escape_mentions(str(e))))
+                    await ch.send(f'Error in rule {self.inline_code(hl)}: {escape_markdown(escape_mentions(str(e)))}')
