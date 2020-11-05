@@ -60,7 +60,7 @@ class HighlightCommand(Command):
         for uid, user_hl in self.highlights.items():
             for hl in user_hl:
                 text = msg.content
-                if msg.author.id == '417012703035392001' and ':' in text:  # Minecraft
+                if msg.author.id == 417012703035392001 and ':' in text:  # Minecraft
                     text = ':'.join(text.split(':')[1:])
                 if re.search(hl, text):
                     user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
