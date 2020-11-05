@@ -23,13 +23,15 @@ from commands.rv import RvCommand
 from commands.hw import HwCommand
 from commands.translate import TranslateCommand
 from commands.roles import UnderageCommand
+from commands.highlight import HighlightCommand
 import reactions
 
 
 class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
-                        FontCommand, RvCommand, HwCommand, NpCommand, TranslateCommand, UnderageCommand]
+                        FontCommand, RvCommand, HwCommand, NpCommand, TranslateCommand, UnderageCommand,
+                        HighlightCommand]
 
     def __init__(self, config):
         super().__init__()
@@ -43,6 +45,7 @@ class DiscordConnection(discord.Client):
         self.reaction_listeners = set()
         self.raw_reaction_listeners = set()
         self.voice_state_listeners = set()
+        self.message_listeners = set()
         self.ratelimit = {}
         # self.ENABLED_COMMANDS.sort(key=lambda e: e.name) # todo: idk, should they be sorted?
         for cmd in self.ENABLED_COMMANDS:
@@ -80,6 +83,8 @@ class DiscordConnection(discord.Client):
 
         try:
             await reactions.on_message(self, msg)
+            for message_listener in self.message_listeners:
+                await message_listener.on_message(msg)
         except Exception as e:
             await msg.channel.send(escape_markdown(escape_mentions(str(e))))
             raise e

@@ -18,7 +18,7 @@ class UnderageCommand(Command):
 
     async def check(self, args, msg):
         for role in msg.author.roles:
-            if role.name.lower() in ['moderator', 'tech support', 'dj']:
+            if role.name.lower() in ['moderator', 'tech support', 'undercover cop']:
                 return True
         return False
 
