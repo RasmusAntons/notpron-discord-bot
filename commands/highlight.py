@@ -2,6 +2,7 @@ from commands.command import Command
 import json
 import discord
 import re
+from discord.utils import escape_markdown, escape_mentions
 
 
 class HighlightCommand(Command):
@@ -62,12 +63,17 @@ class HighlightCommand(Command):
                 text = msg.content
                 if msg.author.id == 417012703035392001 and ':' in text:  # Minecraft
                     text = ':'.join(text.split(':')[1:])
-                if re.search(hl, text):
+                try:
+                    if re.search(hl, text):
+                        user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
+                        ch = await self.bot.get_dm_channel(user)
+                        embed = discord.Embed()
+                        embed.set_author(name=f'{msg.author.display_name}', icon_url=f'{msg.author.avatar_url_as(size=32)}')
+                        embed.add_field(name=f'#{msg.channel.name}', value=f'{msg.content}\n[link]({msg.jump_url})', inline=False)
+                        embed.set_footer(text=f'matched this rule: {hl}')
+                        await ch.send(embed=embed)
+                        break
+                except re.error as e:
                     user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
                     ch = await self.bot.get_dm_channel(user)
-                    embed = discord.Embed()
-                    embed.set_author(name=f'{msg.author.display_name}', icon_url=f'{msg.author.avatar_url_as(size=32)}')
-                    embed.add_field(name=f'#{msg.channel.name}', value=f'{msg.content}\n[link]({msg.jump_url})', inline=False)
-                    embed.set_footer(text=f'matched this rule: {hl}')
-                    await ch.send(embed=embed)
-                    break
+                    await ch.send(escape_markdown(escape_mentions(str(e))))
