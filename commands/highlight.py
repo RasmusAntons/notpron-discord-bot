@@ -63,6 +63,8 @@ class HighlightCommand(Command):
                 text = msg.content
                 if msg.author.id == 417012703035392001 and ':' in text:  # Minecraft
                     text = ':'.join(text.split(':')[1:])
+                elif msg.author.bot:
+                    return
                 try:
                     if re.search(hl, text):
                         member = msg.guild.get_member(uid) or await msg.guild.fetch_member(uid)
