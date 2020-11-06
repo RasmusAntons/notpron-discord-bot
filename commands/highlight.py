@@ -65,11 +65,18 @@ class HighlightCommand(Command):
                     text = ':'.join(text.split(':')[1:])
                 try:
                     if re.search(hl, text):
-                        user = self.bot.get_user(uid) or await self.bot.fetch_user(uid)
-                        ch = await self.bot.get_dm_channel(user)
+                        member = msg.guild.get_member(uid) or await msg.guild.fetch_member(uid)
+                        if not member or not msg.channel.permissions_for(member).read_messages:
+                            return
+                        ch = await self.bot.get_dm_channel(member)
                         embed = discord.Embed()
                         embed.set_author(name=f'{msg.author.display_name}', icon_url=f'{msg.author.avatar_url_as(size=32)}')
-                        embed.add_field(name=f'#{msg.channel.name}', value=f'{msg.content}\n[link]({msg.jump_url})', inline=False)
+                        link = f'\n[link]({msg.jump_url})'
+                        if len(msg.content) > (1024 - len(link)):
+                            text = f'{msg.content[:(1021 - len(link))]}...{link}'
+                        else:
+                            text = f'{msg.content}{link}'
+                        embed.add_field(name=f'#{msg.channel.name}', value=text, inline=False)
                         embed.set_footer(text=f'matched this rule: {hl}')
                         await ch.send(embed=embed)
                         break
