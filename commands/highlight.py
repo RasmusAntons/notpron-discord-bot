@@ -67,7 +67,10 @@ class HighlightCommand(Command):
                     return
                 try:
                     if re.search(hl, text):
-                        member = msg.guild.get_member(uid) or await msg.guild.fetch_member(uid)
+                        try:
+                            member = msg.guild.get_member(uid) or await msg.guild.fetch_member(uid)
+                        except discord.NotFound as e:
+                            return
                         if not member or not msg.channel.permissions_for(member).read_messages:
                             return
                         ch = await self.bot.get_dm_channel(member)
