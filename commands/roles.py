@@ -83,6 +83,9 @@ class UnderageCommand(Command):
             elif payload.emoji.name == '🇧🇷':  # pt
                 role = discord.utils.get(channel.guild.roles, id=722963391316230194)
                 await user.add_roles(role)
+            elif payload.emoji.name == '🎮':  # gamer
+                role = discord.utils.get(channel.guild.roles, id=775467900063580160)
+                await user.add_roles(role)
 
     async def on_raw_reaction_remove(self, channel, user, payload):
         if channel.id == 721487932606906399:
@@ -102,4 +105,7 @@ class UnderageCommand(Command):
                 await user.remove_roles(role)
             elif payload.emoji.name == '🇧🇷':  # pt
                 role = discord.utils.get(channel.guild.roles, id=722963391316230194)
+                await user.remove_roles(role)
+            elif payload.emoji.name == '🎮':  # gamer
+                role = discord.utils.get(channel.guild.roles, id=775467900063580160)
                 await user.remove_roles(role)
