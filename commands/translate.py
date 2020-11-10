@@ -32,11 +32,19 @@ class TranslateCommand(Command):
             else:
                 text.append(arg)
         text = ' '.join(text)
-        translator = Translator()
-        if src is not None:
-            r = translator.translate(text, src=src, dest=dest)
+        for i in range(100):
+            try:
+                translator = Translator()
+                if src is not None:
+                    r = translator.translate(text, src=src, dest=dest)
+                else:
+                    r = translator.translate(text, dest=dest)
+                break
+            except AttributeError:
+                pass
         else:
-            r = translator.translate(text, dest=dest)
+            raise RuntimeError('Failed to google translate 100 times :sob:')
+
         real_src = pycountry.languages.get(alpha_2=self.subst_pycountry.get(r.src) or r.src)
         src_str = f'{real_src.name} ({real_src.alpha_2})' if real_src else f'{r.src}'
         real_dest = pycountry.languages.get(alpha_2=self.subst_pycountry.get(r.dest) or r.dest)
