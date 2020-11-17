@@ -22,7 +22,7 @@ class EvalCommand(Command):
 
             def thread():
                 stderr = io.StringIO()
-                aeval = asteval.Interpreter(err_writer=stderr, no_print=True)
+                aeval = asteval.Interpreter(err_writer=stderr, no_print=True, use_numpy=False)
                 r = aeval(query)
                 stderr.seek(0)
                 err = stderr.read()
