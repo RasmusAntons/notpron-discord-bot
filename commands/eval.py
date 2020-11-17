@@ -2,6 +2,8 @@ from commands.command import Command
 import asteval
 import discord
 import io
+import multiprocessing
+import time
 from discord.utils import escape_markdown, escape_mentions
 
 
@@ -13,16 +15,30 @@ class EvalCommand(Command):
     arg_desc = '<expression...>'
 
     async def execute(self, args, msg):
-        stderr = io.StringIO()
-        aeval = asteval.Interpreter(err_writer=stderr, no_print=True)
         query = ' '.join(args)
         try:
-            res = aeval(query)
-            res = str(res) if res else ''
-            stderr.seek(0)
-            err = stderr.read()
-            if err:
-                res = (res + '\n' + err).strip()
+            queue = multiprocessing.Queue()
+            start = time.time()
+
+            def thread():
+                stderr = io.StringIO()
+                aeval = asteval.Interpreter(err_writer=stderr, no_print=True)
+                r = aeval(query)
+                stderr.seek(0)
+                err = stderr.read()
+                if err:
+                    r = err
+                queue.put(r)
+            t = multiprocessing.Process(target=thread)
+            t.start()
+            while t.is_alive():
+                if time.time() - start > 0.25:
+                    t.terminate()
+                    res = 'Runtime exceeded :angry:'
+                    break
+            else:
+                res = queue.get()
+                res = str(res)
         except Exception as e:
             res = str(e)
         embed = discord.Embed(color=self.bot.config.get_embed_colour())
