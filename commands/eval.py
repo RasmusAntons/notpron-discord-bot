@@ -23,6 +23,7 @@ class EvalCommand(Command):
             def thread():
                 stderr = io.StringIO()
                 aeval = asteval.Interpreter(err_writer=stderr, no_print=True, use_numpy=False)
+                del aeval.symtable['open']
                 r = aeval(query)
                 stderr.seek(0)
                 err = stderr.read()
