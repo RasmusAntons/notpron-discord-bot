@@ -47,6 +47,7 @@ class ExecDiscordConnection(discord.Client):
         embed.add_field(name="(18+) wasteland (scarcely moderated content, cursed images)", value=":nauseated_face:", inline=False)
         embed.add_field(name="(18+) adult-lounge (sensitive topics, not porn)", value=":coffee:", inline=False)
         embed.add_field(name="tech", value=":robot:", inline=False)
+        embed.add_field(name="gamer (no channel - taggable summoning role)", value=":video_game:", inline=False)
         # embed.set_footer(text='To learn how to turn these notifications off, look at the messagce above.')
         # msg = await ch.send('@everyone', embed=embed)
         await msg.edit(embed=embed)
@@ -56,6 +57,7 @@ class ExecDiscordConnection(discord.Client):
         #await msg.add_reaction('🤢')
         #await msg.add_reaction('☕')
         #await msg.add_reaction('🤖')
+        await msg.add_reaction('🎮')
         #oldmsg = await ch.fetch_message(729486803324764180)
         #await oldmsg.delete()
 
