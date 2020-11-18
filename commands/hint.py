@@ -6,6 +6,7 @@ class HintCommand(Command):
     arg_range = (1, 1)
     description = 'request a DM with the official hint for a level'
     arg_desc = '<level name>'
+    guilds = [363692038002180097]
 
     async def execute(self, args, msg):
         hint = None

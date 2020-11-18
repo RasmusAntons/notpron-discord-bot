@@ -9,6 +9,7 @@ class RrCommand(Command):
     arg_range = (0, 0)
     description = 'play a round of russian roulette'
     state = 0
+    guilds = [363692038002180097]
 
     async def execute(self, args, msg):
         loadtxt = ' loads one bullet into the revolver and' if self.state == 0 else ''

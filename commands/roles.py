@@ -27,7 +27,7 @@ class UnderageCommand(Command):
             user = await msg.guild.fetch_member(int(args[0]))
             t = timeparse(' '.join(args[1:]))
             self.add_blocked_user(user.id, t)
-            for rid in [721469067680022541, 768857774573617153]:
+            for rid in self.bot.config.get_adult_roles():
                 await user.remove_roles(discord.utils.get(msg.guild.roles, id=rid))
             await msg.channel.send(f'blocked {user.display_name} from nsfw channels for {t} seconds')
         except (discord.HTTPException, ValueError) as e:
@@ -57,55 +57,34 @@ class UnderageCommand(Command):
         else:
             return False
 
-    async def on_raw_reaction_add(self, channel, user, payload):  # todo: use config file
-        if channel.id == 721487932606906399:
+    async def on_raw_reaction_add(self, channel, user, payload):
+        if channel.id == self.bot.config.get_role_channel():
             if payload.emoji.is_custom_emoji():
-                if payload.emoji.id == 721206165605974019:  # mc
-                    role = discord.utils.get(channel.guild.roles, id=721461067334680626)
-                    await user.add_roles(role)
-            elif payload.emoji.name == '🤖':  # tech
-                role = discord.utils.get(channel.guild.roles, id=769767161258311741)
-                await user.add_roles(role)
-            elif payload.emoji.name == '☕':  # adult-lounge
-                if self.is_user_blocked(user.id):
-                    msg = await channel.fetch_message(payload.message_id)
-                    await msg.remove_reaction('☕', user)
-                else:
-                    role = discord.utils.get(channel.guild.roles, id=768857774573617153)
-                    await user.add_roles(role)
-            elif payload.emoji.name == '🤢':  # wasteland
-                if self.is_user_blocked(user.id):
-                    msg = await channel.fetch_message(payload.message_id)
-                    await msg.remove_reaction('🤢', user)
-                else:
-                    role = discord.utils.get(channel.guild.roles, id=721469067680022541)
-                    await user.add_roles(role)
-            elif payload.emoji.name == '🇧🇷':  # pt
-                role = discord.utils.get(channel.guild.roles, id=722963391316230194)
-                await user.add_roles(role)
-            elif payload.emoji.name == '🎮':  # gamer
-                role = discord.utils.get(channel.guild.roles, id=775467900063580160)
+                emoji = str(payload.emoji.id)
+            else:
+                emoji = payload.emoji.name
+            rid = self.bot.config.get_role(emoji)
+            if rid:
+                if rid in self.bot.config.get_adult_roles():
+                    if self.is_user_blocked(user.id):
+                        msg = await channel.fetch_message(payload.message_id)
+                        await msg.remove_reaction(emoji, user)  # todo: fix for custom emoji
+                        return
+                role = discord.utils.get(channel.guild.roles, id=rid)
                 await user.add_roles(role)
 
     async def on_raw_reaction_remove(self, channel, user, payload):
-        if channel.id == 721487932606906399:
+        if channel.id == self.bot.config.get_role_channel():
             if payload.emoji.is_custom_emoji():
-                if payload.emoji.id == 721206165605974019:  # mc
-                    role = discord.utils.get(channel.guild.roles, id=721461067334680626)
-                    await user.remove_roles(role)
-            elif payload.emoji.name == '🤖':  # tech
-                role = discord.utils.get(channel.guild.roles, id=769767161258311741)
-                await user.remove_roles(role)
-            elif payload.emoji.name == '☕':  # adult-lounge
-                role = discord.utils.get(channel.guild.roles, id=768857774573617153)
-                await user.remove_roles(role)
-            elif payload.emoji.name == '🤢':  # wasteland
-                role = discord.utils.get(channel.guild.roles, id=721469067680022541)
-                await user.remove_roles(role)
-                await user.remove_roles(role)
-            elif payload.emoji.name == '🇧🇷':  # pt
-                role = discord.utils.get(channel.guild.roles, id=722963391316230194)
-                await user.remove_roles(role)
-            elif payload.emoji.name == '🎮':  # gamer
-                role = discord.utils.get(channel.guild.roles, id=775467900063580160)
+                emoji = str(payload.emoji.id)
+            else:
+                emoji = payload.emoji.name
+            rid = self.bot.config.get_role(emoji)
+            if rid:
+                if rid in self.bot.config.get_adult_roles():
+                    if self.is_user_blocked(user.id):
+                        msg = await channel.fetch_message(payload.message_id)
+                        await msg.remove_reaction(emoji, user)  # todo: fix for custom emoji
+                        return
+                role = discord.utils.get(channel.guild.roles, id=rid)
                 await user.remove_roles(role)

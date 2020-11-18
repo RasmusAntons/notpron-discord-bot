@@ -12,6 +12,7 @@ class HwCommand(Command):
     arg_range = (1, 2)
     description = 'manage halloween music queue'
     arg_desc = 'list | remove <list index> | yt <youtube url>'
+    guilds = [363692038002180097]  # todo: enigmatics music? fix
 
     async def check(self, args, msg):
         for role in msg.author.roles:

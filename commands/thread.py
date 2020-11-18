@@ -6,6 +6,7 @@ class ThreadCommand(Command):
     arg_range = (1, 2)
     description = 'request a DM with a link to the forum thread to a level'
     arg_desc = '<level name>'
+    guilds = [363692038002180097]
 
     async def execute(self, args, msg):
         n = ''.join(args).replace('-', 'minus ')

@@ -39,6 +39,7 @@ class RvCommand(Command):
     description = 'remote view some images'
     arg_desc = 'init | done | show <id> | cancel | solve <id> | stats | log'
     n_choices = 4
+    guilds = [363692038002180097]
 
     async def execute(self, args, msg):
         rv_path = self.bot.config.get_rv_path()

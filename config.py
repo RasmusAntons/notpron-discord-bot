@@ -56,5 +56,14 @@ class Config:
     def get_ratelimit(self, chid):
         return self.conf['ratelimit'].get(str(chid), 0)
 
+    def get_role_channel(self):
+        return self.conf['role_channel']
+
+    def get_role(self, emoji):
+        return self.conf['roles'].get(emoji)
+
+    def get_adult_roles(self):
+        return self.conf['adult_roles']
+
     def get_embed_colour(self):
-        return 0xa6ce86
+        return self.conf['embed_colour']

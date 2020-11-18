@@ -7,6 +7,7 @@ class SolverCommand(Command):
     arg_range = (1, 3)
     description = 'announce notpron solver'
     arg_desc = '[user id | name] <solver number>'
+    guilds = [363692038002180097]
     unconfirmed = {}
 
     def __init__(self, bot):
@@ -14,6 +15,8 @@ class SolverCommand(Command):
         bot.reaction_listeners.add(self)
 
     async def check(self, args, msg):
+        if msg.channel.guild.id in self.guilds:
+            return False
         if self.bot.config.get_mod_role() not in [role.id for role in msg.author.roles]:
             return False
         return True

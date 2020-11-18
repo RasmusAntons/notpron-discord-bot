@@ -19,6 +19,7 @@ class Command(ABC):
     aliases = []
     description = None
     arg_desc = None
+    guilds = []
 
     def register(self):
         names = [self.name] + self.aliases
@@ -29,7 +30,7 @@ class Command(ABC):
         self.bot.commands_flat.append(self)
 
     async def check(self, args, msg):
-        return True
+        return msg.channel.guild.id in self.guilds
 
     @abstractmethod
     async def execute(self, args, msg):

@@ -14,7 +14,8 @@ class WeatherCommand(Command):
     async def execute(self, args, msg):
         query = ''.join(args)
         try:
-            await msg.channel.send(embed=get_weather_msg(query, self.bot.config.get_owm_key()))
+            await msg.channel.send(embed=get_weather_msg(query, self.bot.config.get_owm_key(),
+                                                         self.bot.config.get_embed_colour()))
         except pyowm.commons.exceptions.NotFoundError:
             await msg.channel.send(f'{msg.author.mention} I don\'t know that place')
 
@@ -25,12 +26,12 @@ def degrees_to_cardinal(d):
     return dirs[ix % len(dirs)]
 
 
-def get_weather_msg(query, owm_key):
+def get_weather_msg(query, owm_key, embed_colour):
     owm = pyowm.OWM(owm_key)
     mgr = owm.weather_manager()
     obs = mgr.weather_at_place(query)
     weather = obs.weather
-    embed = discord.Embed(title=f'Weather {obs.location.name}, {obs.location.country}', color=0xa6ce86)
+    embed = discord.Embed(title=f'Weather {obs.location.name}, {obs.location.country}', color=embed_colour)
     embed.set_thumbnail(url=f'https://openweathermap.org/img/wn/{weather.weather_icon_name}@2x.png')
     temp_c = weather.temperature('celsius').get('temp')
     temp_f = weather.temperature('fahrenheit').get('temp')

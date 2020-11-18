@@ -8,6 +8,7 @@ class FontCommand(Command):
     arg_range = (1, 99)
     description = 'generate an image with text'
     arg_desc = '<text...>'
+    guilds = [363692038002180097]  # todo: enigmatics font?
 
     async def execute(self, args, msg):
         await msg.channel.trigger_typing()
