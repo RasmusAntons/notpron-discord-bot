@@ -59,6 +59,7 @@ class UnderageCommand(Command):
 
     async def on_raw_reaction_add(self, channel, user, payload):
         if channel.id == self.bot.config.get_role_channel():
+            msg = await channel.fetch_message(payload.message_id)
             if payload.emoji.is_custom_emoji():
                 emoji = str(payload.emoji.id)
             else:
@@ -70,10 +71,11 @@ class UnderageCommand(Command):
                     if old_role.id in exrs:
                         role = discord.utils.get(channel.guild.roles, id=old_role.id)
                         await user.remove_roles(role)
+                for reaction in msg.reactions:
+                    await reaction.remove(user)
             if rid:
                 if rid in self.bot.config.get_adult_roles():
                     if self.is_user_blocked(user.id):
-                        msg = await channel.fetch_message(payload.message_id)
                         await msg.remove_reaction(emoji, user)  # todo: fix for custom emoji
                         return
                 role = discord.utils.get(channel.guild.roles, id=rid)
