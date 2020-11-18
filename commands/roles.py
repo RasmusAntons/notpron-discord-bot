@@ -66,6 +66,13 @@ class UnderageCommand(Command):
                 emoji = payload.emoji.name
             rid = self.bot.config.get_role(emoji)
             exrs = self.bot.config.get_exclusive_roles()
+            if rid:
+                if rid in self.bot.config.get_adult_roles():
+                    if self.is_user_blocked(user.id):
+                        await msg.remove_reaction(payload.emoji, user)
+                        return
+                role = discord.utils.get(channel.guild.roles, id=rid)
+                await user.add_roles(role)
             if rid in exrs:
                 for old_role in user.roles:
                     if old_role.id in exrs:
@@ -74,13 +81,6 @@ class UnderageCommand(Command):
                 for reaction in msg.reactions:
                     if reaction.emoji != payload.emoji:
                         await reaction.remove(user)
-            if rid:
-                if rid in self.bot.config.get_adult_roles():
-                    if self.is_user_blocked(user.id):
-                        await msg.remove_reaction(emoji, user)  # todo: fix for custom emoji
-                        return
-                role = discord.utils.get(channel.guild.roles, id=rid)
-                await user.add_roles(role)
 
     async def on_raw_reaction_remove(self, channel, user, payload):
         if channel.id == self.bot.config.get_role_channel():
