@@ -9,7 +9,7 @@ class HelpCommand(Command):
     description = 'list available commands'
 
     async def execute(self, args, msg):
-        embed = discord.Embed(title=f'{self.bot.name} Commands', color=self.bot.config.get_embed_colour())
+        embed = discord.Embed(title=f'{self.bot.user.name} Commands', color=self.bot.config.get_embed_colour())
         for cmd in self.bot.commands_flat:
             if not await cmd.check([], msg):
                 continue
