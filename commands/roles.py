@@ -72,7 +72,8 @@ class UnderageCommand(Command):
                         role = discord.utils.get(channel.guild.roles, id=old_role.id)
                         await user.remove_roles(role)
                 for reaction in msg.reactions:
-                    await reaction.remove(user)
+                    if reaction.emoji != payload.emoji:
+                        await reaction.remove(user)
             if rid:
                 if rid in self.bot.config.get_adult_roles():
                     if self.is_user_blocked(user.id):
