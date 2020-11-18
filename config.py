@@ -11,6 +11,9 @@ class Config:
     def get_prefix(self):
         return self.conf['prefix']
 
+    def get_listening(self):
+        return self.conf.get('listening')
+
     def get_channels(self):
         return self.conf['channels']
 

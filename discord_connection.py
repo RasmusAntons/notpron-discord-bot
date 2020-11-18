@@ -53,7 +53,9 @@ class DiscordConnection(discord.Client):
             cmd(self).register()
 
     async def on_ready(self):
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!hint | !antihint"))
+        listening = self.config.get_listening()
+        if listening:
+            await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=listening))
         print('I\'m in.')
         await self.markov.load_model('all')
         self.loop.create_task(self.background_task())
