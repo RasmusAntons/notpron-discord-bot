@@ -15,7 +15,7 @@ class SolverCommand(Command):
         bot.reaction_listeners.add(self)
 
     async def check(self, args, msg):
-        if msg.channel.guild.id in self.guilds:
+        if msg.channel.guild.id not in self.guilds:
             return False
         if self.bot.config.get_mod_role() not in [role.id for role in msg.author.roles]:
             return False

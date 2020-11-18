@@ -11,6 +11,7 @@ class GuessingGameCommand(Command):
     word_prompt = None
     correct_word = None
     word_guesses = {}
+    guilds = [363692038002180097]
     num_reacts = ['1️⃣', '2️⃣', '3️⃣', '4️⃣']
 
     def __init__(self, bot):
