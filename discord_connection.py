@@ -79,7 +79,7 @@ class DiscordConnection(discord.Client):
             return
         # todo: remove when Among Us is over
         if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
-            if '@everyone' not in msg.content and '@here' not in msg.content:
+            if '@everyone' not in msg.content and '@here' not in msg.content and msg.channel.guild.id == 363692038002180097:
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
 
         try:
@@ -92,7 +92,7 @@ class DiscordConnection(discord.Client):
 
         async def check_limit():
             for role in msg.author.roles:
-                if role.name.lower() in ['moderator', 'tech support', 'undercover cop']:
+                if role.name.lower() in ['moderator', 'tech support', 'undercover cop', 'admin']:
                     return True
             limit = self.config.get_ratelimit(msg.channel.id)
             if limit > 0:
