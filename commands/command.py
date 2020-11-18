@@ -30,7 +30,7 @@ class Command(ABC):
         self.bot.commands_flat.append(self)
 
     async def check(self, args, msg):
-        return msg.channel.guild.id in self.guilds
+        return not self.guilds or msg.channel.guild.id in self.guilds
 
     @abstractmethod
     async def execute(self, args, msg):
