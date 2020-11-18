@@ -64,6 +64,12 @@ class UnderageCommand(Command):
             else:
                 emoji = payload.emoji.name
             rid = self.bot.config.get_role(emoji)
+            exrs = self.bot.config.get_exclusive_roles()
+            if rid in exrs:
+                for old_role in user.roles:
+                    if old_role.id in exrs:
+                        role = discord.utils.get(channel.guild.roles, id=old_role.id)
+                        await user.remove_roles(role)
             if rid:
                 if rid in self.bot.config.get_adult_roles():
                     if self.is_user_blocked(user.id):

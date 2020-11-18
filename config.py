@@ -65,5 +65,8 @@ class Config:
     def get_adult_roles(self):
         return self.conf['adult_roles']
 
+    def get_exclusive_roles(self):
+        return self.conf['exclusive_roles']
+
     def get_embed_colour(self):
         return self.conf['embed_colour']
