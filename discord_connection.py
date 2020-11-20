@@ -25,6 +25,7 @@ from commands.translate import TranslateCommand
 from commands.roles import UnderageCommand
 from commands.highlight import HighlightCommand
 from commands.eval import EvalCommand
+from commands.purge import PurgeCommand
 import reactions
 
 
@@ -32,7 +33,7 @@ class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
                         FontCommand, RvCommand, HwCommand, NpCommand, TranslateCommand, UnderageCommand,
-                        HighlightCommand, EvalCommand]
+                        HighlightCommand, EvalCommand, PurgeCommand]
 
     def __init__(self, config):
         super().__init__()
