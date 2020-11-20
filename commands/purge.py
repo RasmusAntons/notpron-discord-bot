@@ -56,13 +56,14 @@ class PurgeCommand(Command):
                     del self.unconfirmed[reaction.message.id]
                     await reaction.message.delete()
                 elif reaction.emoji == '✅':
-                    if confirming.get('n', 0) < 0:
+                    if confirming.get('n') and confirming.get('n') < 0:
                         for _ in range(-confirming.get('n')):
                             await self.bot.markov.talk(reaction.message.channel, cont_chance=0)
                     else:
                         users = confirming.get('users')
                         after = confirming.get('t') - confirming.get('td') if confirming.get('td') else None
-                        await reaction.message.channel.purge(limit=confirming.get('n', 1000000),
+                        limit = confirming.get('n') if confirming.get('n') is not None else 1000000
+                        await reaction.message.channel.purge(limit=limit,
                                                              check=lambda m: not users or m.author in users,
                                                              after=after, before=confirming.get('t'))
                     del self.unconfirmed[reaction.message.id]
