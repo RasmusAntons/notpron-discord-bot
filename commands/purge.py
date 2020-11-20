@@ -1,5 +1,6 @@
 from commands.command import Command
 from pytimeparse.timeparse import timeparse
+from discord.utils import escape_markdown, escape_mentions
 import datetime
 
 
@@ -44,18 +45,22 @@ class PurgeCommand(Command):
         self.unconfirmed[prompt.id] = {'author': msg.author, 'users': msg.mentions, 'td': td, 'n': n, 't': t}
 
     async def on_reaction_add(self, reaction, user):
-        confirming = self.unconfirmed.get(reaction.message.id)
-        if confirming and user.id == confirming.get('author').id:
-            if reaction.emoji == '❌':
-                del self.unconfirmed[reaction.message.id]
-                await reaction.message.delete()
-            elif reaction.emoji == '✅':
-                users = confirming.get('users')
-                after = confirming.get('t') - confirming.get('td') if confirming.get('td') else None
-                await reaction.message.channel.purge(limit=confirming.get('n'),
-                                                     check=lambda m: not users or m.author in users,
-                                                     after=after, before=confirming.get('t'))
-                del self.unconfirmed[reaction.message.id]
-                await reaction.message.delete()
-            else:
-                await reaction.message.channel.send(f'that\'s a stupid emoji???')
+        try:
+            confirming = self.unconfirmed.get(reaction.message.id)
+            if confirming and user.id == confirming.get('author').id:
+                if reaction.emoji == '❌':
+                    del self.unconfirmed[reaction.message.id]
+                    await reaction.message.delete()
+                elif reaction.emoji == '✅':
+                    users = confirming.get('users')
+                    after = confirming.get('t') - confirming.get('td') if confirming.get('td') else None
+                    await reaction.message.channel.purge(limit=confirming.get('n'),
+                                                         check=lambda m: not users or m.author in users,
+                                                         after=after, before=confirming.get('t'))
+                    del self.unconfirmed[reaction.message.id]
+                    await reaction.message.delete()
+                else:
+                    await reaction.message.channel.send(f'that\'s a stupid emoji???')
+        except Exception as e:
+            await reaction.message.channel.send(escape_markdown(escape_mentions(str(e))))
+            raise e
