@@ -120,6 +120,7 @@ class NpCommand(Command):
     name = 'np'
     arg_range = (0, 0)
     description = 'show what\'s currently playing'
+    guilds = [363692038002180097]
 
     async def execute(self, args, msg):
         await msg.channel.send(f'Now playing: {np_str}')

@@ -15,6 +15,8 @@ class HwCommand(Command):
     guilds = [363692038002180097]  # todo: enigmatics music? fix
 
     async def check(self, args, msg):
+        if not msg.channel.guild.id in self.guilds:
+            return False
         for role in msg.author.roles:
             if role.name.lower() in ['moderator', 'tech support', 'dj']:
                 return True
