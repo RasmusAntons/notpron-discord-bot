@@ -37,6 +37,10 @@ class PurgeCommand(Command):
         if msg.mentions:
             user_str = ' by ' + ', '.join([user.display_name for user in msg.mentions])
         else:
+            if not n and not td:
+                await msg.channel.send(f'{msg.author.mention}, please mention users, the number or time interval of '
+                                       f'messages to purge')
+                return
             user_str = ''
         text = f'{msg.author.mention}, do you want to purge {quantifier}{user_str}?'
         prompt = await msg.channel.send(text)
@@ -52,11 +56,15 @@ class PurgeCommand(Command):
                     del self.unconfirmed[reaction.message.id]
                     await reaction.message.delete()
                 elif reaction.emoji == '✅':
-                    users = confirming.get('users')
-                    after = confirming.get('t') - confirming.get('td') if confirming.get('td') else None
-                    await reaction.message.channel.purge(limit=confirming.get('n'),
-                                                         check=lambda m: not users or m.author in users,
-                                                         after=after, before=confirming.get('t'))
+                    if confirming.get('n') < 0:
+                        for _ in range(-confirming.get('n')):
+                            await self.bot.markov.talk(reaction.message.channel, cont_chance=0)
+                    else:
+                        users = confirming.get('users')
+                        after = confirming.get('t') - confirming.get('td') if confirming.get('td') else None
+                        await reaction.message.channel.purge(limit=confirming.get('n'),
+                                                             check=lambda m: not users or m.author in users,
+                                                             after=after, before=confirming.get('t'))
                     del self.unconfirmed[reaction.message.id]
                     await reaction.message.delete()
                 else:
