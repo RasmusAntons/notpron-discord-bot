@@ -33,7 +33,7 @@ class PurgeCommand(Command):
             tds = timeparse(args[-1])
             if tds:
                 td = datetime.timedelta(seconds=tds)
-                if td > 1800:
+                if tds > 1800:
                     raise ValueError(f'{msg.author.mention}, I\'m not allowed to delete more than 30 minutes')
                 quantifier = f'messages of the last {td}'
             else:
