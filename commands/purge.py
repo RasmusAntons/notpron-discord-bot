@@ -27,14 +27,14 @@ class PurgeCommand(Command):
         try:
             n = int(args[-1])
             if n > 100:
-                raise ValueError(f'{msg.author.mention}, I\'m not allowed to delete more than 100 messages')
+                raise ValueError(f'I\'m not allowed to delete more than 100 messages')
             quantifier = f'the last {n} messages'
         except ValueError:
             tds = timeparse(args[-1])
             if tds:
                 td = datetime.timedelta(seconds=tds)
                 if tds > 1800:
-                    raise ValueError(f'{msg.author.mention}, I\'m not allowed to delete more than 30 minutes')
+                    raise ValueError(f'I\'m not allowed to delete more than 30 minutes')
                 quantifier = f'messages of the last {td}'
             else:
                 quantifier = 'all messages (up to 100)'
