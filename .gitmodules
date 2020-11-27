@@ -1,0 +1,4 @@
+[submodule "covid-19"]
+	path = covid19
+	url = https://github.com/RasmusAntons/covid-19.git
+	branch = main

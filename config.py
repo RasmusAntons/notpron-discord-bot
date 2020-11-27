@@ -73,3 +73,6 @@ class Config:
 
     def get_embed_colour(self):
         return self.conf['embed_colour']
+
+    def get_geocode_api_key(self):
+        return self.conf["geocode_api_key"]
