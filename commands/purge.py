@@ -26,14 +26,18 @@ class PurgeCommand(Command):
         t = datetime.datetime.utcnow()
         try:
             n = int(args[-1])
+            if n > 100:
+                raise ValueError(f'{msg.author.mention}, I\'m not allowed to delete more than 100 messages')
             quantifier = f'the last {n} messages'
         except ValueError:
             tds = timeparse(args[-1])
             if tds:
                 td = datetime.timedelta(seconds=tds)
+                if td > 1800:
+                    raise ValueError(f'{msg.author.mention}, I\'m not allowed to delete more than 30 minutes')
                 quantifier = f'messages of the last {td}'
             else:
-                quantifier = 'all messages'
+                quantifier = 'all messages (up to 100)'
         if msg.mentions:
             user_str = ' by ' + ', '.join([user.display_name for user in msg.mentions])
         else:
@@ -62,7 +66,7 @@ class PurgeCommand(Command):
                     else:
                         users = confirming.get('users')
                         after = confirming.get('t') - confirming.get('td') if confirming.get('td') else None
-                        limit = confirming.get('n') if confirming.get('n') is not None else 1000000
+                        limit = confirming.get('n') if confirming.get('n') is not None else 100
                         await reaction.message.channel.purge(limit=limit,
                                                              check=lambda m: not users or m.author in users,
                                                              after=after, before=confirming.get('t'))
