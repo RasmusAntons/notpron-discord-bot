@@ -50,7 +50,7 @@ class CovidCommand(Command):
         p.title.set_color('white')
         plt.savefig(f'covid_plot.png')
         plt.close()
-        region = re.sub(r'[^a-zA-Z0-9_]+', '_', res.region)
+        region = re.sub(r'[^a-zA-Z0-9_]+', '_', res.region).strip('_')
         file = discord.File('covid_plot.png', filename=f'{region}.png')
         embed.set_image(url=f'attachment://{region}.png')
 
