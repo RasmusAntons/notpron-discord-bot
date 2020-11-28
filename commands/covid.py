@@ -1,5 +1,5 @@
 from commands.command import Command
-from covid19.bin import run as covid19
+import covid19
 import discord
 from millify import millify, prettify
 import matplotlib.pyplot as plt
@@ -16,7 +16,7 @@ class CovidCommand(Command):
     async def execute(self, args, msg):
         key = self.bot.config.get_geocode_api_key()
         query = ' '.join(args)
-        res = covid19.main(query, key=key)
+        res = covid19.data(query, key=key)
         colour = self.bot.config.get_embed_colour()
         embed = discord.Embed(title=f'COVID-19 data for {res.region or query}', color=colour)
         embed.add_field(name='Total Cases', value=prettify(res.cum_cases))
