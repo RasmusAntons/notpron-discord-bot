@@ -29,7 +29,7 @@ class CovidCommand(Command):
         embed.add_field(name='Source', value=source)
 
         dfm = res.df.rolling(7, on='date').mean()
-        p = dfm.plot(x='date', y='new_cases', kind='line', grid=True, figsize=(7.5, 3), color='#a6ce86', legend=False)
+        p = dfm.plot(x='date', y='new_cases', kind='line', grid=True, figsize=(7.5, 4.1), color='#a6ce86', legend=False)
         p.set_facecolor('#2f3136')
         p.get_figure().set_facecolor('#2f3136')
         xticks = list(dfm.date[::len(dfm.date)//8])
@@ -39,13 +39,13 @@ class CovidCommand(Command):
         else:
             xlabels = xticks
         p.set_xticks(xticks)
-        p.set_xticklabels(map(lambda e: e.strftime('%d.%m.%y'), xlabels))
-        p.get_figure().subplots_adjust(top=0.95, bottom=0.16, right=0.98, left=.11)
+        p.set_xticklabels(map(lambda e: e.strftime('%Y-%m-%d'), xlabels), rotation=25)
+        p.get_figure().subplots_adjust(top=0.95, bottom=0.16, right=0.98, left=.1)
         for spine in p.spines.values():
             spine.set_color('#b0b0b0')
         p.xaxis.label.set_color('white')
         p.set_ylabel('new cases (7 day average)', color='white')
-        p.tick_params(axis='x', colors='white')
+        p.tick_params(axis='x', colors='white', labelrotation=15)
         p.tick_params(axis='y', colors='white')
         p.title.set_color('white')
         plt.savefig(f'covid_plot.png')
