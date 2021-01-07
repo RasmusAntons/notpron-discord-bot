@@ -4,6 +4,7 @@ import discord
 import io
 import multiprocessing
 import time
+import random
 from discord.utils import escape_markdown, escape_mentions
 
 
@@ -24,6 +25,9 @@ class EvalCommand(Command):
                 stderr = io.StringIO()
                 aeval = asteval.Interpreter(err_writer=stderr, no_print=True, use_numpy=False)
                 del aeval.symtable['open']
+                aeval.symtable['random'] = random.random
+                aeval.symtable['choice'] = random.choice
+                aeval.symtable['randrange'] = random.randrange
                 r = aeval(query)
                 stderr.seek(0)
                 err = stderr.read()
