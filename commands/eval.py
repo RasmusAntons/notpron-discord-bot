@@ -22,17 +22,19 @@ class EvalCommand(Command):
             start = time.time()
 
             def thread():
+                stdout = io.StringIO()
                 stderr = io.StringIO()
-                aeval = asteval.Interpreter(err_writer=stderr, no_print=True, use_numpy=False)
+                aeval = asteval.Interpreter(writer=stdout, err_writer=stderr, use_numpy=False)
                 del aeval.symtable['open']
                 aeval.symtable['random'] = random.random
                 aeval.symtable['choice'] = random.choice
                 aeval.symtable['randrange'] = random.randrange
                 r = aeval(query)
-                stderr.seek(0)
-                err = stderr.read()
-                if err:
-                    r = err
+                for stream in (stdout, stderr):
+                    stream.seek(0)
+                    err = stream.read()
+                    if err:
+                        r = err
                 queue.put(r)
             t = multiprocessing.Process(target=thread)
             t.start()
