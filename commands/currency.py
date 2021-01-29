@@ -22,9 +22,18 @@ class CurrencyCommand(Command):
 
     async def execute(self, args, msg):
         amount, origin, destination = args
-        amount = Decimal(amount)
-        o_code, o_symbol = self.currency_code_and_symbol(origin)
-        d_code, d_symbol = self.currency_code_and_symbol(destination)
+        try:
+            amount = Decimal(amount)
+        except Exception as _:
+            raise ValueError(f'Cannot parse decimal: {amount}')
+        try:
+            o_code, o_symbol = self.currency_code_and_symbol(origin)
+        except TypeError:
+            raise ValueError(f'Unknown currency: {origin}')
+        try:
+            d_code, d_symbol = self.currency_code_and_symbol(destination)
+        except TypeError:
+            raise ValueError(f'Unknown currency: {destination}')
         c = CurrencyRates()
         res = c.convert(o_code, d_code, amount)
         await msg.channel.send(f'{amount} {o_code} = {res} {d_code}')
