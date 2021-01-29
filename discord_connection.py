@@ -135,6 +135,8 @@ class DiscordConnection(discord.Client):
             args = content[1:]
             command = self.commands.get(cmd)
             if command:
+                if command.guilds and self.config.get_guild() not in command.guilds:
+                    return
                 if not await check_limit():
                     return
                 if command.arg_range[0] <= len(args) <= command.arg_range[1]:
