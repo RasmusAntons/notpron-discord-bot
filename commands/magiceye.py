@@ -15,8 +15,15 @@ class MagiceyeCommand(Command):
 
     async def execute(self, args, msg):
         attachments = msg.attachments
-        if len(attachments) != 1:
-            raise RuntimeError('Please upload an image (png/gif/jpg) with this command')
+        if len(attachments) == 0:
+            if msg.reference:
+                ref = msg.reference.cached_message or await msg.channel.fetch_message(msg.reference.message_id)
+                if len(ref.attachments) > 0:
+                    attachments = ref.attachments
+                else:
+                    raise RuntimeError('The referenced message does not have a file attached')
+            else:
+                raise RuntimeError('Please upload or reference a file with this command')
         attachment = attachments[0]
         if attachment.filename[-4:] not in ('.png', '.gif', '.jpg'):
             raise RuntimeError('Only .png, .gif and .jpg images are supported')
