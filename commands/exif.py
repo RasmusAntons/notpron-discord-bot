@@ -33,8 +33,20 @@ class ExifCommand(Command):
 
         os.remove('exif_tmp')
 
-        embed = discord.Embed(title=escape_markdown(escape_mentions(attachment.filename)),
-                              color=self.bot.config.get_embed_colour())
+        title = escape_markdown(escape_mentions(attachment.filename))
+        desc = '```'
         for key, value in metadata.items():
-            embed.add_field(name=key, value=value)
+            nextline = f'{key: <32}: {value}\n'
+            while '```' in nextline:
+                nextline = nextline.replace('```', '`\u200c`\u200c`')
+            if len(desc) + len(nextline) + 6 < 2048:
+                desc += nextline
+            else:
+                desc += '...\n'
+                break
+        desc += '```'
+
+        embed = discord.Embed(title=title,
+                              color=self.bot.config.get_embed_colour(),
+                              description=desc)
         await msg.channel.send(embed=embed)
