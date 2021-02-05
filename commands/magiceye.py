@@ -22,11 +22,11 @@ class MagiceyeCommand(Command):
             raise RuntimeError('Only .png, .gif and .jpg images are supported')
         req = urllib.request.Request(attachment.url, data=None, headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0'})
         in_file = io.BytesIO(urllib.request.urlopen(req).read())
-        image = Image.open(in_file)
+        image = Image.open(in_file).convert("RGB")
         image1 = np.array(image, dtype=int)
-        image2 = image.copy().convert("L")
-        image2.thumbnail((520, 520))
+        image2 = image.convert("L")
         image2 = np.array(image2, dtype=int)
+        image2 = image2[::image.height // 10, :]
 
         height, width = image2.shape
         uwu = math.inf
@@ -34,15 +34,6 @@ class MagiceyeCommand(Command):
 
         for i in range(10, width // 2):
             owo = (np.sum(np.abs(image2 - np.roll(image2, i, 1))))
-            if owo < uwu:
-                uwu = owo
-                iwi = i
-
-        iwi = iwi * image.width // width
-        uwu = math.inf
-
-        for i in range(iwi - image.width // width, iwi + image.width // width):
-            owo = (np.sum(np.abs(image - np.roll(image, i, 1))))
             if owo < uwu:
                 uwu = owo
                 iwi = i
