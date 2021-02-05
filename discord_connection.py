@@ -28,6 +28,7 @@ from commands.eval import EvalCommand
 from commands.purge import PurgeCommand
 from commands.covid import CovidCommand
 from commands.currency import CurrencyCommand
+from commands.magiceye import MagiceyeCommand
 import reactions
 
 
@@ -35,7 +36,7 @@ class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
                         FontCommand, RvCommand, HwCommand, NpCommand, TranslateCommand, UnderageCommand,
-                        HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand]
+                        HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand]
 
     def __init__(self, config):
         super().__init__()
