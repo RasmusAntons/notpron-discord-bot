@@ -22,10 +22,10 @@ class MagiceyeCommand(Command):
             raise RuntimeError('Only .png, .gif and .jpg images are supported')
         req = urllib.request.Request(attachment.url, data=None, headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0'})
         in_file = io.BytesIO(urllib.request.urlopen(req).read())
-        image = Image.open(in_file).convert("L")
+        image = Image.open(in_file)
         image1 = np.array(image, dtype=int)
-        image2 = image.copy()
-        image2.thumbnail((400, 400))
+        image2 = image.copy().convert("L")
+        image2.thumbnail((520, 520))
         image2 = np.array(image2, dtype=int)
 
         height, width = image2.shape
@@ -48,6 +48,6 @@ class MagiceyeCommand(Command):
                 iwi = i
 
         out_file = io.BytesIO()
-        Image.fromarray(np.uint8(np.abs(image1 - np.roll(image1, iwi, 1))), mode="L").save(out_file, 'PNG')
+        Image.fromarray(np.uint8(np.abs(image1 - np.roll(image1, iwi, 1))), mode="RGB").save(out_file, 'PNG')
         out_file.seek(0)
         await msg.channel.send(f'I solved your magiceye, {msg.author.mention}', file=discord.File(out_file, filename=f'{attachment.filename}.png', spoiler=True))
