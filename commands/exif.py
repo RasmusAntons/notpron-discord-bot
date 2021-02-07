@@ -4,6 +4,7 @@ import urllib.request
 import exiftool
 from discord.utils import escape_markdown, escape_mentions
 import os
+import io
 
 
 class ExifCommand(Command):
@@ -33,20 +34,19 @@ class ExifCommand(Command):
 
         os.remove('exif_tmp')
 
-        title = escape_markdown(escape_mentions(attachment.filename))
-        desc = '```'
+        text = [f'**{escape_markdown(escape_mentions(attachment.filename))}**', '```']
         for key, value in metadata.items():
-            nextline = f'{key: <32}: {value}\n'
+            key = key.split(':')[-1]
+            if key in ('SourceFile', 'FileName', 'Directory', 'FilePermissions'):
+                continue
+            nextline = f'{key: <24}: {value}'
             while '```' in nextline:
                 nextline = nextline.replace('```', '`\u200c`\u200c`')
-            if len(desc) + len(nextline) + 6 < 2048:
-                desc += nextline
-            else:
-                desc += '...\n'
-                break
-        desc += '```'
+            text.append(nextline)
+        text.append('```')
 
-        embed = discord.Embed(title=title,
-                              color=self.bot.config.get_embed_colour(),
-                              description=desc)
-        await msg.channel.send(embed=embed)
+        res = '\n'.join(text)
+        if len(res) <= 2000:
+            await msg.channel.send(res)
+        else:
+            await msg.channel.send(text[0], file=discord.File(io.StringIO('\n'.join(text[2:-1])), f'{attachment.filename}.exif.txt'))
