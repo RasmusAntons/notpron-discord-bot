@@ -30,6 +30,7 @@ from commands.covid import CovidCommand
 from commands.currency import CurrencyCommand
 from commands.magiceye import MagiceyeCommand
 from commands.exif import ExifCommand
+from commands.roll import RollCommand
 import reactions
 
 
@@ -38,7 +39,7 @@ class DiscordConnection(discord.Client):
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
                         FontCommand, RvCommand, HwCommand, NpCommand, TranslateCommand, UnderageCommand,
                         HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand,
-                        ExifCommand]
+                        ExifCommand, RollCommand]
 
     def __init__(self, config):
         super().__init__()
