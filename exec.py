@@ -33,6 +33,8 @@ class ExecDiscordConnection(discord.Client):
         #await self.change_presence(activity=activity)
 
 
+        #ch = self.get_channel(363692038002180099)
+        #await ch.send('<:monomi:779458067934085150>')
         ch = self.get_channel(721487932606906399)
         msg = await ch.fetch_message(722981667488399420)
         roles = [722970084359798816, 722970087518371880, 722970089804136518, 722970091955814476, 722970093960691733, 722970096204644365, 722970102370140271]
@@ -43,11 +45,12 @@ class ExecDiscordConnection(discord.Client):
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/722266017752940685/722965566708514846/pic2.png')
         embed.add_field(name="minecraft", value=f"<:mc:721206165605974019>", inline=False)
         embed.add_field(name="portuguese", value=":flag_br:", inline=False)
-        #yembed.add_field(name="(18+) nsfw (sexual content)", value=":underage:", inline=False)
+        #embed.add_field(name="(18+) nsfw (sexual content)", value=":underage:", inline=False)
         embed.add_field(name="(18+) wasteland (scarcely moderated content, cursed images)", value=":nauseated_face:", inline=False)
         embed.add_field(name="(18+) adult-lounge (sensitive topics, not porn)", value=":coffee:", inline=False)
         embed.add_field(name="tech", value=":robot:", inline=False)
         embed.add_field(name="gamer (no channel - taggable summoning role)", value=":video_game:", inline=False)
+        embed.add_field(name="workout (no channel - taggable summoning role)", value=":sweat:", inline=False)
         # embed.set_footer(text='To learn how to turn these notifications off, look at the messagce above.')
         # msg = await ch.send('@everyone', embed=embed)
         await msg.edit(embed=embed)
@@ -57,7 +60,8 @@ class ExecDiscordConnection(discord.Client):
         #await msg.add_reaction('🤢')
         #await msg.add_reaction('☕')
         #await msg.add_reaction('🤖')
-        await msg.add_reaction('🎮')
+        #await msg.add_reaction('🎮')
+        await msg.add_reaction('😓')
         #oldmsg = await ch.fetch_message(729486803324764180)
         #await oldmsg.delete()
 

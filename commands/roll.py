@@ -22,4 +22,6 @@ class RollCommand(Command):
         if amount > 1:
             rolls_s = [str(roll) for roll in rolls]
             res += f' ({" + ".join(rolls_s)})'
+        if amount > 100:
+            raise RuntimeError('too many dice >:(')
         await msg.reply(res)
