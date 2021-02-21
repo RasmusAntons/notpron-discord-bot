@@ -17,11 +17,11 @@ class RollCommand(Command):
                 sides = int(arg[1:])
             else:
                 amount = int(arg)
+        if amount > 100:
+            raise RuntimeError('too many dice >:(')
         rolls = [random.randint(1, sides) for _ in range(amount)]
         res = f'{sum(rolls)}'
         if amount > 1:
             rolls_s = [str(roll) for roll in rolls]
             res += f' ({" + ".join(rolls_s)})'
-        if amount > 100:
-            raise RuntimeError('too many dice >:(')
         await msg.reply(res)
