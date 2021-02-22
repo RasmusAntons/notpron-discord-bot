@@ -42,7 +42,9 @@ class DiscordConnection(discord.Client):
                         ExifCommand, RollCommand]
 
     def __init__(self, config):
-        super().__init__()
+        intents = discord.Intents.default()
+        intents.members = True
+        super().__init__(intents=intents)
         self.config = config
         self.markov = Markov(self, config)
         self.api_server = api.ApiServer(self, config)
@@ -197,8 +199,10 @@ class DiscordConnection(discord.Client):
                 await raw_reaction_listener.on_raw_reaction_remove(ch, user, payload)
 
     async def on_member_join(self, member):
+        print(f'{member.name} joined')
         if member.guild.id == 363692038002180097:  # notpron
             role = discord.utils.get(member.guild.roles, id=364055272991490059)  # adventurer
+            print(f'assigning {role.name} role')
             await member.add_roles(role)
 
     def sus_resp(self, userName):
