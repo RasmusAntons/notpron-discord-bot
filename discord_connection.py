@@ -90,7 +90,7 @@ class DiscordConnection(discord.Client):
             return
         # todo: remove when Among Us is over
         if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
-            if '@everyone' not in msg.content and '@here' not in msg.content and msg.channel.guild.id == 363692038002180097:
+            if '@everyone' not in msg.content and '@here' not in msg.content:
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
 
         try:
