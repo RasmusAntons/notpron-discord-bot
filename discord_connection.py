@@ -196,6 +196,11 @@ class DiscordConnection(discord.Client):
             if raw_reaction_listener.on_raw_reaction_remove:
                 await raw_reaction_listener.on_raw_reaction_remove(ch, user, payload)
 
+    async def on_member_join(self, member):
+        if member.guild.id == 363692038002180097:  # notpron
+            role = discord.utils.get(member.guild.roles, id=364055272991490059)  # adventurer
+            await member.add_roles(role)
+
     def sus_resp(self, userName):
         fChoice = random.randint(1, 2)
         sChoice = random.randint(0, 1)
