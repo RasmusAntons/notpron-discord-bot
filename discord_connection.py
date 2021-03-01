@@ -47,7 +47,7 @@ class DiscordConnection(discord.Client):
         super().__init__(intents=intents)
         self.config = config
         self.markov = Markov(self, config)
-        self.api_server = api.ApiServer(self, config)
+        self.api_server = api.ApiServer(self, config, self.loop)
         self.name_check = None
         self.prefix = self.config.get_prefix()
         self.commands = {}
