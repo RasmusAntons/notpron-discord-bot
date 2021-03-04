@@ -72,12 +72,13 @@ class UnderageCommand(Command):
                         await msg.remove_reaction(payload.emoji, user)
                         return
                 role = discord.utils.get(channel.guild.roles, id=rid)
-                if rid in exrs:
-                    await user.remove_roles([discord.utils.get(channel.guild.roles, id=rid) for rid in exrs if rid != role.id])
+                await user.add_roles(role)
+                if role and rid in exrs:
+                    exrs_o = [discord.utils.get(channel.guild.roles, id=rid) for rid in exrs if rid != role.id]
+                    await user.remove_roles(*exrs_o)
                     for reaction in msg.reactions:
                         if reaction.emoji != payload.emoji:
                             await reaction.remove(user)
-                await user.add_roles(role)
 
     async def on_raw_reaction_remove(self, channel, user, payload):
         if channel.id == self.bot.config.get_role_channel():
