@@ -61,12 +61,10 @@ class ExifCommand(Command):
             while '```' in nextline:
                 nextline = nextline.replace('```', '`\u200c`\u200c`')
             text.append(nextline)
-        text.append('```')
-        if not all_tags:
-            text.append('Use "exif all" to see all tags.')
+        text.append('```' + 'Use "exif all" to see all tags.' if not all_tags else '')
 
         res = '\n'.join(text)
         if len(res) <= 2000:
             await msg.channel.send(res)
         else:
-            await msg.channel.send(text[0], file=discord.File(io.StringIO('\n'.join(text[2:-1 if all_tags else -2])), f'{attachment.filename}.exif.txt'))
+            await msg.channel.send(text[0], file=discord.File(io.StringIO('\n'.join(text[2:-1])), f'{attachment.filename}.exif.txt'))
