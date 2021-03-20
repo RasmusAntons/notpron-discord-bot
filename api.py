@@ -85,7 +85,8 @@ class ApiServer:
         if add:
             await member.add_roles(*(guild.get_role(rid) for rid in add))
         if remove:
-            await member.remove_roles(*(guild.get_role(rid) for rid in remove))
+            actually_remove = [role.id for role in member.roles if role.id in remove]
+            await member.remove_roles(*(guild.get_role(rid) for rid in actually_remove))
 
     async def _get_mention(self, ch, uid):
         try:
