@@ -1,6 +1,8 @@
 from commands.command import Command
 from forex_python.converter import CurrencyRates, CurrencyCodes
+from forex_python.bitcoin import BtcConverter
 from decimal import Decimal
+import re
 
 
 class CurrencyCommand(Command):
@@ -11,13 +13,16 @@ class CurrencyCommand(Command):
     arg_desc = '<amount> <origin currency> <destination currency>'
 
     def currency_code_and_symbol(self, code_or_symbol):
+        if code_or_symbol.lower() in ('btc', '₿'):
+            return 'BTC', '₿'
         c = CurrencyCodes()
-        symbol = c.get_symbol(code_or_symbol)
-        if symbol:
-            return code_or_symbol, symbol
         code = c.get_currency_code_from_symbol(code_or_symbol)
         if code:
             return code, code_or_symbol
+        code_or_symbol = code_or_symbol.upper()
+        symbol = c.get_symbol(code_or_symbol)
+        if symbol:
+            return code_or_symbol, symbol
         return None
 
     async def execute(self, args, msg):
@@ -35,5 +40,20 @@ class CurrencyCommand(Command):
         except TypeError:
             raise ValueError(f'Unknown currency: {destination}')
         c = CurrencyRates()
-        res = c.convert(o_code, d_code, amount)
-        await msg.channel.send(f'{amount} {o_code} = {res} {d_code}')
+        if o_code == 'BTC':
+            b = BtcConverter()
+            res = b.convert_btc_to_cur(amount, 'USD')
+            if d_code.lower() != 'usd':
+                res = c.convert('USD', d_code, res)
+        elif d_code == 'BTC':
+            b = BtcConverter()
+            if o_code.lower() != 'usd':
+                amount = c.convert(d_code, 'USD', amount)
+            res = b.convert_to_btc(amount, o_code)
+        else:
+            res = c.convert(o_code, d_code, amount)
+        if res >= 1:
+            res = f'{res:0.3f}'.rstrip('.0')
+        else:
+            res = re.sub(r'(?<=[^0.]{3})\d+', '', f'{res:.100f}'.rstrip('.0'))
+        await msg.channel.send(f'{amount: f} {o_code} = {res or 0} {d_code}')
