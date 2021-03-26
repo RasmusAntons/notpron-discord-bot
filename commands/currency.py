@@ -13,7 +13,7 @@ class CurrencyCommand(Command):
     arg_desc = '<amount> <origin currency> <destination currency>'
 
     def currency_code_and_symbol(self, code_or_symbol):
-        if code_or_symbol.lower() in ('btc', '₿'):
+        if code_or_symbol.upper() in ('BTC', '₿'):
             return 'BTC', '₿'
         c = CurrencyCodes()
         code = c.get_currency_code_from_symbol(code_or_symbol)
@@ -43,12 +43,12 @@ class CurrencyCommand(Command):
         if o_code == 'BTC':
             b = BtcConverter()
             res = b.convert_btc_to_cur(amount, 'USD')
-            if d_code.lower() != 'usd':
+            if d_code != 'USD':
                 res = c.convert('USD', d_code, res)
         elif d_code == 'BTC':
             b = BtcConverter()
-            if o_code.lower() != 'usd':
-                amount = c.convert(d_code, 'USD', amount)
+            if o_code != 'USD':
+                amount = c.convert(o_code, 'USD', amount)
             res = b.convert_to_btc(amount, o_code)
         else:
             res = c.convert(o_code, d_code, amount)
