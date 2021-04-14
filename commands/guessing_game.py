@@ -55,3 +55,6 @@ class GuessingGameCommand(Command):
         except ValueError:
             print(f'what is this emoji? {reaction.emoji}')
         print(self.word_guesses)
+
+    async def on_reaction_remove(self, reaction, user):
+        pass
