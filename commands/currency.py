@@ -1,16 +1,22 @@
-from commands.command import Command
+from commands.command import Command, Category
 from forex_python.converter import CurrencyRates, CurrencyCodes
 from forex_python.bitcoin import BtcConverter
 from decimal import Decimal
-import re
+import math
 
 
 class CurrencyCommand(Command):
     name = 'currency'
     aliases = ['cc']
+    category = Category.UTILITY
     arg_range = (3, 3)
     description = 'convert between currencies'
     arg_desc = '<amount> <origin currency> <destination currency>'
+
+    @staticmethod
+    def format_number(number, significant, min_precision=0):
+        round_to = max(min_precision, significant - math.floor(math.log10(number)) - 1)
+        return f'{round(number, round_to):.{round_to}f}'.rstrip('.0')
 
     def currency_code_and_symbol(self, code_or_symbol):
         if code_or_symbol.upper() in ('BTC', '₿'):
@@ -52,8 +58,5 @@ class CurrencyCommand(Command):
             res = b.convert_to_btc(amount, o_code)
         else:
             res = c.convert(o_code, d_code, amount)
-        if res >= 1:
-            res = f'{res:0.3f}'.rstrip('.0')
-        else:
-            res = re.sub(r'(?<=[^0.]{3})\d+', '', f'{res:.100f}'.rstrip('.0'))
+        res = self.format_number(res, 4, 2)
         await msg.channel.send(f'{amount: f} {o_code} = {res or 0} {d_code}')

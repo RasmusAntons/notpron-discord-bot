@@ -1,14 +1,17 @@
-from commands.command import Command
+from commands.command import Command, Category
 from googletrans import Translator
 import discord
 import pycountry
-from discord.utils import escape_markdown, escape_mentions
+from utils import escape_discord
+
+import globals
 
 
 class TranslateCommand(Command):
     name = 'translate'
     aliases = ['t']
-    arg_range = (0, 99)
+    category = Category.UTILITY
+    arg_range = (1, 99)
     description = 'translate text'
     arg_desc = '<text...> [src=<language>] [dest=<language>]'
     subst_google = {
@@ -32,6 +35,8 @@ class TranslateCommand(Command):
             else:
                 text.append(arg)
         text = ' '.join(text)
+        if not text:
+            return False
         for i in range(100):
             try:
                 translator = Translator()
@@ -49,9 +54,9 @@ class TranslateCommand(Command):
         src_str = f'{real_src.name} ({real_src.alpha_2})' if real_src else f'{r.src}'
         real_dest = pycountry.languages.get(alpha_2=self.subst_pycountry.get(r.dest) or r.dest)
         dest_str = f'{real_dest.name} ({real_dest.alpha_2})' if real_dest else f'{r.dest}'
-        embed = discord.Embed(color=self.bot.config.get_embed_colour())
-        embed.add_field(name=src_str, value=escape_markdown(escape_mentions(text)), inline=False)
-        embed.add_field(name=dest_str, value=escape_markdown(escape_mentions(r.text)), inline=False)
+        embed = discord.Embed(color=globals.conf.get(globals.conf.keys.EMBED_COLOUR))
+        embed.add_field(name=src_str, value=escape_discord(text), inline=False)
+        embed.add_field(name=dest_str, value=escape_discord(r.text), inline=False)
         confidence = r.extra_data.get('confidence')
         possible_mistakes = r.extra_data.get('possible-mistakes')
         if type(possible_mistakes) == list and len(possible_mistakes) >= 2:
@@ -59,3 +64,4 @@ class TranslateCommand(Command):
         ft = f'confidence: {confidence}, possible mistakes: {possible_mistakes}'
         embed.set_footer(text=ft)
         await msg.channel.send(embed=embed)
+        return True

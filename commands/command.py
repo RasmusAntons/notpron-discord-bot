@@ -1,11 +1,16 @@
+from enum import Enum
 from abc import ABC, abstractmethod
+import globals
+
+
+class Category(Enum):
+    ADMIN = 'admin'
+    UTILITY = 'utility'
+    NOTPRON = 'notpron'
+    UNDEFINED = 'undefined'
 
 
 class Command(ABC):
-
-    def __init__(self, bot):
-        self.bot = bot
-
     @property
     @abstractmethod
     def name(self):
@@ -19,18 +24,26 @@ class Command(ABC):
     aliases = []
     description = None
     arg_desc = None
+    category = Category.UNDEFINED
     guilds = []
 
     def register(self):
         names = [self.name] + self.aliases
         for name in names:
-            if name in self.bot.commands.keys():
+            if name in globals.bot.commands.keys():
                 raise RuntimeError(f'Duplicate command: {name} is already registered')
-            self.bot.commands[name] = self
-        self.bot.commands_flat.append(self)
+            globals.bot.commands[name] = self
+        globals.bot.commands_flat.append(self)
 
-    async def check(self, args, msg):
-        return not self.guilds or msg.channel.guild.id in self.guilds
+    async def check(self, args, msg, test=False):
+        return self.category.value not in globals.conf.get(globals.conf.keys.BLACKLIST_CATEGORIES, [])
+
+    def usage_str(self, prefix):
+        usage = [f'Usage: `{prefix}{self.name}']
+        if self.arg_desc:
+            usage.append(f' {self.arg_desc}')
+        usage.append('`')
+        return ''.join(usage)
 
     @abstractmethod
     async def execute(self, args, msg):

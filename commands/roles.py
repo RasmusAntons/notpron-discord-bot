@@ -1,79 +1,70 @@
-from commands.command import Command
+from commands.command import Command, Category
 from pytimeparse.timeparse import timeparse
 import discord
-import json
 import time
+import globals
+import config
 
 
 class UnderageCommand(Command):
     name = 'underagepersonidentified'
+    category = Category.ADMIN
     aliases = ['underage']
     arg_range = (2, 2)
     description = 'block user from nsfw channels'
     arg_desc = '<userid> <duration>'
 
-    def __init__(self, bot):
-        super().__init__(bot)
-        bot.raw_reaction_listeners.add(self)
+    def __init__(self):
+        super().__init__()
+        globals.bot.raw_reaction_listeners.add(self)
+        globals.bot.db['underage'].create_index('uid', unique=True)
 
-    async def check(self, args, msg):
-        for role in msg.author.roles:
-            if role.name.lower() in ['moderator', 'tech support', 'undercover cop', 'admin']:
-                return True
-        return False
+    async def check(self, args, msg, test=False):
+        return await super().check(args, msg, test) and await config.is_mod(msg.author)
 
     async def execute(self, args, msg):
         try:
             user = await msg.guild.fetch_member(int(args[0]))
             t = timeparse(' '.join(args[1:]))
-            self.add_blocked_user(user.id, t)
-            for rid in self.bot.config.get_adult_roles():
+            coll = globals.bot.db['underage']
+            coll.replace_one({'uid': user.id}, {'uid': user.id, 'until':  time.time() + t}, upsert=True)
+            for rid in globals.conf.get(globals.conf.keys.ADULT_ROLES, []):
                 await user.remove_roles(discord.utils.get(msg.guild.roles, id=rid))
             await msg.channel.send(f'blocked {user.display_name} from nsfw channels for {t} seconds')
         except (discord.HTTPException, ValueError) as e:
             await msg.channel.send(str(e))
 
-    def add_blocked_user(self, uid, t):
-        with open('blocked_users.json') as f:
-            blocked_users = json.load(f)
-        until = time.time() + t
-        blocked_users[str(uid)] = until
-        with open('blocked_users.json', 'w') as f:
-            json.dump(blocked_users, f)
-
     def is_user_blocked(self, uid):
-        with open('blocked_users.json') as f:
-            blocked_users = json.load(f)
-        until = blocked_users.get(str(uid))
-        if until:
+        coll = globals.bot.db['underage']
+        result = coll.find_one({'uid': uid})
+        if result:
+            until = result['until']
             print(f'{uid} blocked until {until} ({until - time.time()} more s)')
             if until > time.time():
                 return True
             else:
-                del blocked_users[str(uid)]
-                with open('blocked_users.json', 'w') as f:
-                    json.dump(blocked_users, f)
+                coll.delete_one({'uid': uid})
                 return False
         else:
             return False
 
     async def on_raw_reaction_add(self, channel, user, payload):
-        if channel.id == self.bot.config.get_role_channel():
+        if channel.id == globals.conf.get(globals.conf.keys.ROLE_CHANNEL):
             msg = await channel.fetch_message(payload.message_id)
             if payload.emoji.is_custom_emoji():
                 emoji = str(payload.emoji.id)
             else:
                 emoji = payload.emoji.name
-            rid = self.bot.config.get_role(emoji)
-            exrs = self.bot.config.get_exclusive_roles()
+            rid = globals.conf.dict_get(globals.conf.keys.ASSIGN_ROLES, emoji)
             if rid:
-                if rid in self.bot.config.get_adult_roles():
+                if rid in globals.conf.get(globals.conf.keys.ADULT_ROLES, []):
                     if self.is_user_blocked(user.id):
                         await msg.remove_reaction(payload.emoji, user)
                         return
                 role = discord.utils.get(channel.guild.roles, id=rid)
                 await user.add_roles(role)
-                if role and rid in exrs:
+                exrs = globals.conf.get(globals.conf.keys.EXCLUSIVE_ROLES)
+                if role and exrs and rid in exrs:
                     exrs_o = [discord.utils.get(channel.guild.roles, id=rid) for rid in exrs if rid != role.id]
                     await user.remove_roles(*exrs_o)
                     for reaction in msg.reactions:
@@ -81,17 +72,12 @@ class UnderageCommand(Command):
                             await reaction.remove(user)
 
     async def on_raw_reaction_remove(self, channel, user, payload):
-        if channel.id == self.bot.config.get_role_channel():
+        if channel.id == globals.conf.get(globals.conf.keys.ROLE_CHANNEL):
             if payload.emoji.is_custom_emoji():
                 emoji = str(payload.emoji.id)
             else:
                 emoji = payload.emoji.name
-            rid = self.bot.config.get_role(emoji)
+            rid = globals.conf.dict_get(globals.conf.keys.ASSIGN_ROLES, emoji)
             if rid:
-                if rid in self.bot.config.get_adult_roles():
-                    if self.is_user_blocked(user.id):
-                        msg = await channel.fetch_message(payload.message_id)
-                        await msg.remove_reaction(emoji, user)  # todo: fix for custom emoji
-                        return
                 role = discord.utils.get(channel.guild.roles, id=rid)
                 await user.remove_roles(role)

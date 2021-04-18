@@ -1,29 +1,43 @@
-from commands.command import Command
+from commands.command import Command, Category
 import asyncio
 import random
 import discord
+import globals
+import datetime
 
 
 class RrCommand(Command):
     name = 'rr'
+    category = Category.NOTPRON
     arg_range = (0, 0)
     description = 'play a round of russian roulette'
-    state = 0
-    guilds = [363692038002180097]
+
+    def __init__(self):
+        super().__init__()
+        coll = globals.bot.db['russian_roulette']
+        if not coll.find_one({}):
+            coll.insert_one({'streak': 0, 'max_streak': 0, 'uid': None, 'date': None, 'misses': 0, 'deaths': 0})
 
     async def execute(self, args, msg):
-        loadtxt = ' loads one bullet into the revolver and' if self.state == 0 else ''
-        await msg.channel.send(f'{msg.author.display_name}{loadtxt} slowly pulls the trigger...')
+        await msg.channel.send(f'*{msg.author.display_name} loads one bullet into the revolver and slowly pulls the trigger...*')
         await msg.channel.trigger_typing()
         await asyncio.sleep(1)
-        if random.randrange(6 - self.state) == 0:
+        coll = globals.bot.db['russian_roulette']
+        if random.randrange(6) == 0:
             await msg.channel.send(f'{msg.author.display_name} **died**')
+            coll.update_one({}, {'$inc': {'deaths': 1}, '$set': {'streak': 0}})
             try:
                 await msg.author.edit(nick=f'dead')
             except discord.HTTPException:
                 pass
-            self.state = 0
         else:
-            self.state += 1
+            stats = coll.find_one({})
+            stats['streak'] += 1
+            stats['misses'] += 1
+            if stats['streak'] > stats['max_streak']:
+                stats['max_streak'] = stats['streak']
+                stats['uid'] = msg.author.id
+                stats['date'] = datetime.datetime.now()
+            coll.replace_one({}, stats)
             await msg.channel.send(
-                f'*click* - empty chamber. {msg.author.display_name} will live another day. Who\'s next? Misses since last death: {self.state}')
+                f'*click* - empty chamber. {msg.author.display_name} will live another day. Who\'s next? Misses since last death: {stats["streak"]}')

@@ -1,10 +1,12 @@
 import markovify
 import os
 import random
-from config import Config
 import asyncio
 from discord.utils import escape_mentions
 import re
+from globals import bot
+import globals
+from utils import get_user
 
 
 FILENAME = 'markov/{}.json'
@@ -12,9 +14,7 @@ TXT_FILE = 'markov/{}.txt'
 
 
 class Markov:
-    def __init__(self, bot, config: Config):
-        self.bot = bot
-        self.config = config
+    def __init__(self):
         self.models = {}
 
     async def load_model(self, key):
@@ -24,7 +24,7 @@ class Markov:
                 self.models[key] = markovify.Text.from_json(f.read())
 
     async def on_command(self, msg, cmd):
-        if cmd == "regenerate" and msg.channel.id == self.config.get_control_channel():
+        if cmd == "regenerate" and msg.channel.id == bot.conf.get_control_channel():
             n = await self.regenerate(msg)
             await msg.channel.send(f"finished regenerating, using {n} messages")
         elif cmd.startswith("imitate "):
@@ -46,9 +46,10 @@ class Markov:
     async def regenerate(self, orig_msg):
         msgs = {'all': []}
         n = 0
-        for i, channel in enumerate(self.config.get_markov_channels()):
-            await orig_msg.channel.send(f'reading channel {i + 1}/{len(self.config.get_markov_channels())}')
-            async for msg in self.bot.get_channel(channel).history(limit=10**5):
+        markov_channels = globals.conf.get(globals.conf.keys.MARKOV_CHANNELS)
+        for i, channel in enumerate(markov_channels):
+            await orig_msg.channel.send(f'reading channel {i + 1}/{len(markov_channels)}')
+            async for msg in globals.bot.get_channel(channel).history(limit=10**5):
                 if not msg.author.bot:
                     n += 1
                     text = msg.content
@@ -73,7 +74,7 @@ class Markov:
 
     async def replace_mentions(self, m):
         for uid in re.findall(r'<@!?(\d+)>', m):
-            usr = await self.bot.fetch_user(int(uid))
+            usr = await get_user(int(uid))
             m = m.replace(f'<@{uid}>', usr.name or '??????')
             m = m.replace(f'<@!{uid}>', usr.name or '??????')
         return m

@@ -1,6 +1,6 @@
 import json
 
-
+"""
 class Config:
     def __init__(self, filename):
         self.conf = json.load(open(filename))
@@ -76,3 +76,4 @@ class Config:
 
     def get_geocode_api_key(self):
         return self.conf["geocode_api_key"]
+"""

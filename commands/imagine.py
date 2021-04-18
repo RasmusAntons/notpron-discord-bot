@@ -1,44 +1,55 @@
-from commands.command import Command
-from bing_image_downloader import downloader
-import glob
+from commands.command import Command, Category
+from google_images_search import GoogleImagesSearch
 import random
-import discord
-import re
-import os
+import globals
+import pymongo
+import datetime
 
 
 class ImagineCommand(Command):
     name = 'imagine'
+    category = Category.UTILITY
     arg_range = (1, 99)
     description = 'get an image for your query'
     arg_desc = '<query...>'
     state = {}
 
-    async def rv_image(self, keyword, adult=False):
-        n = (self.state.get(keyword, 0) % 9) + 1
-        self.state[keyword] = n
-        output_dir = 'download/adult' if adult else 'download'
-        fn = f'{output_dir}/{keyword}/Image_{n}.jpg'
-        if os.path.isfile(fn):
-            return fn
-        downloader.download(keyword, limit=9, output_dir=output_dir, adult_filter_off=adult, force_replace=True,
-                            timeout=10)
-        if os.path.isfile(fn):
-            return fn
-        files = glob.glob(f'{output_dir}/{keyword}/Image_*')
-        if len(files) > 0:
-            return files[-1]
-        return None
+    def __init__(self):
+        super().__init__()
+        coll = globals.bot.db['imagine']
+        coll.create_index([('query', pymongo.ASCENDING), ('safe', pymongo.ASCENDING)], unique=True)
 
     async def execute(self, args, msg):
-        keyword = msg.content[9:].strip() + ' -notpron'
-        adult = msg.channel.is_nsfw()
-        if not re.match(r'^[A-Za-z0-9 \-+ÄÖÜäöüß]+$', keyword):
-            return await msg.channel.send(f'{msg.author.mention} please give me words like /^[A-Za-z0-9 ÄÖÜäöüß]+$/')
+        query = ' '.join(args)
+        suffix = globals.conf.get(globals.conf.keys.IMAGINE_SUFFIX)
+        if suffix:
+            query = f'{query} {suffix}'
+        search_params = {
+            'q': query,
+            'safe': 'off' if msg.channel.is_nsfw() else 'medium',
+            'num': 10
+        }
         await msg.channel.trigger_typing()
-        print(f'Searching for "{keyword}"')
-        img_path = await self.rv_image(keyword, adult)
-        if not img_path:
+        coll = globals.bot.db['imagine']
+        results = coll.find_one({'query': search_params['q'], 'safe': search_params['safe']})
+        if results is None or results['date'] + datetime.timedelta(days=7) < datetime.datetime.utcnow():
+            image_api_key = globals.conf.get(globals.conf.keys.IMAGE_API_KEY, bypass_protected=True)
+            image_search_cx = globals.conf.get(globals.conf.keys.IMAGE_SEARCH_CX, bypass_protected=True)
+            if image_api_key is None or image_search_cx is None:
+                raise RuntimeError(f'Google search API key or custom search engine not configured.')
+            gis = GoogleImagesSearch(image_api_key, image_search_cx)
+            gis.search(search_params=search_params)
+            good_ext = {'jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'PNG', 'gif', 'webm', 'mp4', 'wav', 'mp3', 'ogg'}
+            urls = list(filter(
+                lambda u: u.split('?')[0].split('.')[-1] in good_ext,
+                map(lambda r: r.url, gis.results()))
+            )
+            results = {'query': search_params['q'], 'safe': search_params['safe'], 'urls': urls, 'state': 0,
+                       'date': datetime.datetime.utcnow()}
+            coll.replace_one({'query': search_params['q'], 'safe': search_params['safe']}, results, upsert=True)
+        if len(results['urls']) == 0:
             excuses = ['I cannot imagine that', 'I don\'t even know what that is']
             return await msg.channel.send(f'{msg.author.mention} {random.choice(excuses)}')
-        await msg.channel.send(file=discord.File(img_path, f'{keyword}.jpg'))
+        await msg.channel.send(results['urls'][results['state']])
+        next_state = (results['state'] + 1) % len(results['urls'])
+        coll.update_one(results, {'$set': {'state': next_state}})

@@ -1,21 +1,23 @@
-from commands.command import Command
+from commands.command import Command, Category
 import discord
 import pyowm
 import datetime
 import pyowm.commons.exceptions
+import globals
 
 
 class WeatherCommand(Command):
     name = 'weather'
-    arg_range = (0, 99)
+    category = Category.UTILITY
+    arg_range = (1, 99)
     description = 'get the current weather at a location'
     arg_desc = '<location>'
 
     async def execute(self, args, msg):
         query = ''.join(args)
         try:
-            await msg.channel.send(embed=get_weather_msg(query, self.bot.config.get_owm_key(),
-                                                         self.bot.config.get_embed_colour()))
+            await msg.channel.send(embed=get_weather_msg(query, globals.conf.get(globals.conf.keys.OWM_API_KEY),
+                                                         globals.conf.get(globals.conf.keys.EMBED_COLOUR)))
         except pyowm.commons.exceptions.NotFoundError:
             await msg.channel.send(f'{msg.author.mention} I don\'t know that place')
 

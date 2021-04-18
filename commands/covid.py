@@ -1,23 +1,28 @@
-from commands.command import Command
+from commands.command import Command, Category
 import covid19
 import discord
 from millify import millify, prettify
 import matplotlib.pyplot as plt
 import datetime
 import re
+import io
+import globals
 
 
 class CovidCommand(Command):
     name = 'covid'
+    category = Category.UTILITY
     arg_range = (0, 99)
     description = 'show covid-19 data for a location'
     arg_desc = '[location...]'
 
     async def execute(self, args, msg):
-        key = self.bot.config.get_geocode_api_key()
+        key = globals.bot.conf.get(globals.bot.conf.keys.GMAPS_API_KEY, bypass_protected=True)
+        if key is None:
+            raise RuntimeError('Google maps API key not set.')
         query = ' '.join(args)
         res = covid19.data(query, key=key)
-        colour = self.bot.config.get_embed_colour()
+        colour = globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR)
         embed = discord.Embed(title=f'COVID-19 data for {res.region or query}', color=colour)
         embed.add_field(name='Total Cases', value=prettify(res.cum_cases))
         embed.add_field(name='Total Deaths', value=prettify(res.cum_deaths))
@@ -40,7 +45,7 @@ class CovidCommand(Command):
             xlabels = xticks
         p.set_xticks(xticks)
         p.set_xticklabels(map(lambda e: e.strftime('%Y-%m-%d'), xlabels), rotation=25)
-        p.get_figure().subplots_adjust(top=0.95, bottom=0.16, right=0.98, left=.1)
+        p.get_figure().subplots_adjust(top=0.95, bottom=0.16, right=0.98, left=.11)
         for spine in p.spines.values():
             spine.set_color('#b0b0b0')
         p.xaxis.label.set_color('white')
@@ -48,10 +53,11 @@ class CovidCommand(Command):
         p.tick_params(axis='x', colors='white', labelrotation=15)
         p.tick_params(axis='y', colors='white')
         p.title.set_color('white')
-        plt.savefig(f'covid_plot.png')
+        out_file = io.BytesIO()
+        plt.savefig(out_file)
         plt.close()
+        out_file.seek(0)
         region = re.sub(r'[^a-zA-Z0-9_]+', '_', res.region).strip('_')
-        file = discord.File('covid_plot.png', filename=f'{region}.png')
+        file = discord.File(out_file, filename=f'{region}.png')
         embed.set_image(url=f'attachment://{region}.png')
-
         await msg.channel.send(file=file, embed=embed)

@@ -1,15 +1,14 @@
 import asyncio
 import json
 import discord.utils
+import globals
+from utils import get_guild
 
 
 class ApiServer:
-    def __init__(self, client, config, loop):
-        self.client = client
-        self.config = config
-        self.loop = loop
-        self.coro = asyncio.start_server(self.handle_request, 'localhost', config.get_api_port())
-        self.loop.create_task(self.coro)
+    def __init__(self):
+        self.coro = asyncio.start_server(self.handle_request, 'localhost', globals.bot.conf.get(globals.bot.conf.keys.API_PORT))
+        globals.bot.loop.create_task(self.coro)
         self.functions = {
             'raw': {'f': self.send_raw, 'p': {'chid': int, 'message': str}},
             'update_roles': {'f': self.update_roles, 'p': {'uid': int, 'gid': int, 'add': list, 'remove': list}},
@@ -47,7 +46,7 @@ class ApiServer:
                     break
             else:
                 if req.get("async"):
-                    self.loop.create_task(function(*(req.get(param) for param in params)))
+                    bot.loop.create_task(function(*(req.get(param) for param in params)))
                 else:
                     try:
                         await function(*(req.get(param) for param in params))
@@ -60,11 +59,11 @@ class ApiServer:
         writer.close()
 
     async def send_raw(self, channel, message):
-        ch = self.client.get_channel(channel)
+        ch = globals.bot.get_channel(channel)
         await ch.send(message)
 
     async def update_roles(self, uid, gid, add, remove):
-        guild = self.client.get_guild(gid) or await self.client.fetch_guild(gid)
+        guild = await get_guild(gid)
         member = guild.get_member(uid) or await guild.fetch_member(uid)
         if add:
             await member.add_roles(*(guild.get_role(rid) for rid in add))
@@ -80,30 +79,31 @@ class ApiServer:
             if same_server:
                 return default
             try:
-                user = self.client.get_user(uid) or await self.client.fetch_user(uid)
+                user = globals.bot.get_user(uid) or await globals.bot.fetch_user(uid)
                 return user.name
             except (discord.NotFound, discord.HTTPException):
                 return default
 
     async def send_weekly_solve(self, chid, uid, name):
-        ch = self.client.get_channel(chid)
+        ch = globals.bot.get_channel(chid)
         mention = await self._get_mention(ch, uid, same_server=True, default=name)
         await ch.send(f'Congratulations {mention} for solving the weekly riddle!')
 
     async def send_halloween_solve(self, chid, uid, name):
-        ch = self.client.get_channel(chid)
+        ch = globals.bot.get_channel(chid)
         mention = await self._get_mention(ch, uid, same_server=True, default=name)
         await ch.send(f'Congratulations {mention} for completing the Halloween event! :jack_o_lantern: :ghost:')
 
     async def send_weekly_announce(self, chid, title, uid, name, icon):
-        ch = self.client.get_channel(chid)
+        ch = globals.bot.get_channel(chid)
         mention = await self._get_mention(ch, uid, same_server=True, default=name)
         title = title.replace('`', '')
         description = f'`{title}` by {mention}'
-        embed = discord.Embed(title='ɴᴇᴡ ᴡᴇᴇᴋʟʏ ᴘᴜᴢᴢʟᴇ', description=description, color=self.config.get_embed_colour())
+        embed = discord.Embed(title='ɴᴇᴡ ᴡᴇᴇᴋʟʏ ᴘᴜᴢᴢʟᴇ', description=description,
+                              color=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
         embed.set_thumbnail(url=icon)
         embed.set_footer(text='To learn how to turn these notifications off, look at the message above.')
-        await ch.purge(limit=1, check=lambda m: m.author == self.client.user)
+        await ch.purge(limit=1, check=lambda m: m.author == globals.bot.user)
         msg = await ch.send('@everyone', embed=embed)
         if ch.is_news():
             await msg.publish()

@@ -1,55 +1,36 @@
 import discord
-import asyncio
+import pymongo
+from config import Config
+import globals
 from markov import Markov
 import api
 import time
-import datetime
 import random
-from discord.utils import escape_markdown, escape_mentions
-from commands.hint import HintCommand
-from commands.antihint import AntiHintCommand
-from commands.thread import ThreadCommand
-from commands.rr import RrCommand
-from commands.help import HelpCommand
-from commands.convert import ConvertCommand
-from commands.weather import WeatherCommand
-from commands.colour import ColourCommand
-from commands.solver import SolverCommand
-from commands.imagine import ImagineCommand
-from commands.guessing_game import GuessingGameCommand
-from commands.tts import TtsCommand, NpCommand
-from commands.font import FontCommand
-from commands.rv import RvCommand
-from commands.hw import HwCommand
-from commands.translate import TranslateCommand
-from commands.roles import UnderageCommand
-from commands.highlight import HighlightCommand
-from commands.eval import EvalCommand
-from commands.purge import PurgeCommand
-from commands.covid import CovidCommand
-from commands.currency import CurrencyCommand
-from commands.magiceye import MagiceyeCommand
-from commands.exif import ExifCommand
-from commands.roll import RollCommand
+from utils import escape_discord
+from commands import *
 import reactions
 
 
 class DiscordConnection(discord.Client):
     ENABLED_COMMANDS = [HintCommand, AntiHintCommand, ThreadCommand, RrCommand, HelpCommand, ConvertCommand,
-                        WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand, TtsCommand,
-                        FontCommand, RvCommand, HwCommand, TranslateCommand, UnderageCommand,
+                        WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand,
+                        FontCommand, RvCommand, TranslateCommand, UnderageCommand,
                         HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand,
-                        ExifCommand, RollCommand]
+                        ExifCommand, RollCommand, ConfigCommand]
 
-    def __init__(self, config):
+    def __init__(self, config_file):
         intents = discord.Intents.default()
         intents.members = True
         super().__init__(intents=intents)
-        self.config = config
-        self.markov = Markov(self, config)
-        self.api_server = api.ApiServer(self, config, self.loop)
+        globals.bot = self
+        self.conf = Config(config_file)
+        self._db_client = pymongo.MongoClient(self.conf.get(self.conf.keys.DB_URL))
+        self.db = self._db_client[self.conf.get(self.conf.keys.INSTANCE)]
+        self.conf.load_db()
+        globals.conf = self.conf
+        self.markov = Markov()
+        self.api_server = api.ApiServer()
         self.name_check = None
-        self.prefix = self.config.get_prefix()
         self.commands = {}
         self.commands_flat = []
         self.reaction_listeners = set()
@@ -58,38 +39,27 @@ class DiscordConnection(discord.Client):
         self.message_listeners = set()
         self.ratelimit = {}
         # self.ENABLED_COMMANDS.sort(key=lambda e: e.name) # todo: idk, should they be sorted?
+        blacklist_categories = globals.conf.get(globals.conf.keys.BLACKLIST_CATEGORIES)
         for cmd in self.ENABLED_COMMANDS:
-            cmd(self).register()
+            cmd().register()
 
     async def on_ready(self):
-        listening = self.config.get_listening()
-        if listening:
-            await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=listening))
+        listening = self.conf.get(self.conf.keys.LISTENING)
+        if listening is not None:
+            if listening != '':
+                await self.change_presence(
+                    activity=discord.Activity(type=discord.ActivityType.listening, name=listening))
+            else:
+                await self.change_presence(activity=None)
         print('I\'m in.')
         await self.markov.load_model('all')
-        self.loop.create_task(self.background_task())
-
-    async def background_task(self):
-        while True:
-            ts = datetime.datetime.utcnow()
-            if self.name_check is None or ts.hour != self.name_check.hour:
-                for id, names in self.config.get_names().items():
-                    new_name = names.get(str(ts.hour))
-                    if new_name:
-                        try:
-                            guild = self.get_guild(self.config.get_guild())
-                            member = await guild.fetch_member(int(id))
-                            await member.edit(nick=new_name)
-                        except discord.HTTPException as e:
-                            pass
-            self.name_check = ts
-            await asyncio.sleep(10)
 
     async def on_message(self, msg):
-        if msg.channel.id not in self.config.get_channels() or msg.author.id == self.user.id:
+        prefix = globals.conf.get(globals.conf.keys.PREFIX)
+        if not self.conf.list_contains(self.conf.keys.CHANNELS, msg.channel.id) or msg.author.id == self.user.id:
             return
         # todo: remove when Among Us is over
-        if not msg.content.startswith('!') and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
+        if not msg.content.startswith(prefix) and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await msg.channel.send(self.sus_resp(msg.mentions[0].name))
 
@@ -98,14 +68,14 @@ class DiscordConnection(discord.Client):
             for message_listener in self.message_listeners:
                 await message_listener.on_message(msg)
         except Exception as e:
-            await msg.channel.send(escape_markdown(escape_mentions(str(e))))
+            await msg.reply(escape_discord(f'{type(e).__name__}: {str(e)}'))
             raise e
 
         async def check_limit():
             for role in msg.author.roles:
                 if role.name.lower() in ['moderator', 'tech support', 'undercover cop', 'admin']:
                     return True
-            limit = self.config.get_ratelimit(msg.channel.id)
+            limit = self.conf.dict_get(self.conf.keys.RATELIMITS, msg.channel.id, 0)
             if limit > 0:
                 if msg.channel.id not in self.ratelimit:
                     self.ratelimit[msg.channel.id] = {}
@@ -115,7 +85,8 @@ class DiscordConnection(discord.Client):
                 t_hist = self.ratelimit[msg.channel.id][msg.author.id]
                 if t_now - t_hist[0] < 60 * 60:
                     dm_channel = await self.get_dm_channel(msg.author)
-                    await dm_channel.send('Ratelimit exceeded! :robot: Please avoid using too many bot commands in the improper channels and use #bots-and-spam instead!')
+                    await dm_channel.send(
+                        'Ratelimit exceeded! :robot: Please avoid using too many bot commands in the improper channels and use #bots-and-spam instead!')
                     for emoji in ['👉', '#️⃣', '🤖']:
                         await msg.add_reaction(emoji)
                     return False
@@ -124,42 +95,42 @@ class DiscordConnection(discord.Client):
                     return True
             else:
                 return True
+
         if self.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 if not await check_limit():
                     return
                 await self.markov.talk(msg.channel, query=msg.content)
-        elif msg.content.startswith("!imitate ") or msg.content.startswith('!regenerate'):
+        elif msg.content.startswith(f"{prefix}imitate ") or msg.content.startswith(f'{prefix}regenerate'):
             if not await check_limit():
                 return
-            cmd = msg.content[1:].strip()
+            cmd = msg.content[len(prefix):].strip()
             await self.markov.on_command(msg, cmd)
 
-        if msg.content.startswith(self.prefix):
-            content = msg.content[len(self.prefix):].split(' ')
+        if msg.content.startswith(prefix):
+            content = msg.content[len(prefix):].split(' ')
             cmd = content[0]
             args = content[1:]
             command = self.commands.get(cmd)
             if command:
-                if command.guilds and self.config.get_guild() not in command.guilds:
+                if command.category.value in globals.conf.get(globals.conf.keys.BLACKLIST_CATEGORIES, []):
+                    return
+                if command.guilds and self.conf.get(self.conf.keys.GUILD) not in command.guilds:
                     return
                 if not await check_limit():
                     return
                 if command.arg_range[0] <= len(args) <= command.arg_range[1]:
                     try:
                         if await command.check(args, msg):
-                            await command.execute(args, msg)
+                            if await command.execute(args, msg) is False:
+                                await msg.channel.send(command.usage_str(prefix))
                         else:
-                            await msg.channel.send(f'{msg.author.mention} please don\'t do that')
+                            await msg.reply(f'Permission check failed.')
                     except Exception as e:
-                        await msg.channel.send(escape_markdown(escape_mentions(str(e))))
+                        await msg.reply(escape_discord(f'{type(e).__name__}: {str(e)}'))
                         raise e
                 else:
-                    usage = f'Usage: `{self.prefix}{command.name}'
-                    if command.arg_desc:
-                        usage += f' {command.arg_desc}'
-                    usage += '`'
-                    await msg.channel.send(usage)
+                    await msg.channel.send(command.usage_str(prefix))
 
     async def get_dm_channel(self, user):
         # todo: check if user has dms disabled

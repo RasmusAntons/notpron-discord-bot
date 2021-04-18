@@ -1,24 +1,29 @@
-from commands.command import Command
+from commands.command import Command, Category
 from pytimeparse.timeparse import timeparse
-from discord.utils import escape_markdown, escape_mentions
+import config
+from utils import escape_discord
 import datetime
+import globals
 
 
 class PurgeCommand(Command):
     name = 'purge'
+    category = Category.ADMIN
     arg_range = (1, 99)
     description = 'purge messages'
     arg_desc = '[mention...] [number | duration]'
     unconfirmed = {}
 
-    def __init__(self, bot):
-        super().__init__(bot)
-        bot.reaction_listeners.add(self)
+    def __init__(self):
+        super().__init__()
+        globals.bot.reaction_listeners.add(self)
 
-    async def check(self, args, msg):
-        if msg.author.permissions_in(msg.channel).manage_messages:
-            return True
-        return False
+    async def check(self, args, msg, test=False):
+        if not await super().check(args, msg, test):
+            return False
+        if not await config.is_mod(msg.author):
+            return False
+        return test or msg.author.permissions_in(msg.channel).manage_messages
 
     async def execute(self, args, msg):
         td = None
@@ -75,5 +80,5 @@ class PurgeCommand(Command):
                 else:
                     await reaction.message.channel.send(f'that\'s a stupid emoji???')
         except Exception as e:
-            await reaction.message.channel.send(escape_markdown(escape_mentions(str(e))))
+            await reaction.message.channel.send(escape_discord(str(e)))
             raise e

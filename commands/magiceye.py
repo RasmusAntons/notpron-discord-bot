@@ -1,4 +1,4 @@
-from commands.command import Command
+from commands.command import Command, Category
 import discord
 from PIL import Image
 import numpy as np
@@ -9,6 +9,7 @@ import io
 
 class MagiceyeCommand(Command):
     name = 'magiceye'
+    category = Category.UTILITY
     aliases = []
     arg_range = (0, 0)
     description = 'solve magiceye image'

@@ -1,9 +1,10 @@
-from commands.command import Command
+from commands.command import Command, Category
 import random
 
 
 class RollCommand(Command):
     name = 'roll'
+    category = Category.UTILITY
     aliases = []
     arg_range = (0, 2)
     description = 'roll a die'

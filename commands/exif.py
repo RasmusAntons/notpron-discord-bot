@@ -1,22 +1,21 @@
-from commands.command import Command
+from commands.command import Command, Category
 import discord
 import urllib.request
 import exiftool
-from discord.utils import escape_markdown, escape_mentions
+from utils import escape_discord, to_code_block
 import os
 import io
 
-
 important_tags = ['XMP:Location', 'XMP:Title', 'XMP:Creator', 'Photoshop:SlicesGroupName', 'IPTC:By-line',
-                             'IPTC:ObjectName', 'IPTC:Sub-location', 'EXIF:XPComment', 'EXIF:UserComment',
-                             'Composite:GPSPosition', 'PNG:AnimationFrames', 'GIF:FrameCount', 'GIF:Duration',
-                             'EXIF:Model', 'XMP:DateCreated', 'CreationTime', 'File:FileModifyDate',
-                             'File:FileAccessDate', 'File:FileType', 'Composite:ImageSize']
+                  'IPTC:ObjectName', 'IPTC:Sub-location', 'EXIF:XPComment', 'EXIF:UserComment',
+                  'Composite:GPSPosition', 'PNG:AnimationFrames', 'GIF:FrameCount', 'GIF:Duration',
+                  'EXIF:Model', 'XMP:DateCreated', 'CreationTime', 'File:FileModifyDate',
+                  'File:FileAccessDate', 'File:FileType', 'Composite:ImageSize']
 
 
 class ExifCommand(Command):
     name = 'exif'
-    aliases = []
+    category = Category.UTILITY
     arg_range = (0, 1)
     arg_desc = '[all]'
     description = 'show file file metadata'
@@ -40,7 +39,8 @@ class ExifCommand(Command):
             else:
                 raise RuntimeError('Please upload or reference a file with this command')
         attachment = attachments[0]
-        req = urllib.request.Request(attachment.url, data=None, headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0'})
+        req = urllib.request.Request(attachment.url, data=None, headers={
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0'})
         with open('exif_tmp', 'wb') as f:
             f.write(urllib.request.urlopen(req).read())
 
@@ -52,7 +52,7 @@ class ExifCommand(Command):
 
         os.remove('exif_tmp')
 
-        text = [f'**{escape_markdown(escape_mentions(attachment.filename))}**', '```']
+        text = [f'**{escape_discord(attachment.filename)}**', '```']
         for key, value in metadata.items():
             key = key.split(':')[-1]
             if key in ('SourceFile', 'FileName', 'Directory', 'FilePermissions'):
@@ -61,10 +61,11 @@ class ExifCommand(Command):
             while '```' in nextline:
                 nextline = nextline.replace('```', '`\u200c`\u200c`')
             text.append(nextline)
-        text.append('```' + 'Use "exif all" to see all tags.' if not all_tags else '')
+        text.append('```' + ('Use "exif all" to see all tags.' if not all_tags else ''))
 
         res = '\n'.join(text)
         if len(res) <= 2000:
             await msg.channel.send(res)
         else:
-            await msg.channel.send(text[0], file=discord.File(io.StringIO('\n'.join(text[2:-1])), f'{attachment.filename}.exif.txt'))
+            await msg.channel.send(text[0], file=discord.File(io.StringIO('\n'.join(text[2:-1])),
+                                                              f'{attachment.filename}.exif.txt'))

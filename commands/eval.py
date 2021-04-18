@@ -1,15 +1,18 @@
-from commands.command import Command
+from commands.command import Command, Category
 import asteval
+import asyncio
 import discord
 import io
 import multiprocessing
 import time
 import random
-from discord.utils import escape_markdown, escape_mentions
+import globals
+from utils import escape_discord
 
 
 class EvalCommand(Command):
     name = 'eval'
+    category = Category.UTILITY
     aliases = ['evaluate', 'solve', 'math', 'maths']
     arg_range = (0, 99)
     description = 'evaluate expression'
@@ -36,19 +39,21 @@ class EvalCommand(Command):
                     if err:
                         r = err
                 queue.put(r)
+            timeout = globals.conf.get(globals.conf.keys.EVAL_TIMEOUT, 250) / 1000
             t = multiprocessing.Process(target=thread)
             t.start()
             while t.is_alive():
-                if time.time() - start > 0.25:
+                time_left = start + timeout - time.time()
+                if time_left < 0:
                     t.terminate()
                     res = 'Runtime exceeded :angry:'
                     break
+                await asyncio.sleep(max(0.25, time_left))
             else:
                 res = queue.get()
                 res = str(res)
         except Exception as e:
             res = str(e)
-        embed = discord.Embed(color=self.bot.config.get_embed_colour())
-        embed.add_field(name=escape_mentions(escape_markdown(query)), value=escape_markdown(escape_mentions(res)),
-                        inline=False)
+        embed = discord.Embed(color=globals.conf.get(globals.conf.keys.EMBED_COLOUR, 0))
+        embed.add_field(name=escape_discord(query), value=escape_discord(res), inline=False)
         await msg.channel.send(embed=embed)
