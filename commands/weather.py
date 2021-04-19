@@ -16,8 +16,10 @@ class WeatherCommand(Command):
     async def execute(self, args, msg):
         query = ''.join(args)
         try:
-            await msg.channel.send(embed=get_weather_msg(query, globals.conf.get(globals.conf.keys.OWM_API_KEY),
-                                                         globals.conf.get(globals.conf.keys.EMBED_COLOUR)))
+            await msg.channel.send(
+                embed=get_weather_msg(query,
+                                      globals.conf.get(globals.conf.keys.OWM_API_KEY, bypass_protected=True),
+                                      globals.conf.get(globals.conf.keys.EMBED_COLOUR)))
         except pyowm.commons.exceptions.NotFoundError:
             await msg.channel.send(f'{msg.author.mention} I don\'t know that place')
 
