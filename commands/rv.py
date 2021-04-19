@@ -209,13 +209,14 @@ class RvCommand(Command):
             else:
                 await msg.reply(f'You don\'t have a target yet. Use `{prefix}{self.name} init` to request one.')
         elif args[0] == 'log':
-            log = coll_logs.find({}).sort({'t_end': 1})
-            out_file = io.StringIO('Time(UTC),UserID,Success,Duration(s)\n')
+            log = coll_logs.find({}).sort('t_end', 1)
+            out_file = io.StringIO()
+            out_file.write('Time(UTC),UserID,Success,Duration(s)\n')
             for log_entry in log:
-                t_end = datetime.datetime.utcfromtimestamp(log_entry.get('t_end')).replace(microsecond=0)
+                t_end = log_entry.get('t_end').replace(microsecond=0)
                 uid = f'"{log_entry.get("uid")}"'
                 suc = str(log_entry.get('correct', 'cancelled')).upper()
-                dur = int(log_entry.get('t_end') - log_entry.get('t_start'))
+                dur = int((log_entry.get('t_end') - log_entry.get('t_start')).total_seconds())
                 out_file.write(f'{t_end.isoformat()},{uid},{suc},{dur}\n')
             out_file.seek(0)
             fn = f'rv/rv_log_{datetime.datetime.utcnow().isoformat()}.csv'
