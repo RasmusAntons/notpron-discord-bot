@@ -21,6 +21,8 @@ class RegenerateCommand(Command, MessageListener):
         if not globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
             return
         if globals.bot.user.mentioned_in(msg):
+            if globals.bot.user.mention not in msg.content:
+                return
             if '@everyone' not in msg.content and '@here' not in msg.content:
                 await globals.bot.markov.talk(msg.channel, query=msg.content)
 

@@ -1,5 +1,6 @@
 import discord
 import discord.utils
+import discord.errors
 import globals
 
 
@@ -14,11 +15,19 @@ def escape_discord(text):
 
 
 async def get_guild(gid):
-    return globals.bot.get_guild(gid) or await globals.bot.fetch_guild(gid)
+    if gid is None:
+        return None
+    try:
+        return globals.bot.get_guild(gid) or await globals.bot.fetch_guild(gid)
+    except discord.errors.NotFound:
+        return None
 
 
 async def get_user(uid):
-    return globals.bot.get_user(uid) or await globals.bot.fetch_user(uid)
+    try:
+        return globals.bot.get_user(uid) or await globals.bot.fetch_user(uid)
+    except discord.errors.NotFound:
+        return None
 
 
 async def get_member(user):
@@ -28,8 +37,14 @@ async def get_member(user):
     elif isinstance(user, discord.User) or isinstance(user, discord.Member):
         user = user.id
     guild = await get_guild(guild_id)
-    return guild.get_member(user) or await guild.fetch_member(user)
+    try:
+        return guild.get_member(user) or await guild.fetch_member(user)
+    except discord.errors.NotFound:
+        return None
 
 
 async def get_channel(chid):
-    return globals.bot.get_channel(chid) or await globals.bot.fetch_channel(chid)
+    try:
+        return globals.bot.get_channel(chid) or await globals.bot.fetch_channel(chid)
+    except discord.errors.NotFound:
+        return None

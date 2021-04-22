@@ -23,6 +23,7 @@ class Key(enum.Enum):
     RV_PATH = ConfigKey('rv_path', ConfigDatatype.STRING, help_text='Directory with RV images.')
     IMAGINE_SUFFIX = ConfigKey('imagine_suffix', ConfigDatatype.STRING, help_text='Appended to each imagine query.')
     DEFAULT_ROLE = ConfigKey('default_role', ConfigDatatype.INT, help_text='Role assigned to new members on join.')
+    DM_RELAY_CHANNEL = ConfigKey('dm_relay_channel', ConfigDatatype.INT, help_text='Channel to send bot dms to.')
 
     MOD_ROLES = ConfigListKey('mod_roles', ConfigDatatype.INT, help_text='Ids of moderator roles.')
     ADMIN_USERS = ConfigListKey('admin_users', ConfigDatatype.INT, help_text='Ids of admin users.')

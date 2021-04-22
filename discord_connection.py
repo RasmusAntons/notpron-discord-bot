@@ -1,3 +1,4 @@
+import io
 import sys
 import traceback
 import pymongo
@@ -17,7 +18,7 @@ class DiscordConnection(discord.Client):
                         HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand,
                         ExifCommand, RollCommand, ConfigCommand, ArchiveCommand, RegenerateCommand, ImitateCommand]
 
-    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, ReactionListener]
+    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, ReactionListener, DmRelayListener]
 
     def __init__(self, config_file):
         intents = discord.Intents.default()
@@ -63,12 +64,16 @@ class DiscordConnection(discord.Client):
         print(exception_txt, file=sys.stderr)
         if control_channel_id:
             ch = await get_channel(control_channel_id)
-            text = [
-                f'Error in `{escape_discord(event_method)}`',
+            text = '\n'.join([
+                f'Error in `{event_method}`',
                 to_code_block(exception_txt),
                 to_code_block(str(args))
-            ]
-            self.loop.create_task(ch.send('\n'.join(text)))
+            ])
+            if len(text) < 2000:
+                self.loop.create_task(ch.send(text))
+            else:
+                file = discord.File(io.StringIO(text), filename=f'error_details.txt')
+                self.loop.create_task(ch.send(f'Error in `{event_method}`', ))
 
     async def on_message(self, msg):
         for message_listener in self.message_listeners:
@@ -166,17 +171,16 @@ class DiscordConnection(discord.Client):
         for message_edit_listener in self.message_edit_listeners:
             message_edit_listener: MessageEditListener
             await message_edit_listener.on_message_edit(message, payload.cached_message)
-        raise RuntimeError('ERROR')
 
     async def on_raw_message_delete(self, payload):
         ch = await get_channel(payload.channel_id)
-        guild = await get_guild(payload.guild_id)
+        guild = await get_guild(payload.guild_id) if payload.guild_id else None
         for message_delete_listener in self.message_delete_listeners:
             await message_delete_listener.on_message_delete(payload.message_id, ch, guild, payload.cached_message)
 
     async def on_raw_bulk_message_delete(self, payload):
         ch = await get_channel(payload.channel_id)
-        guild = await get_guild(payload.guild_id)
+        guild = await get_guild(payload.guild_id) if payload.guild_id else None
         messages = dict.fromkeys(payload.message_ids, None)
         for cached_message in payload.cached_messages:
             messages[cached_message.id] = cached_message
