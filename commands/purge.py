@@ -1,4 +1,5 @@
 from commands.command import Command, Category
+from listeners import ReactionListener
 from pytimeparse.timeparse import timeparse
 import config
 from utils import escape_discord
@@ -6,17 +7,13 @@ import datetime
 import globals
 
 
-class PurgeCommand(Command):
+class PurgeCommand(Command, ReactionListener):
     name = 'purge'
     category = Category.ADMIN
     arg_range = (1, 99)
     description = 'purge messages'
     arg_desc = '[mention...] [number | duration]'
     unconfirmed = {}
-
-    def __init__(self):
-        super().__init__()
-        globals.bot.reaction_listeners.add(self)
 
     async def check(self, args, msg, test=False):
         if not await super().check(args, msg, test):
@@ -67,7 +64,7 @@ class PurgeCommand(Command):
                 elif reaction.emoji == '✅':
                     if confirming.get('n') and confirming.get('n') < 0:
                         for _ in range(-confirming.get('n')):
-                            await self.bot.markov.talk(reaction.message.channel, cont_chance=0)
+                            await globals.bot.markov.talk(reaction.message.channel, cont_chance=0)
                     else:
                         users = confirming.get('users')
                         after = confirming.get('t') - confirming.get('td') if confirming.get('td') else None
@@ -82,3 +79,6 @@ class PurgeCommand(Command):
         except Exception as e:
             await reaction.message.channel.send(escape_discord(str(e)))
             raise e
+
+    async def on_reaction_remove(self, reaction, user):
+        pass

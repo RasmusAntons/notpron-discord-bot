@@ -1,4 +1,5 @@
 from commands.command import Command, Category
+from listeners import ReactionListener
 import random
 import discord
 import asyncio
@@ -8,7 +9,7 @@ from utils import escape_discord
 from pymongo.errors import DuplicateKeyError
 
 
-class GuessingGameCommand(Command):
+class GuessingGameCommand(Command, ReactionListener):
     name = 'wordgame'
     aliases = ['botpronpleasestartthemultiplechoicewordguessinggame', 'wg']
     category = Category.UTILITY
@@ -21,8 +22,7 @@ class GuessingGameCommand(Command):
     num_reacts = ['1️⃣', '2️⃣', '3️⃣', '4️⃣']
 
     def __init__(self):
-        super().__init__()
-        globals.bot.reaction_listeners.add(self)
+        super(GuessingGameCommand, self).__init__()
         coll = globals.bot.db['word_game']
         coll.create_index('question', unique=True)
         coll.create_index('language')

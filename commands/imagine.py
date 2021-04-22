@@ -15,7 +15,7 @@ class ImagineCommand(Command):
     state = {}
 
     def __init__(self):
-        super().__init__()
+        super(ImagineCommand, self).__init__()
         coll = globals.bot.db['imagine']
         coll.create_index([('query', pymongo.ASCENDING), ('safe', pymongo.ASCENDING)], unique=True)
 

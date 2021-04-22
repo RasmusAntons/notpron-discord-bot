@@ -23,26 +23,6 @@ class Markov:
             with open(fn, 'r') as f:
                 self.models[key] = markovify.Text.from_json(f.read())
 
-    async def on_command(self, msg, cmd):
-        if cmd == "regenerate" and msg.channel.id == bot.conf.get_control_channel():
-            n = await self.regenerate(msg)
-            await msg.channel.send(f"finished regenerating, using {n} messages")
-        elif cmd.startswith("imitate "):
-            if msg.mentions:
-                await self.talk(msg.channel, user=int(msg.mentions[0].id))
-            else:
-                uname = cmd[8:]
-                user = msg.channel.guild.get_member_named(uname)
-                if user:
-                    await self.talk(msg.channel, user=user.id)
-                else:
-                    try:
-                        uid = int(cmd[8:])
-                        if 100000000000000 <= uid <= 9999999999999999999:
-                            await self.talk(msg.channel, user=uid)
-                    except:
-                        pass
-
     async def regenerate(self, orig_msg):
         msgs = {'all': []}
         n = 0

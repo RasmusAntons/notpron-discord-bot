@@ -2,19 +2,16 @@ from commands.command import Command, Category
 import discord
 import config
 import globals
+from listeners import ReactionListener
 
 
-class SolverCommand(Command):
+class SolverCommand(Command, ReactionListener):
     name = 'solver'
     category = Category.NOTPRON
     arg_range = (1, 3)
     description = 'announce notpron solver'
     arg_desc = '[user id | name] <solver number>'
     unconfirmed = {}
-
-    def __init__(self):
-        super().__init__()
-        globals.bot.reaction_listeners.add(self)
 
     async def check(self, args, msg, test=True):
         return await super().check(args, msg, test) and await config.is_mod(msg.author)
@@ -69,3 +66,6 @@ class SolverCommand(Command):
             return
         elif confirming:
             await reaction.message.channel.send(f'{user.mention}, you are {user.id} and not {confirming.get("author").id}!')
+
+    async def on_reaction_remove(self, reaction, user):
+        pass

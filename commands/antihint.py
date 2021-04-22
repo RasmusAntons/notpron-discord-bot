@@ -10,7 +10,7 @@ class AntiHintCommand(Command):
     arg_desc = '<level name>'
 
     def __init__(self):
-        super().__init__()
+        super(AntiHintCommand, self).__init__()
         globals.bot.db['antihints'].create_index('level', unique=True)
 
     async def execute(self, args, msg):

@@ -1,14 +1,13 @@
-import discord
+import sys
+import traceback
 import pymongo
 from config import Config
-import globals
 from markov import Markov
 import api
 import time
-import random
-from utils import escape_discord
+from utils import *
 from commands import *
-import reactions
+from listeners import *
 
 
 class DiscordConnection(discord.Client):
@@ -16,7 +15,9 @@ class DiscordConnection(discord.Client):
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand,
                         FontCommand, RvCommand, TranslateCommand, UnderageCommand,
                         HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand,
-                        ExifCommand, RollCommand, ConfigCommand]
+                        ExifCommand, RollCommand, ConfigCommand, ArchiveCommand, RegenerateCommand, ImitateCommand]
+
+    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, ReactionListener]
 
     def __init__(self, config_file):
         intents = discord.Intents.default()
@@ -30,46 +31,52 @@ class DiscordConnection(discord.Client):
         globals.conf = self.conf
         self.markov = Markov()
         self.api_server = api.ApiServer()
-        self.name_check = None
         self.commands = {}
         self.commands_flat = []
+        self.message_listeners = set()
         self.reaction_listeners = set()
         self.raw_reaction_listeners = set()
+        self.message_edit_listeners = set()
+        self.message_delete_listeners = set()
         self.voice_state_listeners = set()
-        self.message_listeners = set()
+        self.ready_listeners = set()
+        self.member_join_listeners = set()
         self.ratelimit = {}
-        # self.ENABLED_COMMANDS.sort(key=lambda e: e.name) # todo: idk, should they be sorted?
-        blacklist_categories = globals.conf.get(globals.conf.keys.BLACKLIST_CATEGORIES)
-        for cmd in self.ENABLED_COMMANDS:
-            cmd().register()
+        self.initialised = False
+        self.ENABLED_COMMANDS.sort(key=lambda e: e.name)
+        for entity in self.ENABLED_COMMANDS + self.ENABLED_LISTENERS:
+            entity()
 
     async def on_ready(self):
-        listening = self.conf.get(self.conf.keys.LISTENING)
-        if listening is not None:
-            if listening != '':
-                await self.change_presence(
-                    activity=discord.Activity(type=discord.ActivityType.listening, name=listening))
-            else:
-                await self.change_presence(activity=None)
-        print('I\'m in.')
-        await self.markov.load_model('all')
+        if not self.initialised:
+            self.initialised = True
+            print('I\'m in.')
+            for ready_listener in self.ready_listeners:
+                await ready_listener.on_ready()
+            await self.markov.load_model('all')
+        else:
+            print('Reconnected.')
+
+    async def on_error(self, event_method, *args, **kwargs):
+        control_channel_id = globals.conf.get(globals.conf.keys.CONTROL_CHANNEL)
+        exception_txt = traceback.format_exc()
+        print(exception_txt, file=sys.stderr)
+        if control_channel_id:
+            ch = await get_channel(control_channel_id)
+            text = [
+                f'Error in `{escape_discord(event_method)}`',
+                to_code_block(exception_txt),
+                to_code_block(str(args))
+            ]
+            self.loop.create_task(ch.send('\n'.join(text)))
 
     async def on_message(self, msg):
+        for message_listener in self.message_listeners:
+            await message_listener.on_message(msg)
         prefix = globals.conf.get(globals.conf.keys.PREFIX)
+
         if not self.conf.list_contains(self.conf.keys.CHANNELS, msg.channel.id) or msg.author.id == self.user.id:
             return
-        # todo: remove when Among Us is over
-        if not msg.content.startswith(prefix) and 'sus' in msg.content.split(' ') and len(msg.mentions) == 1:
-            if '@everyone' not in msg.content and '@here' not in msg.content:
-                await msg.channel.send(self.sus_resp(msg.mentions[0].name))
-
-        try:
-            await reactions.on_message(self, msg)
-            for message_listener in self.message_listeners:
-                await message_listener.on_message(msg)
-        except Exception as e:
-            await msg.reply(escape_discord(f'{type(e).__name__}: {str(e)}'))
-            raise e
 
         async def check_limit():
             for role in msg.author.roles:
@@ -95,17 +102,6 @@ class DiscordConnection(discord.Client):
                     return True
             else:
                 return True
-
-        if self.user.mentioned_in(msg):
-            if '@everyone' not in msg.content and '@here' not in msg.content:
-                if not await check_limit():
-                    return
-                await self.markov.talk(msg.channel, query=msg.content)
-        elif msg.content.startswith(f"{prefix}imitate ") or msg.content.startswith(f'{prefix}regenerate'):
-            if not await check_limit():
-                return
-            cmd = msg.content[len(prefix):].strip()
-            await self.markov.on_command(msg, cmd)
 
         if msg.content.startswith(prefix):
             content = msg.content[len(prefix):].split(' ')
@@ -133,80 +129,60 @@ class DiscordConnection(discord.Client):
                     await msg.channel.send(command.usage_str(prefix))
 
     async def get_dm_channel(self, user):
-        # todo: check if user has dms disabled
-        dm_channel = user.dm_channel
-        if dm_channel is None:
-            dm_channel = await user.create_dm()
-        if dm_channel is None:
-            raise RuntimeError('Failed to create dm channel')
-        return dm_channel
+        return user.dm_channel or await user.create_dm()
 
     async def on_reaction_add(self, reaction, user):
         if user.id == self.user.id:
             return
         for reaction_listener in self.reaction_listeners:
-            if reaction_listener.on_reaction_add:
-                await reaction_listener.on_reaction_add(reaction, user)
+            await reaction_listener.on_reaction_add(reaction, user)
 
     async def on_reaction_remove(self, reaction, user):
         if user.id == self.user.id:
             return
         for reaction_listener in self.reaction_listeners:
-            if reaction_listener.on_reaction_remove:
-                await reaction_listener.on_reaction_remove(reaction, user)
+            await reaction_listener.on_reaction_remove(reaction, user)
 
     async def on_raw_reaction_add(self, payload):
-        ch = self.get_channel(payload.channel_id)
-        user = ch.guild.get_member(payload.user_id) or await ch.guild.fetch_member(payload.user_id)
+        ch = await get_channel(payload.channel_id)
+        member = await get_member(payload.user_id)
         for raw_reaction_listener in self.raw_reaction_listeners:
-            if raw_reaction_listener.on_raw_reaction_add:
-                await raw_reaction_listener.on_raw_reaction_add(ch, user, payload)
+            await raw_reaction_listener.on_raw_reaction_add(ch, member, payload)
 
     async def on_raw_reaction_remove(self, payload):
-        ch = self.get_channel(payload.channel_id)
-        user = ch.guild.get_member(payload.user_id) or await ch.guild.fetch_member(payload.user_id)
+        ch = await get_channel(payload.channel_id)
+        member = await get_member(payload.user_id)
         for raw_reaction_listener in self.raw_reaction_listeners:
-            if raw_reaction_listener.on_raw_reaction_remove:
-                await raw_reaction_listener.on_raw_reaction_remove(ch, user, payload)
+            await raw_reaction_listener.on_raw_reaction_remove(ch, member, payload)
 
     async def on_member_join(self, member):
-        print(f'{member.name} joined')
-        if member.guild.id == 363692038002180097:  # notpron
-            role = discord.utils.get(member.guild.roles, id=364055272991490059)  # adventurer
-            print(f'assigning {role.name} role')
-            await member.add_roles(role)
+        for member_join_listener in self.member_join_listeners:
+            await member_join_listener.on_member_join(member)
 
-    def sus_resp(self, userName):
-        fChoice = random.randint(1, 2)
-        sChoice = random.randint(0, 1)
-        n = max(1, (len(userName) - 8) // 2)
-        choice = [f"""
-    . 　　　。　　　　•　 　ﾟ　　。 　　.
+    async def on_raw_message_edit(self, payload):
+        ch = await get_channel(payload.channel_id)
+        ch: discord.TextChannel
+        message = await ch.fetch_message(payload.message_id)
+        for message_edit_listener in self.message_edit_listeners:
+            message_edit_listener: MessageEditListener
+            await message_edit_listener.on_message_edit(message, payload.cached_message)
+        raise RuntimeError('ERROR')
 
-    　　　.　　　 　　.　　　　　。　　 。　. 　
+    async def on_raw_message_delete(self, payload):
+        ch = await get_channel(payload.channel_id)
+        guild = await get_guild(payload.guild_id)
+        for message_delete_listener in self.message_delete_listeners:
+            await message_delete_listener.on_message_delete(payload.message_id, ch, guild, payload.cached_message)
 
-    .　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
-
-{"    　　ﾟ　　  "[:-n]}{userName} was not {"An" if fChoice == 2 else "The"} Impostor.{"　 。　."[:-n]}
-
-    　　'　　　 {fChoice} Impostor{"s" if fChoice == 2 else ""} remain{"s" if fChoice != 2 else ""} 　 　　。
-
-    　　ﾟ　　　.　　　. ,　　　　.　 .
-    """,
-                  f"""
-    . 　　　。　　　　•　 　ﾟ　　。 　　.
-
-    　　　.　　　 　　.　　　　　。　　 。　. 　
-
-    .　　 。　　　　　 ඞ 。 . 　　 • 　　　　•
-
-{"    　　ﾟ　　  "[:-n]}{userName} was {"An" if sChoice == 1 else "The"} Impostor.{"　 。　."[:-n]}
-
-    　　'　　　 {sChoice} Impostor remains 　 　　。
-
-    　　ﾟ　　　.　　　. ,　　　　.　 .
-    """]
-        return random.choice(choice)
+    async def on_raw_bulk_message_delete(self, payload):
+        ch = await get_channel(payload.channel_id)
+        guild = await get_guild(payload.guild_id)
+        messages = dict.fromkeys(payload.message_ids, None)
+        for cached_message in payload.cached_messages:
+            messages[cached_message.id] = cached_message
+        for message_id, cached_message in messages.items():
+            for message_delete_listener in self.message_delete_listeners:
+                await message_delete_listener.on_message_delete(message_id, ch, guild, cached_message)
 
     async def on_voice_state_update(self, member, before, after):
         for vc_listener in self.voice_state_listeners:

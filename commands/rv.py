@@ -43,9 +43,10 @@ class RvCommand(Command):
     n_choices = 4
 
     def __init__(self):
-        super().__init__()
+        super(RvCommand, self).__init__()
         for coll_name in ('rv', 'rv_stats'):
             globals.bot.db[coll_name].create_index('uid', unique=True)
+        globals.bot.db['rv_logs'].create_index('t_end')
 
     async def execute(self, args, msg):
         rv_path = globals.conf.get(globals.conf.keys.RV_PATH)

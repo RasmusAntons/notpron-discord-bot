@@ -10,7 +10,7 @@ class ThreadCommand(Command):
     arg_desc = '<level name>'
 
     def __init__(self):
-        super().__init__()
+        super(ThreadCommand, self).__init__()
         globals.bot.db['threads'].create_index('level', unique=True)
 
     async def execute(self, args, msg):

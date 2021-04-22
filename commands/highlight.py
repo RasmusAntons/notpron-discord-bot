@@ -17,8 +17,7 @@ class HighlightCommand(Command):
     arg_desc = 'add <regular expression...> | list | remove <highlight_id>'
 
     def __init__(self):
-        super().__init__()
-        globals.bot.message_listeners.add(self)
+        super(HighlightCommand, self).__init__()
         coll = globals.bot.db['highlights']
         coll.create_index('uid')
         coll.create_index([('uid', pymongo.ASCENDING), ('pattern', pymongo.ASCENDING)], unique=True)

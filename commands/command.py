@@ -27,7 +27,8 @@ class Command(ABC):
     category = Category.UNDEFINED
     guilds = []
 
-    def register(self):
+    def __init__(self):
+        super(Command, self).__init__()
         names = [self.name] + self.aliases
         for name in names:
             if name in globals.bot.commands.keys():

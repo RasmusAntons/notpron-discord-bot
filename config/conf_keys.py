@@ -22,6 +22,7 @@ class Key(enum.Enum):
     FONT = ConfigKey('font', ConfigDatatype.STRING, help_text='Font to use in the font command.')
     RV_PATH = ConfigKey('rv_path', ConfigDatatype.STRING, help_text='Directory with RV images.')
     IMAGINE_SUFFIX = ConfigKey('imagine_suffix', ConfigDatatype.STRING, help_text='Appended to each imagine query.')
+    DEFAULT_ROLE = ConfigKey('default_role', ConfigDatatype.INT, help_text='Role assigned to new members on join.')
 
     MOD_ROLES = ConfigListKey('mod_roles', ConfigDatatype.INT, help_text='Ids of moderator roles.')
     ADMIN_USERS = ConfigListKey('admin_users', ConfigDatatype.INT, help_text='Ids of admin users.')

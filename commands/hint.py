@@ -10,7 +10,7 @@ class HintCommand(Command):
     arg_desc = '<level name>'
 
     def __init__(self):
-        super().__init__()
+        super(HintCommand, self).__init__()
         globals.bot.db['hints'].create_index('level', unique=True)
 
     async def execute(self, args, msg):

@@ -13,7 +13,7 @@ class RrCommand(Command):
     description = 'play a round of russian roulette'
 
     def __init__(self):
-        super().__init__()
+        super(RrCommand, self).__init__()
         coll = globals.bot.db['russian_roulette']
         if not coll.find_one({}):
             coll.insert_one({'streak': 0, 'max_streak': 0, 'uid': None, 'date': None, 'misses': 0, 'deaths': 0})

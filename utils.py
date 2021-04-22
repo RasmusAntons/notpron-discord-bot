@@ -1,5 +1,5 @@
-from discord.utils import escape_markdown, escape_mentions
-from discord import User, Member
+import discord
+import discord.utils
 import globals
 
 
@@ -10,7 +10,7 @@ def to_code_block(text, lang=''):
 
 
 def escape_discord(text):
-    return escape_markdown(escape_mentions(str(text)))
+    return discord.utils.escape_markdown(discord.utils.escape_mentions(str(text)))
 
 
 async def get_guild(gid):
@@ -23,9 +23,13 @@ async def get_user(uid):
 
 async def get_member(user):
     guild_id = globals.bot.conf.get(globals.bot.conf.keys.GUILD)
-    if isinstance(user, Member) and user.guild.id == guild_id:
+    if isinstance(user, discord.Member) and user.guild.id == guild_id:
         return user
-    elif isinstance(user, User) or isinstance(user, Member):
+    elif isinstance(user, discord.User) or isinstance(user, discord.Member):
         user = user.id
     guild = await get_guild(guild_id)
     return guild.get_member(user) or await guild.fetch_member(user)
+
+
+async def get_channel(chid):
+    return globals.bot.get_channel(chid) or await globals.bot.fetch_channel(chid)
