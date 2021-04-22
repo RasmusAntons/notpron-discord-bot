@@ -82,6 +82,7 @@ class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListene
         relayed_pair = coll.find_one({'$or': [{'dm_message': message_id}, {'relayed_message': message_id}]})
         if not relayed_pair:
             return
+        coll.delete_one(relayed_pair)
         if relayed_pair['dm_message'] == message_id:
             dm_relay_channel_id = globals.conf.get(globals.conf.keys.DM_RELAY_CHANNEL)
             relay_channel = await get_channel(dm_relay_channel_id)
