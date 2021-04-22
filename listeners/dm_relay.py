@@ -80,6 +80,8 @@ class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListene
     async def on_message_delete(self, message_id, channel, guild, cached_message=None):
         coll = globals.bot.db['db_relay']
         relayed_pair = coll.find_one({'$or': [{'dm_message': message_id}, {'relayed_message': message_id}]})
+        if not relayed_pair:
+            return
         if relayed_pair['dm_message'] == message_id:
             dm_relay_channel_id = globals.conf.get(globals.conf.keys.DM_RELAY_CHANNEL)
             relay_channel = await get_channel(dm_relay_channel_id)
