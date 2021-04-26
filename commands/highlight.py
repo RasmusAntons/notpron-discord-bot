@@ -1,4 +1,5 @@
 from commands.command import Command, Category
+from listeners import MessageListener
 import json
 import discord
 from utils import get_member
@@ -8,7 +9,7 @@ from bson.objectid import ObjectId
 import pymongo
 
 
-class HighlightCommand(Command):
+class HighlightCommand(Command, MessageListener):
     name = 'highlight'
     category = Category.UTILITY
     aliases = ['hl']
