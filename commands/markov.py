@@ -1,30 +1,37 @@
 from commands.command import Command, Category
-from listeners import MessageListener
 import config
 import globals
+import time
+from utils import escape_discord
 
 
-class RegenerateCommand(Command, MessageListener):
-    name = 'regenerate'
+class MarkovAddChannelCommand(Command):
+    name = 'markov_add_channel'
     category = Category.ADMIN
-    arg_range = (0, 0)
-    description = 'Regenerate markov chains.'
+    arg_range = (1, 2)
+    description = 'Add messages from a channel to the text generation.'
+    arg_desc = '<#text_channel> [message_limit]'
 
     async def check(self, args, msg, test=False):
         return await super().check(args, msg, test) and config.is_admin(msg.author)
 
     async def execute(self, args, msg):
-        n = await globals.bot.markov.regenerate(msg)
-        await msg.channel.send(f"finished regenerating, using {n} messages")
-
-    async def on_message(self, msg):
-        if not globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
-            return
-        if globals.bot.user.mentioned_in(msg):
-            if globals.bot.user.mention not in msg.content:
-                return
-            if '@everyone' not in msg.content and '@here' not in msg.content:
-                await globals.bot.markov.talk(msg.channel, query=msg.content)
+        limit = int(args[1]) if len(args) == 2 else 10**5
+        if len(msg.channel_mentions) != 1:
+            raise Exception('Mention a channel with this command.')
+        ch = msg.channel_mentions[0]
+        progress_msg = await msg.channel.send(f'Adding {ch.mention} to text generation...')
+        count = 0
+        t_last_update = time.time()
+        async for old_msg in ch.history(limit=limit):
+            if not old_msg.author.bot:
+                count += 1
+                text = old_msg.clean_content
+                globals.bot.markov.insert_text(text, tag=str(old_msg.author.id))
+            if t_last_update + 10 < time.time():
+                t_last_update = time.time()
+                await progress_msg.edit(content=f'Adding {ch.mention} to text generation...\n{count} messages added.')
+        await progress_msg.edit(content=f'Added {ch.mention} to text generation.\n{count} messages added.')
 
 
 class ImitateCommand(Command):
@@ -35,17 +42,12 @@ class ImitateCommand(Command):
     arg_desc = '<@user>'
 
     async def execute(self, args, msg):
-        if msg.mentions:
-            await globals.bot.markov.talk(msg.channel, user=int(msg.mentions[0].id))
-        else:
-            uname = args[0]
-            user = msg.channel.guild.get_member_named(uname)
-            if user:
-                await globals.bot.markov.talk(msg.channel, user=user.id)
-            else:
-                try:
-                    uid = int(args[0])
-                    if 100000000000000 <= uid <= 9999999999999999999:
-                        await globals.bot.markov.talk(msg.channel, user=uid)
-                except ValueError:
-                    pass
+        if len(msg.mentions) != 1:
+            raise Exception('Mention a user with this command.')
+        elif msg.mentions[0].bot:
+            raise Exception('Cannot imitate bot users.')
+        text = globals.bot.markov.generate_forwards(tag=str(msg.author.id))
+        if text is None:
+            await msg.reply(f'I don\' know {msg.mentions[0].display_name} well enough.')
+            return
+        await msg.reply(escape_discord(text))

@@ -3,7 +3,7 @@ import sys
 import traceback
 import pymongo
 from config import Config
-from markov import Markov
+from mongodb_markov import MongodbMarkov
 import api
 import time
 from utils import *
@@ -16,9 +16,11 @@ class DiscordConnection(discord.Client):
                         WeatherCommand, ColourCommand, SolverCommand, ImagineCommand, GuessingGameCommand,
                         FontCommand, RvCommand, TranslateCommand, UnderageCommand,
                         HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand,
-                        ExifCommand, RollCommand, ConfigCommand, ArchiveCommand, RegenerateCommand, ImitateCommand]
+                        ExifCommand, RollCommand, ConfigCommand, ArchiveCommand, MarkovAddChannelCommand,
+                        ImitateCommand]
 
-    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, ReactionListener, DmRelayListener]
+    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, ReactionListener, DmRelayListener,
+                         MarkovListener]
 
     def __init__(self, config_file):
         intents = discord.Intents.default()
@@ -30,7 +32,7 @@ class DiscordConnection(discord.Client):
         self.db = self._db_client[self.conf.get(self.conf.keys.INSTANCE)]
         self.conf.load_db()
         globals.conf = self.conf
-        self.markov = Markov()
+        self.markov = MongodbMarkov(db_client=self._db_client, db_name=self.db.name)
         self.api_server = api.ApiServer()
         self.commands = {}
         self.commands_flat = []
@@ -54,7 +56,6 @@ class DiscordConnection(discord.Client):
             print('I\'m in.')
             for ready_listener in self.ready_listeners:
                 await ready_listener.on_ready()
-            await self.markov.load_model('all')
         else:
             print('Reconnected.')
 
@@ -73,7 +74,7 @@ class DiscordConnection(discord.Client):
                 self.loop.create_task(ch.send(text))
             else:
                 file = discord.File(io.StringIO(text), filename=f'error_details.txt')
-                self.loop.create_task(ch.send(f'Error in `{event_method}`', ))
+                self.loop.create_task(ch.send(f'Error in `{event_method}`', file=file))
 
     async def on_message(self, msg):
         for message_listener in self.message_listeners:
@@ -129,7 +130,7 @@ class DiscordConnection(discord.Client):
                             await msg.reply(f'Permission check failed.')
                     except Exception as e:
                         await msg.reply(escape_discord(f'{type(e).__name__}: {str(e)}'))
-                        raise e
+                        traceback.print_exc()
                 else:
                     await msg.channel.send(command.usage_str(prefix))
 

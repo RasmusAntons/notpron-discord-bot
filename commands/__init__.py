@@ -23,4 +23,4 @@ from .thread import ThreadCommand
 from .translate import TranslateCommand
 from .weather import WeatherCommand
 from .word_game import GuessingGameCommand
-from .markov import RegenerateCommand, ImitateCommand
+from .markov import MarkovAddChannelCommand, ImitateCommand
