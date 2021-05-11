@@ -18,7 +18,8 @@ class MarkovListener(MessageListener, MessageEditListener, MessageDeleteListener
                 for text in globals.bot.markov.generate_multiple_from_least_common(msg.clean_content, n):
                     await asyncio.sleep(0.04 * len(text))
                     await msg.channel.send(escape_discord(text))
-        globals.bot.markov.insert_text(msg.clean_content)
+        if globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, msg.channel.id):
+            globals.bot.markov.insert_text(msg.clean_content)
 
     async def on_message_edit(self, message, cached_message=None):
         if cached_message is not None:
