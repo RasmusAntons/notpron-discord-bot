@@ -95,6 +95,7 @@ class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListene
             if len(relayed_message.embeds) == 0:
                 return
             embed = relayed_message.embeds[0]
+            embed.description = '-'
             embed.set_footer(text=f'Message deleted at {datetime.datetime.utcnow().replace(microsecond=0)}.')
             await relayed_message.edit(embed=embed)
         elif relayed_pair['relayed_message'] == message_id:
