@@ -9,26 +9,25 @@ class MarkovListener(MessageListener, MessageEditListener, MessageDeleteListener
     async def on_message(self, msg):
         if msg.author.bot:
             return
-        if not globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
-            return
-        if globals.bot.user.mentioned_in(msg):
-            if '@everyone' not in msg.content and '@here' not in msg.content:
-                member = msg.channel.guild.get_member(globals.bot.user.id) or \
-                         await msg.channel.guild.fetch_member(globals.bot.user.id)
-                seed = msg.clean_content.replace(f'@{member.display_name}', '')
-                n = np.random.geometric(0.5)
-                for text in globals.bot.markov.generate_multiple_from_least_common(seed, n):
-                    await msg.channel.trigger_typing()
-                    await asyncio.sleep(0.04 * len(text))
-                    await msg.channel.send(escape_mentions(text))
+        if globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
+            if globals.bot.user.mentioned_in(msg):
+                if '@everyone' not in msg.content and '@here' not in msg.content:
+                    member = msg.channel.guild.get_member(globals.bot.user.id) or \
+                             await msg.channel.guild.fetch_member(globals.bot.user.id)
+                    seed = msg.clean_content.replace(f'@{member.display_name}', '')
+                    n = np.random.geometric(0.5)
+                    for text in globals.bot.markov.generate_multiple_from_least_common(seed, n):
+                        await msg.channel.trigger_typing()
+                        await asyncio.sleep(0.04 * len(text))
+                        await msg.channel.send(escape_mentions(text))
         if globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, msg.channel.id):
             globals.bot.markov.insert_text(msg.clean_content)
 
     async def on_message_edit(self, message, cached_message=None):
-        if cached_message is not None:
+        if cached_message and globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, message.channel.id):
             globals.bot.markov.delete_text(cached_message.clean_content)
             globals.bot.markov.insert_text(message.clean_content)
 
     async def on_message_delete(self, message_id, channel, guild, cached_message=None):
-        if cached_message:
+        if cached_message and globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, cached_message.channel.id):
             globals.bot.markov.delete_text(cached_message.clean_content)
