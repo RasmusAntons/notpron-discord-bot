@@ -28,7 +28,10 @@ class DiscordConnection(discord.Client):
         super().__init__(intents=intents)
         globals.bot = self
         self.conf = Config(config_file)
-        self._db_client = pymongo.MongoClient(self.conf.get(self.conf.keys.DB_URL))
+        self._db_client = pymongo.MongoClient(
+            self.conf.get(self.conf.keys.DB_URL),
+            unicode_decode_error_handler='ignore'
+        )
         self.db = self._db_client[self.conf.get(self.conf.keys.INSTANCE)]
         self.conf.load_db()
         globals.conf = self.conf
