@@ -58,7 +58,7 @@ class ConfigCommand(Command):
                 await msg.channel.send(f'{escape_discord(value)} is already in {config_key.value.key}.')
         elif len(args) >= 3 and args[0] == 'list_remove':
             value = self.parse_value(' '.join(args[2:]), config_key, override_dtype=config_key.value.list_item_type.value)
-            if globals.conf.list_add(config_key, value):
+            if globals.conf.list_remove(config_key, value):
                 await msg.channel.send(f'Removed {escape_discord(value)} from {config_key.value.key}.')
             else:
                 await msg.channel.send(f'{escape_discord(value)} is not in {config_key.value.key}.')
