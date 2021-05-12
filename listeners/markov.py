@@ -13,9 +13,9 @@ class MarkovListener(MessageListener, MessageEditListener, MessageDeleteListener
             return
         if globals.bot.user.mentioned_in(msg):
             if '@everyone' not in msg.content and '@here' not in msg.content:
-                await msg.channel.trigger_typing()
                 n = np.random.geometric(0.5)
                 for text in globals.bot.markov.generate_multiple_from_least_common(msg.clean_content, n):
+                    await msg.channel.trigger_typing()
                     await asyncio.sleep(0.04 * len(text))
                     await msg.channel.send(escape_discord(text))
         if globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, msg.channel.id):
