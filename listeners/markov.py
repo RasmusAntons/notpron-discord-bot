@@ -1,7 +1,7 @@
 from listeners import MessageListener, MessageEditListener, MessageDeleteListener
 import globals
 import numpy as np
-from utils import escape_discord
+from discord.utils import escape_mentions
 import asyncio
 
 
@@ -17,7 +17,7 @@ class MarkovListener(MessageListener, MessageEditListener, MessageDeleteListener
                 for text in globals.bot.markov.generate_multiple_from_least_common(msg.clean_content, n):
                     await msg.channel.trigger_typing()
                     await asyncio.sleep(0.04 * len(text))
-                    await msg.channel.send(escape_discord(text))
+                    await msg.channel.send(escape_mentions(text))
         if globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, msg.channel.id):
             globals.bot.markov.insert_text(msg.clean_content)
 

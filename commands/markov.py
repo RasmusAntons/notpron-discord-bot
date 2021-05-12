@@ -2,7 +2,7 @@ from commands.command import Command, Category
 import config
 import globals
 import time
-from utils import escape_discord
+from discord.utils import escape_mentions
 
 
 class MarkovAddChannelCommand(Command):
@@ -50,4 +50,4 @@ class ImitateCommand(Command):
         if text is None:
             await msg.reply(f'I don\' know {msg.mentions[0].display_name} well enough.')
             return
-        await msg.reply(escape_discord(text))
+        await msg.reply(escape_mentions(text))
