@@ -7,6 +7,7 @@ from scripts.populate_highlights import populate_highlights
 from scripts.populate_underage import populate_underage
 from scripts.populate_rv import populate_rv
 from scripts.weekly_notify import weekly_notify
+from scripts.send_embed import send_embed
 import pymongo
 import globals
 
@@ -30,7 +31,8 @@ class ExecDiscordConnection(discord.Client):
         # populate_highlights()
         # populate_underage()
         # populate_rv()
-        await weekly_notify()
+        # await send_embed()
+        # await weekly_notify()
 
         print('done')
         await self.close()

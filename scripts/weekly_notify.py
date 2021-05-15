@@ -18,8 +18,7 @@ text = ":point_right: Congratulations on your #1 position on the weekly puzzle l
 
 
 async def weekly_notify():
-    # uids = [177438227563675648]
-    uids = []
+    uids = [258360321431961615, 355560197152047105, 246354921761406978, 429458290477629482, 480374028880838657, 746457711926968470, 515947127432806410, 177438227563675648, 440949067015782401, 277336623996469249, 697331345843814430, 244097774675689473, 349992977621581844, 364055767302799360, 441958578962694144, 430852316363620363, 704372346995081246]
     embed = discord.Embed(title=':shushing_face: Top Secret! :shushing_face:', colour=0xfe1b07)
     embed.description = text
     log_channel = await get_channel(818143082427580456)
@@ -31,5 +30,3 @@ async def weekly_notify():
         except discord.errors.Forbidden:
             await log_channel.send(f'Failed to dm {user.mention}.')
 
-    ch = await get_channel(818143082427580456)
-    await ch.send(embed=embed)
