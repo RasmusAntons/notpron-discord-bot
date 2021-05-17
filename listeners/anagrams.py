@@ -20,9 +20,6 @@ class AnagramListener(MessageListener):
                 self.words[key].append(word)
             else:
                 self.words[key] = [word]
-        for key, words in self.words.items():
-            if len(words) > 4:
-                print(key, words)
 
     async def on_message(self, msg):
         if msg.author.id == globals.bot.user.id:
