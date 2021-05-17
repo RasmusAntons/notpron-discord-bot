@@ -16,7 +16,7 @@ class ArchiveListener(MessageListener, MessageEditListener, MessageDeleteListene
         coll_channels.create_index('id')
 
     async def on_ready(self):
-        for channel_id in globals.conf.get(globals.conf.keys.MARKOV_CHANNELS, []):
+        for channel_id in globals.conf.get(globals.conf.keys.ARCHIVE_CHANNELS, []):
             channel = await get_channel(channel_id)
             coll = globals.bot.db['archive']
             last_message = next(
@@ -27,15 +27,15 @@ class ArchiveListener(MessageListener, MessageEditListener, MessageDeleteListene
                 coll.insert_one(self.message_to_dict(message))
 
     async def on_message(self, message):
-        if globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, message.channel.id):
+        if globals.conf.list_contains(globals.conf.keys.ARCHIVE_CHANNELS, message.channel.id):
             globals.bot.db['archive'].insert_one(self.message_to_dict(message))
 
     async def on_message_edit(self, message, cached_message=None):
-        if globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, message.channel.id):
+        if globals.conf.list_contains(globals.conf.keys.ARCHIVE_CHANNELS, message.channel.id):
             globals.bot.db['archive'].replace_one({'id': message.id}, self.message_to_dict(message), upsert=True)
 
     async def on_message_delete(self, message_id, channel, guild, cached_message=None):
-        if globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, message_id):
+        if globals.conf.list_contains(globals.conf.keys.ARCHIVE_CHANNELS, message_id):
             globals.bot.db['archive'].delete_one({'id': message_id})
 
     @staticmethod

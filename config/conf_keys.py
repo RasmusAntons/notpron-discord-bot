@@ -18,6 +18,7 @@ class Key(enum.Enum):
     CHANNELS = ConfigListKey('channels', ConfigDatatype.INT, help_text='Ids of channels the bot is active in.')
     RATELIMITS = ConfigDictKey('ratelimits', ConfigDatatype.INT, ConfigDatatype.INT, help_text='Ratelimits in seconds per channel id.')
     MARKOV_CHANNELS = ConfigListKey('markov_channels', ConfigDatatype.INT, help_text='Ids of channels used for markov chain generation.')
+    ARCHIVE_CHANNELS = ConfigListKey('archive_channels', ConfigDatatype.INT, help_text='Ids of channels archived continuously.')
     EVAL_TIMEOUT = ConfigKey('eval_timeout', ConfigDatatype.INT, help_text='Timeout for eval command in milliseconds.')
     FONT = ConfigKey('font', ConfigDatatype.STRING, help_text='Font to use in the font command.')
     RV_PATH = ConfigKey('rv_path', ConfigDatatype.STRING, help_text='Directory with RV images.')
