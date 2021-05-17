@@ -32,7 +32,6 @@ class AnagramListener(MessageListener):
         if self.min_len <= len(letters) <= self.max_len:
             key = ''.join(sorted(letters))
             words = self.words.get(key)
-            print(f'{words=}')
             if words and letters in words:
                 words.remove(letters)
             if words:
