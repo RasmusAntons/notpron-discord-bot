@@ -9,7 +9,7 @@ class AnagramListener(MessageListener):
         super().__init__()
         self.min_len = 8
         self.max_len = 20
-        self.emoji = ['😄', '😆', '😉', '😮', '😔', '🙂', '😋', '🤓']
+        self.emoji = ['😄', '😆', '😉', '😮', '🥺', '🙂', '😋', '🤓']
         self.words = {}
         for line in open('res/anagram_wordlist.txt'):
             if not line:
@@ -36,8 +36,8 @@ class AnagramListener(MessageListener):
                 words.remove(letters)
             if words:
                 if len(words) == 1:
-                    text = f'I found an anagram for your message {random.choice(self.emoji)}: {words[0]}'
+                    text = f'{random.choice(self.emoji)} anagram: {words[0]}'
                 else:
                     words_str = ', '.join(words)
-                    text = f'I found {len(words)} anagrams for your message {random.choice(self.emoji)}: {words_str}'
+                    text = f'{random.choice(self.emoji)} anagrams: {words_str}'
                 await msg.reply(text)
