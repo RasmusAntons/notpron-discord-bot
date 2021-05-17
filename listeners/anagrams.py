@@ -8,7 +8,7 @@ class AnagramListener(MessageListener):
     def __init__(self):
         super().__init__()
         self.min_len = 8
-        self.max_len = 20
+        self.max_len = 23
         self.emoji = ['😄', '😆', '😉', '😮', '🥺', '🙂', '😋', '🤓']
         self.words = {}
         for line in open('res/anagram_wordlist.txt'):
@@ -20,6 +20,9 @@ class AnagramListener(MessageListener):
                 self.words[key].append(word)
             else:
                 self.words[key] = [word]
+        for key, words in self.words.items():
+            if len(words) > 4:
+                print(key, words)
 
     async def on_message(self, msg):
         if msg.author.id == globals.bot.user.id:
@@ -36,8 +39,4 @@ class AnagramListener(MessageListener):
                 words.remove(letters)
             if words:
                 if len(words) == 1:
-                    text = f'{random.choice(self.emoji)} anagram: {words[0]}'
-                else:
-                    words_str = ', '.join(words)
-                    text = f'{random.choice(self.emoji)} anagrams: {words_str}'
-                await msg.reply(text)
+                    await msg.reply(f'{random.choice(self.emoji)} anagram: {words[0]}')
