@@ -28,7 +28,7 @@ class AnagramListener(MessageListener):
             return
         if not self.min_len <= len(msg.content) <= self.max_len * 2:
             return
-        letters = re.sub(r'\W', '', msg.content)
+        letters = re.sub(r'\W', '', msg.content).lower()
         if self.min_len <= len(letters) <= self.max_len:
             key = ''.join(sorted(letters))
             words = self.words.get(key)
