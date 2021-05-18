@@ -27,6 +27,8 @@ class Config:
             key = enum_item.value.key
             if key in yaml_cfg and key is not None and (override or key not in self._conf):
                 self._conf[key] = yaml_cfg[key]
+            elif enum_item.value.default is not None:
+                self._conf[key] = enum_item.value.default
 
     def load_db(self, override=True):
         for enum_item in self.keys:
