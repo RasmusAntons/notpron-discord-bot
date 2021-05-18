@@ -25,6 +25,7 @@ class Key(enum.Enum):
     IMAGINE_SUFFIX = ConfigKey('imagine_suffix', ConfigDatatype.STRING, help_text='Appended to each imagine query.')
     DEFAULT_ROLE = ConfigKey('default_role', ConfigDatatype.INT, help_text='Role assigned to new members on join.')
     DM_RELAY_CHANNEL = ConfigKey('dm_relay_channel', ConfigDatatype.INT, help_text='Channel to send bot dms to.')
+    ANAGRAM_MIN_LENGTH = ConfigKey('anagram_min_length', ConfigDatatype.INT, help_text='Minimum length of anagrams should be reacted to.', default=8)
 
     MOD_ROLES = ConfigListKey('mod_roles', ConfigDatatype.INT, help_text='Ids of moderator roles.')
     ADMIN_USERS = ConfigListKey('admin_users', ConfigDatatype.INT, help_text='Ids of admin users.')

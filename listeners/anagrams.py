@@ -7,14 +7,15 @@ from listeners import MessageListener
 class AnagramListener(MessageListener):
     def __init__(self):
         super().__init__()
-        self.min_len = 8
-        self.max_len = 23
+        self.max_len = 0
         self.emoji = ['😄', '😆', '😉', '😮', '🥺', '🙂', '😋', '🤓']
         self.words = {}
         for line in open('res/anagram_wordlist.txt'):
             if not line:
                 continue
             word = line.strip()
+            if len(word) > self.max_len:
+                self.max_len = len(word)
             key = ''.join(sorted(word))
             if key in self.words:
                 self.words[key].append(word)
@@ -26,10 +27,11 @@ class AnagramListener(MessageListener):
             return
         if not globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
             return
-        if not self.min_len <= len(msg.content) <= self.max_len * 2:
+        min_len = globals.conf.get(globals.conf.keys.ANAGRAM_MIN_LENGTH)
+        if not min_len <= len(msg.content) <= 50:
             return
         letters = re.sub(r'\W', '', msg.content).lower()
-        if self.min_len <= len(letters) <= self.max_len:
+        if min_len <= len(letters):
             key = ''.join(sorted(letters))
             words = self.words.get(key)
             if words and letters in words:
