@@ -46,7 +46,7 @@ class ImitateCommand(Command):
             raise Exception('Mention a user with this command.')
         elif msg.mentions[0].bot:
             raise Exception('Cannot imitate bot users.')
-        text = globals.bot.markov.generate_forwards(tag=str(msg.author.id))
+        text = globals.bot.markov.generate_forwards(tag=str(msg.mentions[0].id))
         if text is None:
             await msg.reply(f'I don\' know {msg.mentions[0].display_name} well enough.')
             return
