@@ -38,7 +38,7 @@ class HighlightCommand(Command, MessageListener):
                 valid = coll.find_one({'_id': insert_result.inserted_id, '$where': f'try {{new RegExp(this.pattern)}} catch(e) {{return false}} return true'})
                 if valid is None:
                     coll.delete_one({'_id': insert_result.inserted_id})
-                    raise RuntimeError('Not valid JavaScript JSON.')
+                    raise RuntimeError('Not valid JavaScript regex.')
             except DuplicateKeyError:
                 raise RuntimeError(f'That highlight already exists.')
             await msg.reply(f'added highlight {self.inline_code(new_hl)}')
