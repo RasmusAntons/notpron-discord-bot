@@ -20,7 +20,7 @@ class DiscordConnection(discord.Client):
                         ImitateCommand]
 
     ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, ReactionListener, DmRelayListener,
-                         MarkovListener, AnagramListener]
+                         MarkovListener]
 
     def __init__(self, config_file):
         intents = discord.Intents.default()
