@@ -19,7 +19,7 @@ class DiscordConnection(discord.Client):
                         ExifCommand, RollCommand, ConfigCommand, ArchiveCommand, MarkovAddChannelCommand,
                         ImitateCommand]
 
-    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, ReactionListener, DmRelayListener,
+    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, BotReactionListener, DmRelayListener,
                          MarkovListener]
 
     def __init__(self, config_file):

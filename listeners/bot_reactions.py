@@ -4,7 +4,7 @@ import random
 import globals
 
 
-class ReactionListener(MessageListener):
+class BotReactionListener(MessageListener):
     punct = str.maketrans(dict.fromkeys(string.punctuation))
 
     async def on_message(self, msg):
