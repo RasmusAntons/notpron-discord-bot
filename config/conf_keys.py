@@ -33,6 +33,7 @@ class Key(enum.Enum):
     ASSIGN_ROLES = ConfigDictKey('assign_roles', ConfigDatatype.STRING, ConfigDatatype.INT, help_text='Emoji (id as string or string representation) and their respective roles.')
     EXCLUSIVE_ROLES = ConfigListKey('exclusive_roles', ConfigDatatype.INT, help_text='Ids of mutually exclusive roles.')
     ADULT_ROLES = ConfigListKey('adult_roles', ConfigDatatype.INT, help_text='Ids of adult-only roles.')
+    WEEKLIES_CHANNELS = ConfigDictKey('weeklies_channels', ConfigDatatype.INT, ConfigDatatype.INT, help_text='Ids of weekly discussion channels')
 
     IMAGE_API_KEY = ConfigKey('image_api_key', ConfigDatatype.STRING, protected=True, help_text='Api key for google image search.')
     IMAGE_SEARCH_CX = ConfigKey('image_search_cx', ConfigDatatype.STRING, protected=True, help_text='Google custom search engine.')

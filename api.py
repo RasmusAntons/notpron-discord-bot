@@ -12,7 +12,7 @@ class ApiServer:
         self.functions = {
             'raw': {'f': self.send_raw, 'p': {'chid': int, 'message': str}},
             'update_roles': {'f': self.update_roles, 'p': {'uid': int, 'gid': int, 'add': list, 'remove': list}},
-            'weekly_solve': {'f': self.send_weekly_solve, 'p': {'chid': int, 'uid': int, 'name': str}},
+            'weekly_solve': {'f': self.send_weekly_solve, 'p': {'chid': int, 'uid': int, 'name': str, 'week': int}},
             'event_solve': {'f': self.send_halloween_solve, 'p': {'chid': int, 'uid': int, 'name': str}},
             'weekly_announce': {'f': self.send_weekly_announce, 'p': {'chid': int, 'title': str, 'uid': int, 'name': str, 'icon': str}},
         }
@@ -46,7 +46,7 @@ class ApiServer:
                     break
             else:
                 if req.get("async"):
-                    bot.loop.create_task(function(*(req.get(param) for param in params)))
+                    globals.bot.loop.create_task(function(*(req.get(param) for param in params)))
                 else:
                     try:
                         await function(*(req.get(param) for param in params))
@@ -84,9 +84,16 @@ class ApiServer:
             except (discord.NotFound, discord.HTTPException):
                 return default
 
-    async def send_weekly_solve(self, chid, uid, name):
+    async def send_weekly_solve(self, chid, uid, name, week):
         ch = globals.bot.get_channel(chid)
         mention = await self._get_mention(ch, uid, same_server=True, default=name)
+        weeklies_chid = globals.conf.get(globals.conf.keys.WEEKLIES_CHANNELS, week)
+        if weeklies_chid is not None:
+            weeklies_ch = globals.bot.get_channel(weeklies_chid)
+            weeklies_ch: discord.TextChannel
+            member = weeklies_ch.guild.get_member(uid) or await weeklies_ch.guild.fetch_member(uid)
+            if member:
+                await weeklies_ch.set_permissions(member, read_messages=True)
         await ch.send(f'Congratulations {mention} for solving the weekly riddle!')
 
     async def send_halloween_solve(self, chid, uid, name):
