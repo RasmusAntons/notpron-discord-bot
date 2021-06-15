@@ -87,7 +87,7 @@ class ApiServer:
     async def send_weekly_solve(self, chid, uid, name, week):
         ch = globals.bot.get_channel(chid)
         mention = await self._get_mention(ch, uid, same_server=True, default=name)
-        weeklies_chid = globals.conf.get(globals.conf.keys.WEEKLIES_CHANNELS, week)
+        weeklies_chid = globals.conf.get(globals.conf.keys.WEEKLIES_CHANNELS, str(week))
         if weeklies_chid is not None:
             weeklies_ch = globals.bot.get_channel(weeklies_chid)
             weeklies_ch: discord.TextChannel
