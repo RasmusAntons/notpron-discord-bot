@@ -3,18 +3,27 @@ import json
 import discord.utils
 import globals
 from utils import get_guild
+from utils import escape_discord
 
 
 class ApiServer:
     def __init__(self):
         self.coro = asyncio.start_server(self.handle_request, 'localhost', globals.bot.conf.get(globals.bot.conf.keys.API_PORT))
         globals.bot.loop.create_task(self.coro)
+        """
+        'type': 'puzzle_submission',
+        'name': puzzle_submission.name,
+        'short_name': puzzle_submission.short_name,
+        'description': puzzle_submission.description,
+        'submitter': puzzle_submission.submitter.username
+        """
         self.functions = {
             'raw': {'f': self.send_raw, 'p': {'chid': int, 'message': str}},
             'update_roles': {'f': self.update_roles, 'p': {'uid': int, 'gid': int, 'add': list, 'remove': list}},
             'weekly_solve': {'f': self.send_weekly_solve, 'p': {'chid': int, 'uid': int, 'name': str, 'week': int}},
             'event_solve': {'f': self.send_halloween_solve, 'p': {'chid': int, 'uid': int, 'name': str}},
             'weekly_announce': {'f': self.send_weekly_announce, 'p': {'chid': int, 'title': str, 'uid': int, 'name': str, 'icon': str}},
+            'puzzle_submission': {'f': self.send_puzzle_submission, 'p': {'name': str, 'short_name': str, 'description': str, 'submitter': str}}
         }
 
     async def handle_request(self, reader, writer):
@@ -114,3 +123,15 @@ class ApiServer:
         msg = await ch.send('@everyone', embed=embed)
         if ch.is_news():
             await msg.publish()
+
+    async def send_puzzle_submission(self, name, short_name, description, submitter):
+        chid = globals.conf.get(globals.conf.keys.CONTROL_CHANNEL)
+        if chid is None:
+            raise RuntimeError('No control channel configured')
+        ch = globals.bot.get_channel(chid)
+        embed = discord.Embed(title=f'New puzzle submission from {submitter}',
+                              description=f'[link](https://enigmatics.org/puzzles/submissions/{short_name})')
+        embed.add_field(name='Name', value=escape_discord(name), inline=False)
+        if description:
+            embed.add_field(name='Description', value=escape_discord(description), inline=False)
+        await ch.send(f'@admin', embed=embed)
