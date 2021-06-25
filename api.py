@@ -94,7 +94,7 @@ class ApiServer:
             member = weeklies_ch.guild.get_member(uid) or await weeklies_ch.guild.fetch_member(uid)
             if member:
                 await weeklies_ch.set_permissions(member, read_messages=True)
-        await ch.send(f'Congratulations {mention} for solving the weekly riddle!')
+        await ch.send(f'Congratulations {mention} for solving the weekly puzzle!')
 
     async def send_halloween_solve(self, chid, uid, name):
         ch = globals.bot.get_channel(chid)
