@@ -134,4 +134,4 @@ class ApiServer:
         embed.add_field(name='Name', value=escape_discord(name), inline=False)
         if description:
             embed.add_field(name='Description', value=escape_discord(description), inline=False)
-        await ch.send(f'@admin', embed=embed)
+        await ch.send(f'@everyone', embed=embed)
