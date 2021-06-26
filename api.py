@@ -102,7 +102,10 @@ class ApiServer:
         if weeklies_chid is not None and uid:
             weeklies_ch = globals.bot.get_channel(weeklies_chid)
             weeklies_ch: discord.TextChannel
-            member = weeklies_ch.guild.get_member(uid) or await weeklies_ch.guild.fetch_member(uid)
+            try:
+                member = weeklies_ch.guild.get_member(uid) or await weeklies_ch.guild.fetch_member(uid)
+            except discord.NotFound:
+                member = None
             if member:
                 try:
                     await weeklies_ch.set_permissions(member, read_messages=True)
