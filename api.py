@@ -4,6 +4,7 @@ import discord.utils
 import globals
 from utils import get_guild
 from utils import escape_discord
+import traceback
 
 
 class ApiServer:
@@ -60,6 +61,7 @@ class ApiServer:
                     try:
                         await function(*(req.get(param) for param in params))
                     except Exception as e:
+                        traceback.print_exc()
                         res = str(e)
         else:
             res = 'invalid request type'
@@ -96,13 +98,16 @@ class ApiServer:
     async def send_weekly_solve(self, chid, uid, name, week):
         ch = globals.bot.get_channel(chid)
         mention = await self._get_mention(ch, uid, same_server=True, default=name)
-        weeklies_chid = globals.conf.get(globals.conf.keys.WEEKLIES_CHANNELS, str(week))
-        if weeklies_chid is not None:
+        weeklies_chid = globals.conf.dict_get(globals.conf.keys.WEEKLIES_CHANNELS, str(week))
+        if weeklies_chid is not None and uid:
             weeklies_ch = globals.bot.get_channel(weeklies_chid)
             weeklies_ch: discord.TextChannel
             member = weeklies_ch.guild.get_member(uid) or await weeklies_ch.guild.fetch_member(uid)
             if member:
-                await weeklies_ch.set_permissions(member, read_messages=True)
+                try:
+                    await weeklies_ch.set_permissions(member, read_messages=True)
+                except discord.Forbidden:
+                    print('Missing access to weekly channel.')
         await ch.send(f'Congratulations {mention} for solving the weekly puzzle!')
 
     async def send_halloween_solve(self, chid, uid, name):
