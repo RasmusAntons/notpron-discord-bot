@@ -2,7 +2,9 @@ from commands.command import Command, Category
 import config
 import globals
 import time
+import numpy as np
 from discord.utils import escape_mentions
+import asyncio
 
 
 class MarkovAddChannelCommand(Command):
@@ -46,8 +48,11 @@ class ImitateCommand(Command):
             raise Exception('Mention a user with this command.')
         elif msg.mentions[0].bot:
             raise Exception('Cannot imitate bot users.')
-        text = globals.bot.markov.generate_forwards(tag=str(msg.mentions[0].id))
-        if text is None:
-            await msg.reply(f'I don\' know {msg.mentions[0].display_name} well enough.')
-            return
-        await msg.reply(escape_mentions(text))
+        for n in range(np.random.geometric(0.5)):
+            text = globals.bot.markov.generate_forwards(tag=str(msg.mentions[0].id))
+            if text is None:
+                await msg.reply(f'I don\' know {msg.mentions[0].display_name} well enough.')
+                return
+            await msg.channel.trigger_typing()
+            await asyncio.sleep(0.04 * len(text))
+            await msg.channel.send(escape_mentions(text))
