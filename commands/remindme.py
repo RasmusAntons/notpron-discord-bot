@@ -37,7 +37,7 @@ class RemindmeCommand(Command, ReactionListener, ReadyListener):
                 if relative_time is None:
                     await msg.reply('Invalid time format.')
                     return True
-                ts = datetime.datetime.now() + datetime.timedelta(seconds=relative_time)
+                ts = datetime.datetime.now().replace(microsecond=0) + datetime.timedelta(seconds=relative_time)
             else:
                 try:
                     ts = dateutil.parser.parse(args[1])
