@@ -13,7 +13,9 @@ from .highlight import HighlightCommand
 from .hint import HintCommand
 from .imagine import ImagineCommand
 from .magiceye import MagiceyeCommand
+from .markov import MarkovAddChannelCommand, ImitateCommand
 from .purge import PurgeCommand
+from .remindme import RemindmeCommand
 from .roles import UnderageCommand
 from .roll import RollCommand
 from .rr import RrCommand
@@ -23,4 +25,3 @@ from .thread import ThreadCommand
 from .translate import TranslateCommand
 from .weather import WeatherCommand
 from .word_game import GuessingGameCommand
-from .markov import MarkovAddChannelCommand, ImitateCommand

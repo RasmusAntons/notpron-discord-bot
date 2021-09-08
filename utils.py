@@ -10,6 +10,12 @@ def to_code_block(text, lang=''):
     return f'```{lang}{text}```'
 
 
+def inline_code(text):
+    while '``' in text:
+        text = text.replace('``', '`​`')
+    return f'``{text}``'
+
+
 def escape_discord(text):
     return discord.utils.escape_markdown(discord.utils.escape_mentions(str(text)))
 

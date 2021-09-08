@@ -2,7 +2,7 @@ from commands.command import Command, Category
 from listeners import MessageListener
 import json
 import discord
-from utils import get_member
+from utils import get_member, inline_code
 import globals
 from pymongo.errors import DuplicateKeyError
 from bson.objectid import ObjectId
@@ -23,12 +23,6 @@ class HighlightCommand(Command, MessageListener):
         coll.create_index('uid')
         coll.create_index([('uid', pymongo.ASCENDING), ('pattern', pymongo.ASCENDING)], unique=True)
 
-    @staticmethod
-    def inline_code(text):
-        while '``' in text:
-            text = text.replace('``', '`​`')
-        return f'``{text}``'
-
     async def execute(self, args, msg):
         coll = globals.bot.db['highlights']
         if len(args) >= 2 and args[0] == 'add':
@@ -41,25 +35,25 @@ class HighlightCommand(Command, MessageListener):
                     raise RuntimeError('Not valid JavaScript regex.')
             except DuplicateKeyError:
                 raise RuntimeError(f'That highlight already exists.')
-            await msg.reply(f'added highlight {self.inline_code(new_hl)}')
+            await msg.reply(f'added highlight {inline_code(new_hl)}')
             return True
         elif len(args) == 1 and args[0] == 'list':
             user_hl = coll.find({'uid': msg.author.id})
             embed = discord.Embed(colour=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
-            text = [f'{msg.author.mention}']
+            text = []
             for i, hl in enumerate(user_hl):
-                text.append(f'{self.inline_code(hl["pattern"])} ({hl["_id"]})')
-            if len(text) == 1:
+                text.append(f'{inline_code(hl["pattern"])} ({hl["_id"]})')
+            if len(text) == 0:
                 text.append(f'None')
             embed.add_field(name='Highlights', value='\n'.join(text), inline=False)
-            await msg.channel.send(embed=embed)
+            await msg.reply(embed=embed)
             return True
         elif len(args) == 2 and args[0] in ('remove', 'delete'):
             delete_result = coll.delete_one({'_id': ObjectId(args[1]), 'uid': msg.author.id})
             if delete_result.deleted_count == 1:
-                await msg.channel.send(f'Removed highlight {args[1]}.')
+                await msg.reply(f'Removed highlight {args[1]}.')
             else:
-                await msg.channel.send(f'Cannot find highlight {args[1]}.')
+                await msg.reply(f'Cannot find highlight {args[1]}.')
             return True
         return False
 
