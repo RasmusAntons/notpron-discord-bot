@@ -41,13 +41,14 @@ class RemindmeCommand(Command, ReactionListener, ReadyListener):
             else:
                 try:
                     ts = dateutil.parser.parse(args[1])
+                    ts = ts.replace(tzinfo=ts.tzinfo or datetime.timezone.utc)
                 except (ValueError, OverflowError) as e:
                     await msg.reply('Invalid time format.')
                     return True
             message = ' '.join(args[2:]) if len(args) > 2 else None
             coll.insert_one({'uid': msg.author.id, 'ts': ts, 'message': message})
             self.bg_event.set()
-            await msg.reply(f'Set a reminder for {ts.isoformat()}.')
+            await msg.reply(f'Set a reminder for {ts.astimezone(datetime.timezone.utc).isoformat()}.')
             return True
         elif args[0] == 'list':
             embed = discord.Embed(colour=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
