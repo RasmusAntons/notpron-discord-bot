@@ -60,7 +60,7 @@ class WhoSaidItCommand(Command, ReactionListener):
                 await game_msg.edit(embed=self.format_msg(selection_users, game_state['clues']))
                 await asyncio.sleep(self.delay_between_clues)
             if not game_state['ended']:
-                await game_msg.edit(embed=self.format_msg(selection_users, game_state['clues'], 'Nobody solved.'))
+                await game_msg.edit(embed=self.format_msg(selection_users, game_state['clues'], f'nobody guessed {target_user.display_name}'))
             del self.running[game_msg.id]
             return True
         if len(args) == 1 and args[0] == 'addme':
@@ -90,7 +90,8 @@ class WhoSaidItCommand(Command, ReactionListener):
             game_state['guesses'][user.id] = guess_idx
             if game_state['selection'][guess_idx].id == game_state['target'].id:
                 game_state['ended'] = True
-                await reaction.message.edit(embed=self.format_msg(game_state['selection'], game_state['clues'], f'{user.mention} solved'))
+                correct_guess = game_state['target'].display_name
+                await reaction.message.edit(embed=self.format_msg(game_state['selection'], game_state['clues'], f'{user.mention} solved by guessing {correct_guess}'))
 
     async def on_reaction_remove(self, reaction, user):
         pass
