@@ -21,13 +21,13 @@ class MarkovListener(MessageListener, MessageEditListener, MessageDeleteListener
                         await asyncio.sleep(0.04 * len(text))
                         await msg.channel.send(escape_mentions(text))
         if globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, msg.channel.id):
-            globals.bot.markov.insert_text(msg.clean_content)
+            globals.bot.markov.insert_text(msg.clean_content, tag=str(msg.author.id))
 
     async def on_message_edit(self, message, cached_message=None):
         if cached_message and globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, message.channel.id):
             globals.bot.markov.delete_text(cached_message.clean_content)
-            globals.bot.markov.insert_text(message.clean_content)
+            globals.bot.markov.insert_text(message.clean_content, tag=str(message.author.id))
 
     async def on_message_delete(self, message_id, channel, guild, cached_message=None):
         if cached_message and globals.conf.list_contains(globals.conf.keys.MARKOV_CHANNELS, cached_message.channel.id):
-            globals.bot.markov.delete_text(cached_message.clean_content)
+            globals.bot.markov.delete_text(cached_message.clean_content, tag=str(cached_message.author.id))
