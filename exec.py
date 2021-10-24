@@ -8,6 +8,7 @@ from scripts.populate_underage import populate_underage
 from scripts.populate_rv import populate_rv
 from scripts.weekly_notify import weekly_notify
 from scripts.send_embed import send_embed
+from scripts.emoji_stat import emoji_stat
 import pymongo
 import globals
 
@@ -33,6 +34,11 @@ class ExecDiscordConnection(discord.Client):
         # populate_rv()
         # await send_embed()
         # await weekly_notify()
+        # await emoji_stat()
+
+        # ch = self.get_channel(776099352962793503)
+        # msg = await ch.fetch_message(883092891046645791)
+        # await msg.reply(':pensive:')
 
         print('done')
         await self.close()

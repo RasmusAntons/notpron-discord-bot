@@ -29,7 +29,7 @@ class WhoSaidItCommand(Command, ReactionListener):
         res = ['Who said this?', '']
         for i, hint in enumerate(clues):
             embed.add_field(name=f'Clue {i + 1}', value=hint, inline=False)
-        selection_text = '•'.join(f'{i} {selection[i].display_name}' for i in range(len(selection)))
+        selection_text = ' • '.join(f'{i} {selection[i].display_name}' for i in range(len(selection)))
         embed.set_footer(text=selection_text)
         if outcome is not None:
             embed.add_field(name='Game Over', value=outcome, inline=False)
@@ -57,7 +57,8 @@ class WhoSaidItCommand(Command, ReactionListener):
                     return
                 game_state['clues'].append(hint)
                 await game_msg.edit(embed=self.format_msg(selection_users, game_state['clues']))
-            await asyncio.sleep(self.delay_between_clues)
+            if not game_state['ended']:
+                await asyncio.sleep(self.delay_between_clues)
             if not game_state['ended']:
                 await game_msg.edit(embed=self.format_msg(selection_users, game_state['clues'], 'Nobody solved.'))
             del self.running[game_msg.id]
