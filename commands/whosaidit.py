@@ -28,7 +28,7 @@ class WhoSaidItCommand(Command, ReactionListener):
         embed = discord.Embed(title='who said this:', color=globals.conf.get(globals.conf.keys.EMBED_COLOUR))
         res = ['Who said this?', '']
         for i, hint in enumerate(clues):
-            embed.add_field(name=f'clue {i + 1}', value=hint, inline=False)
+            embed.add_field(name=f'------------', value=hint, inline=False)
         selection_text = ' • '.join(f'{i} {selection[i].display_name}' for i in range(len(selection)))
         embed.set_footer(text=selection_text)
         if outcome is not None:
@@ -40,7 +40,7 @@ class WhoSaidItCommand(Command, ReactionListener):
         if len(args) == 0:
             enabled_users = [user['uid'] for user in coll_enabled.find()]
             selection_uids = random.sample(enabled_users, min(len(enabled_users), 10))
-            selection_users = [globals.bot.get_user(uid) or globals.bot.fetch_user(uid) for uid in selection_uids]
+            selection_users = sorted([globals.bot.get_user(uid) or globals.bot.fetch_user(uid) for uid in selection_uids], key=lambda u: u.display_name)
             target_user = random.choice(selection_users)
             game_msg = await msg.channel.send(embed=self.format_msg(selection_users, []))
             game_state = {'selection': selection_users, 'target': target_user, 'clues': [], 'guesses': {}, 'ended': False}
