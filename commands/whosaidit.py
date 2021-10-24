@@ -25,14 +25,14 @@ class WhoSaidItCommand(Command, ReactionListener):
         self.running = {}
 
     def format_msg(self, selection, clues, outcome=None):
-        embed = discord.Embed(title='Who said this?')
+        embed = discord.Embed(title='who said this:', color=globals.conf.get(globals.conf.keys.EMBED_COLOUR))
         res = ['Who said this?', '']
         for i, hint in enumerate(clues):
-            embed.add_field(name=f'Clue {i + 1}', value=hint, inline=False)
+            embed.add_field(name=f'clue {i + 1}', value=hint, inline=False)
         selection_text = ' • '.join(f'{i} {selection[i].display_name}' for i in range(len(selection)))
         embed.set_footer(text=selection_text)
         if outcome is not None:
-            embed.add_field(name='Game Over', value=outcome, inline=False)
+            embed.add_field(name='game over', value=outcome, inline=False)
         return embed
 
     async def execute(self, args, msg):
