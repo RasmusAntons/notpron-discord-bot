@@ -16,6 +16,7 @@ class WhoSaidItCommand(Command, ReactionListener):
     arg_desc = '[addme | add @user]'
     num_reacts = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
     n_clues = 5
+    delay_before_start = 3
     delay_between_clues = 10
 
     def __init__(self):
@@ -47,8 +48,8 @@ class WhoSaidItCommand(Command, ReactionListener):
             self.running[game_msg.id] = game_state
             for i in range(len(selection_uids)):
                 await game_msg.add_reaction(self.num_reacts[i])
+            await asyncio.sleep(self.delay_before_start)
             for hint_nr in range(self.n_clues):
-                await asyncio.sleep(self.delay_between_clues)
                 if game_state['ended']:
                     break
                 hint = globals.bot.markov.generate_forwards(tag=str(target_user.id))
@@ -57,7 +58,6 @@ class WhoSaidItCommand(Command, ReactionListener):
                     return
                 game_state['clues'].append(hint)
                 await game_msg.edit(embed=self.format_msg(selection_users, game_state['clues']))
-            if not game_state['ended']:
                 await asyncio.sleep(self.delay_between_clues)
             if not game_state['ended']:
                 await game_msg.edit(embed=self.format_msg(selection_users, game_state['clues'], 'Nobody solved.'))
