@@ -14,7 +14,7 @@ class WhoSaidItCommand(Command, ReactionListener):
     arg_range = (0, 2)
     description = 'who said it'
     arg_desc = '[addme | add @user]'
-    num_reacts = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
+    num_reacts = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
     n_clues = 5
     delay_before_start = 3
     delay_between_clues = 10
@@ -30,7 +30,7 @@ class WhoSaidItCommand(Command, ReactionListener):
         res = ['Who said this?', '']
         for i, hint in enumerate(clues):
             embed.add_field(name=f'------------', value=hint, inline=False)
-        selection_text = ' • '.join(f'{i} {selection[i].display_name}' for i in range(len(selection)))
+        selection_text = ' • '.join(f'{i + 1} {selection[i].display_name}' for i in range(len(selection)))
         embed.set_footer(text=selection_text)
         if outcome is not None:
             embed.add_field(name='game over', value=outcome, inline=False)
