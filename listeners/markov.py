@@ -23,7 +23,7 @@ class MarkovListener(MessageListener, MessageEditListener, MessageDeleteListener
                         await asyncio.sleep(0.04 * len(text))
                         await msg.channel.send(escape_mentions(text))
         if globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
-            if (random.random() * 100) < globals.conf.get(globals.conf.keys.MARKOV_CHANNELS):
+            if (random.random() * 100) < globals.conf.get(globals.conf.keys.MARKOV_CHANCE):
                 member = msg.channel.guild.get_member(globals.bot.user.id) or \
                          await msg.channel.guild.fetch_member(globals.bot.user.id)
                 seed = msg.clean_content.replace(f'@{member.display_name}', '')
