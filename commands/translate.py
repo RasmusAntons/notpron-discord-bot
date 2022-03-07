@@ -25,9 +25,6 @@ class TranslateCommand(Command):
         src = None
         dest = 'en'
         text = []
-        if msg.reference:
-            ref = msg.reference.cached_message or await msg.channel.fetch_message(msg.reference.message_id)
-            args = ref.content.split()
         for arg in args:
             if arg.lower().startswith('src='):
                 src = self.subst_google.get(arg[4:]) or arg[4:]
@@ -37,6 +34,9 @@ class TranslateCommand(Command):
                     src = self.subst_google[src]
             else:
                 text.append(arg)
+        if msg.reference:
+            ref = msg.reference.cached_message or await msg.channel.fetch_message(msg.reference.message_id)
+            text = ref.content.split()
         text = ' '.join(text)
         if not text:
             return False
