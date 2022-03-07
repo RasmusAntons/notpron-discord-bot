@@ -42,3 +42,4 @@ class Key(enum.Enum):
     IMAGE_SEARCH_CX = ConfigKey('image_search_cx', ConfigDatatype.STRING, protected=True, help_text='Google custom search engine.')
     GMAPS_API_KEY = ConfigKey('gmaps_api_key', ConfigDatatype.STRING, protected=True, help_text='Api key for google maps geocoding.')
     OWM_API_KEY = ConfigKey('owm_api_key', ConfigDatatype.STRING, protected=True, help_text='API key for openweathermap.org.')
+    WORDNIK_API_KEY = ConfigKey('wordnik_api_key', ConfigDatatype.STRING, protected=True, help_text='API key for wordnik.com')

@@ -26,3 +26,4 @@ from .translate import TranslateCommand
 from .weather import WeatherCommand
 from .word_game import GuessingGameCommand
 from .whosaidit import WhoSaidItCommand
+from .wordnik import WordnikCommand
