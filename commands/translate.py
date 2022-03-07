@@ -11,7 +11,7 @@ class TranslateCommand(Command):
     name = 'translate'
     aliases = ['t']
     category = Category.UTILITY
-    arg_range = (1, 99)
+    arg_range = (0, 99)
     description = 'translate text'
     arg_desc = '<text...> [src=<language>] [dest=<language>]'
     subst_google = {
@@ -25,10 +25,13 @@ class TranslateCommand(Command):
         src = None
         dest = 'en'
         text = []
+        if msg.reference:
+            ref = msg.reference.cached_message or await msg.channel.fetch_message(msg.reference.message_id)
+            args = ref.content.split()
         for arg in args:
-            if arg.startswith('src='):
+            if arg.lower().startswith('src='):
                 src = self.subst_google.get(arg[4:]) or arg[4:]
-            elif arg.startswith('dest='):
+            elif arg.lower().startswith('dest='):
                 dest = self.subst_google.get(arg[5:]) or arg[5:]
                 if src in self.subst_google:
                     src = self.subst_google[src]
