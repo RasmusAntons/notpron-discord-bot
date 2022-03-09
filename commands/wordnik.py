@@ -25,12 +25,12 @@ class WordnikCommand(Command):
         if args[0] == 'define':
             if len(args) != 2:
                 return False
-            definitions = self.word_api.getDefinitions(args[1], limit=1)
+            definitions = word_api.getDefinitions(args[1], limit=1)
             await msg.reply(definitions[0].text)
         elif args[0] == 'frequency':
             if len(args) != 2:
                 return False
-            frequency = self.word_api.getWordFrequency(args[1])
+            frequency = word_api.getWordFrequency(args[1])
             await msg.reply(str(frequency))
         else:
             return False
