@@ -12,16 +12,13 @@ class WordnikCommand(Command):
     description = 'define a word'
     arg_desc = 'define|frequency <word>'
 
-    def __init__(self):
-        api_key = globals.conf.get(globals.conf.keys.ANAGRAM_MIN_LENGTH)
-        super(WordnikCommand, self).__init__()
-        self.wordnik_client = wordnik.swagger.ApiClient(api_key, 'https://api.wordnik.com/v4')
-        self.word_api = wordnik.WordApi.WordApi(self.wordnik_client)
-
     async def send_usage(self):
         pass
 
     async def execute(self, args, msg):
+        api_key = globals.conf.get(globals.conf.keys.ANAGRAM_MIN_LENGTH)
+        wordnik_client = wordnik.swagger.ApiClient(api_key, 'https://api.wordnik.com/v4')
+        word_api = wordnik.WordApi.WordApi(wordnik_client)
         for subcmd in ['define']:
             if msg.content.split(' ')[0][1:] == subcmd:
                 args.insert(0, subcmd)
