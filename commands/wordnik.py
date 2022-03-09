@@ -16,7 +16,7 @@ class WordnikCommand(Command):
         pass
 
     async def execute(self, args, msg):
-        api_key = globals.conf.get(globals.conf.keys.ANAGRAM_MIN_LENGTH)
+        api_key = globals.conf.get(globals.conf.keys.WORDNIK_API_KEY, bypass_protected=True)
         wordnik_client = wordnik.swagger.ApiClient(api_key, 'https://api.wordnik.com/v4')
         word_api = wordnik.WordApi.WordApi(wordnik_client)
         for subcmd in ['define']:
