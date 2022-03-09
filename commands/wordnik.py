@@ -25,8 +25,8 @@ class WordnikCommand(Command):
         if args[0] == 'define':
             if len(args) != 2:
                 return False
-            definitions = word_api.getDefinitions(args[1], limit=1)
-            await msg.reply(definitions[0].text)
+            definitions = word_api.getDefinitions(args[1], limit=2)
+            await msg.reply(definitions[1].text)
         elif args[0] == 'frequency':
             if len(args) != 2:
                 return False
