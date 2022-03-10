@@ -7,6 +7,7 @@ import discord
 import pandas as pd
 import matplotlib.pyplot as plt
 import io
+import urllib
 
 import utils
 
@@ -65,7 +66,7 @@ class WordnikCommand(Command):
         try:
             definitions = word_api.getDefinitions(query, limit=limit + 5, sourceDictionaries=dictionaries)
             definitions = list(filter(lambda d: d.text, definitions))[:limit]
-        except urllib.HTTPError:
+        except urllib.error.HTTPError:
             definitions = None
         if definitions:
             embed = discord.Embed(description=utils.escape_discord(query),
@@ -80,7 +81,7 @@ class WordnikCommand(Command):
     async def frequency(self, word_api, msg, query, start=1800, end=2022):
         try:
             frequency = word_api.getWordFrequency(query, startYear=start, endYear=end)
-        except urllib.HTTPError:
+        except urllib.error.HTTPError:
             return await msg.reply('word not found')
         df = pd.DataFrame(((point.year, point.count) for point in frequency.frequency), columns=['year', 'count'])
         embed = discord.Embed(description=utils.escape_discord(query),
