@@ -72,7 +72,8 @@ class WordnikCommand(Command):
             embed = discord.Embed(description=utils.escape_discord(query),
                                   color=globals.conf.get(globals.conf.keys.EMBED_COLOUR))
             for definition in definitions:
-                text = utils.escape_discord(definition.text).replace('<xref>', '*').replace('</xref>', '*')
+                text = utils.escape_discord(definition.text)
+                text = text.replace('<xref>', '*').replace('</xref>', '*').replace('<em>', '**').replace('</em>', '**')
                 embed.add_field(name=definition.partOfSpeech, value=text, inline=False)
             await msg.reply(embed=embed)
         else:
