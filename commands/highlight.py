@@ -68,7 +68,7 @@ class HighlightCommand(Command, MessageListener):
                 member = await get_member(match['uid'])
             except discord.NotFound:
                 continue
-            if not member or not msg.channel.permissions_for(member).read_messages or member.id == msg.author.id:
+            if (not member) or (not msg.channel.permissions_for(member).read_messages) or member.id == msg.author.id:
                 continue
             if member.id in notified:
                 continue
