@@ -44,7 +44,7 @@ class ExifCommand(Command):
         with open('exif_tmp', 'wb') as f:
             f.write(urllib.request.urlopen(req).read())
 
-        with exiftool.ExifTool() as et:
+        with exiftool.ExifToolHelper() as et:
             if all_tags:
                 metadata = et.get_metadata('exif_tmp')
             else:
