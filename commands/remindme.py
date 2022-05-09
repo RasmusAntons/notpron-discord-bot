@@ -48,7 +48,7 @@ class RemindmeCommand(Command, ReactionListener, ReadyListener):
             message = ' '.join(args[2:]) if len(args) > 2 else None
             coll.insert_one({'uid': msg.author.id, 'ts': ts, 'message': message})
             self.bg_event.set()
-            await msg.reply(f'Set a reminder for {ts.astimezone(datetime.timezone.utc).isoformat()}.')
+            await msg.reply(f'Set a reminder for <t:{int(ts.timestamp())}>.')
             return True
         elif args[0] == 'list':
             embed = discord.Embed(colour=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
