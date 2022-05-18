@@ -7,6 +7,7 @@ class Key(enum.Enum):
     DB_URL = ConfigKey('db_url', ConfigDatatype.STRING, required=True, default='/tmp/mongodb-27017.sock', help_text='Url to the mongodb instance.')
     DISCORD_TOKEN = ConfigKey('discord_token', ConfigDatatype.STRING, required=True, protected=True, help_text='Discord bot token.')
     API_PORT = ConfigKey('api_port', ConfigDatatype.INT, help_text='Listening port for the API.')
+    ENIGMATICS_URL = ConfigKey('enigmatics_url', ConfigDatatype.STRING, help_text='Private URL of enigmatics.org')
 
     PREFIX = ConfigKey('prefix', ConfigDatatype.STRING, required=True, help_text='Command prefix.')
     LISTENING = ConfigKey('listening', ConfigDatatype.STRING, help_text='Displayed in the bot\'s status.')

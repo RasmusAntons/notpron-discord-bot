@@ -17,7 +17,7 @@ class DiscordConnection(discord.Client):
                         FontCommand, RvCommand, TranslateCommand, UnderageCommand,
                         HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand,
                         ExifCommand, RollCommand, ConfigCommand, ArchiveCommand, MarkovAddChannelCommand,
-                        ImitateCommand, RemindmeCommand, WhoSaidItCommand, WordnikCommand]
+                        ImitateCommand, RemindmeCommand, WhoSaidItCommand, WordnikCommand, ProfileCommand]
 
     ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, BotReactionListener, DmRelayListener,
                          MarkovListener]
