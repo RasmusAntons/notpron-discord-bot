@@ -21,6 +21,10 @@ class ProfileCommand(Command):
                     return
                 profile = await res.json()
         description = []
+        if profile['colour']:
+            colour = int(profile['colour'][1:], 16)
+        else:
+            colour = globals.conf.get(globals.conf.keys.EMBED_COLOUR)
         if profile['badges']:
             badges = []
             for badge in profile['badges']:
@@ -35,7 +39,8 @@ class ProfileCommand(Command):
         if profile['completed_puzzles']:
             n = len(profile["completed_puzzles"])
             description.append(f'{n} completed puzzle{"s" if n > 1 else ""}')
-        embed = discord.Embed(title=f'{profile["name"]}', url=profile['url'], description='\n'.join(description))
+        embed = discord.Embed(title=f'{profile["name"]}', url=profile['url'], description='\n'.join(description),
+                              colour=colour)
         if profile['weeklies']:
             weeklies = '\n'.join([f'{name}: {points}' for name, points in profile['weeklies'].items()])
             total = sum(points for points in profile['weeklies'].values())
