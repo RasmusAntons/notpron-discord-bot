@@ -27,12 +27,12 @@ class ProfileCommand(Command):
         if profile['active_puzzles']:
             active_puzzles = '\n'.join(f'{puzzle}: {note}' if note else puzzle
                                        for puzzle, note in profile['active_puzzles'].items())
-            embed.add_field(name='active puzzles', value=active_puzzles)
+            embed.add_field(name='active puzzles', value=active_puzzles, inline=False)
         if profile['completed_puzzles']:
             completed_puzzles = '\n'.join(f'{puzzle}: {note}' if note else puzzle
                                           for puzzle, note in profile['completed_puzzles'].items())
-            embed.add_field(name='active puzzles', value=completed_puzzles)
+            embed.add_field(name='completed puzzles', value=completed_puzzles, inline=False)
         if profile['weeklies']:
             weeklies = '\n'.join([f'{name}: {points}' for name, points in profile['weeklies'].items()])
-            embed.add_field(name='weeklies', value=weeklies , inline=False)
+            embed.add_field(name='weeklies', value=weeklies, inline=False)
         await msg.reply(embed=embed)
