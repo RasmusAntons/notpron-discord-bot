@@ -20,23 +20,24 @@ class ProfileCommand(Command):
                     await msg.reply('That discord user is not linked to an enigmatics.org account')
                     return
                 profile = await res.json()
-        embed = discord.Embed(title=f'{profile["name"]}', url=profile['url'])
+        description = []
         if profile['badges']:
             badges = []
             for badge in profile['badges']:
                 badge_name = badge['name']
                 emote = globals.conf.dict_get(globals.conf.keys.BADGE_EMOJI, badge_name.replace(' ', '_'))
-                badges.append(f'{emote} {badge_name}' if emote else badge_name)
-            embed.add_field(name='badges', value='\n'.join(badges), inline=False)
+                badges.append(f'{emote}' if emote else badge_name)
+            description.append(' '.join(badges))
+            description.append('')
         if profile['active_puzzles']:
-            active_puzzles = '\n'.join(f'{puzzle}: {note}' if note else puzzle
-                                       for puzzle, note in profile['active_puzzles'].items())
-            embed.add_field(name='active puzzles', value=active_puzzles, inline=False)
+            n = len(profile["active_puzzles"])
+            description.append(f'{n} active puzzle{"s" if n > 1 else ""}')
         if profile['completed_puzzles']:
-            completed_puzzles = '\n'.join(f'{puzzle}: {note}' if note else puzzle
-                                          for puzzle, note in profile['completed_puzzles'].items())
-            embed.add_field(name='completed puzzles', value=completed_puzzles, inline=False)
+            n = len(profile["completed_puzzles"])
+            description.append(f'{n} completed puzzle{"s" if n > 1 else ""}')
+        embed = discord.Embed(title=f'{profile["name"]}', url=profile['url'], description='\n'.join(description))
         if profile['weeklies']:
             weeklies = '\n'.join([f'{name}: {points}' for name, points in profile['weeklies'].items()])
-            embed.add_field(name='weeklies', value=weeklies, inline=False)
+            total = sum(points for points in profile['weeklies'].values())
+            embed.add_field(name=f'{total} weeklies points', value=weeklies, inline=False)
         await msg.reply(embed=embed)
