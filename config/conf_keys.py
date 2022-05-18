@@ -8,6 +8,7 @@ class Key(enum.Enum):
     DISCORD_TOKEN = ConfigKey('discord_token', ConfigDatatype.STRING, required=True, protected=True, help_text='Discord bot token.')
     API_PORT = ConfigKey('api_port', ConfigDatatype.INT, help_text='Listening port for the API.')
     ENIGMATICS_URL = ConfigKey('enigmatics_url', ConfigDatatype.STRING, help_text='Private URL of enigmatics.org')
+    BADGE_EMOJI = ConfigDictKey('badge_emoji', ConfigDatatype.STRING, ConfigDatatype.STRING, help_text='emoji of badges')
 
     PREFIX = ConfigKey('prefix', ConfigDatatype.STRING, required=True, help_text='Command prefix.')
     LISTENING = ConfigKey('listening', ConfigDatatype.STRING, help_text='Displayed in the bot\'s status.')

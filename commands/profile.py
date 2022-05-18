@@ -22,8 +22,12 @@ class ProfileCommand(Command):
                 profile = await res.json()
         embed = discord.Embed(title=f'{profile["name"]}', url=profile['url'])
         if profile['badges']:
-            badges = '\n'.join([badge['name'] for badge in profile['badges']])
-            embed.add_field(name='badges', value=badges, inline=False)
+            badges = []
+            for badge in profile['badges']:
+                badge_name = badge['name']
+                emote = globals.conf.dict_get(globals.conf.keys.BADGE_EMOJI, badge_name.replace(' ', '_'))
+                badges.append(f'{emote} {badge_name}' if emote else badge_name)
+            embed.add_field(name='badges', value='\n'.join(badges), inline=False)
         if profile['active_puzzles']:
             active_puzzles = '\n'.join(f'{puzzle}: {note}' if note else puzzle
                                        for puzzle, note in profile['active_puzzles'].items())
