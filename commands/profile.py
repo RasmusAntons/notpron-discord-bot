@@ -39,7 +39,8 @@ class ProfileCommand(Command):
         if profile['completed_puzzles']:
             n = len(profile["completed_puzzles"])
             description.append(f'{n} completed puzzle{"s" if n > 1 else ""}')
-        embed = discord.Embed(title=f'{profile["name"]}', url=profile['url'], description='\n'.join(description),
+        url = f'https://enigmatics.org/profile/{profile["name"]}'
+        embed = discord.Embed(title=profile["name"], url=url, description='\n'.join(description),
                               colour=colour)
         if profile['weeklies']:
             weeklies = '\n'.join([f'{name}: {points}' for name, points in profile['weeklies'].items()])
