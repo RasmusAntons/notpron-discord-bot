@@ -87,7 +87,6 @@ class RenameCommand(Command):
             for uid in group['users']:
                 user = globals.bot.get_user(int(uid))
                 if user is not None:
-                    count += 1
                     member = msg.guild.get_member(int(uid))
                     renamed_user = users_coll.find_one({'uid': uid})
                     old_name = member.nick
@@ -103,6 +102,7 @@ class RenameCommand(Command):
                             if member.nick != old_name:
                                 await member.edit(nick=old_name)
                             users_coll.delete_one({'uid': uid})
+                        count += 1
                     except discord.HTTPException:
                         failed_renames.append(member.mention)
                 else:
