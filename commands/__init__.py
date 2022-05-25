@@ -29,3 +29,4 @@ from .whosaidit import WhoSaidItCommand
 from .wordnik import WordnikCommand
 from .profile import ProfileCommand
 from .eightball import EightballCommand
+from .rename import RenameCommand
