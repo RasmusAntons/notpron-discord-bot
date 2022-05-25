@@ -1,3 +1,5 @@
+import random
+
 import discord
 import pymongo.collection
 
@@ -11,7 +13,7 @@ class RenameCommand(Command):
     category = Category.ADMIN
     arg_range = (2, 99)
     description = 'mass rename nerds'
-    arg_desc = 'group create <group_name> | group list | group show <group_name> | group add <group_name> [mentions...] | rename <group_name> [new name...] | revert <group_name>'
+    arg_desc = 'group create <group_name> | group list | group show <group_name> | group add <group_name> [mentions...] | rename <group_name> [new names (| separated)...] | revert <group_name>'
 
     def __init__(self):
         super(RenameCommand, self).__init__()
@@ -80,7 +82,7 @@ class RenameCommand(Command):
             group = groups_coll.find_one({'name': group_name})
             if group is None:
                 raise RuntimeError('That group does not exist')
-            new_name = ' '.join(args[2:])
+            new_name_choices = ' '.join(args[2:]).split('|')
             count = 0
             invalid_uids = []
             failed_renames = []
@@ -90,6 +92,7 @@ class RenameCommand(Command):
                     member = msg.guild.get_member(int(uid))
                     renamed_user = users_coll.find_one({'uid': uid})
                     old_name = member.nick
+                    new_name = random.choice(new_name_choices)
                     if renamed_user is not None:
                         if renamed_user['new_name'] == member.nick:
                             old_name = renamed_user['old_name']
@@ -97,12 +100,13 @@ class RenameCommand(Command):
                         if args[0] == 'rename':
                             if member.nick != new_name:
                                 await member.edit(nick=new_name)
+                                count += 1
                             users_coll.update_one({'uid': uid}, {'$set': {'uid': uid, 'old_name': old_name, 'new_name': new_name}}, upsert=True)
                         elif args[0] == 'revert':
                             if member.nick != old_name:
                                 await member.edit(nick=old_name)
+                                count += 1
                             users_coll.delete_one({'uid': uid})
-                        count += 1
                     except discord.HTTPException:
                         failed_renames.append(member.mention)
                 else:
