@@ -86,13 +86,13 @@ class RenameCommand(Command):
             count = 0
             invalid_uids = []
             failed_renames = []
-            for uid in group['users']:
+            for i, uid in enumerate(group['users']):
                 user = globals.bot.get_user(int(uid))
                 if user is not None:
                     member = msg.guild.get_member(int(uid))
                     renamed_user = users_coll.find_one({'uid': uid})
                     old_name = member.nick
-                    new_name = random.choice(new_name_choices)
+                    new_name = new_name_choices[i % len(new_name_choices)]
                     if renamed_user is not None:
                         if renamed_user['new_name'] == member.nick:
                             old_name = renamed_user['old_name']
