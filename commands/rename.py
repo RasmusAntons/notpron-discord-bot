@@ -42,16 +42,18 @@ class RenameCommand(Command):
                 group = groups_coll.find_one({'name': group_name})
                 if group is None:
                     raise RuntimeError('That group does not exist')
+                mentions = []
                 usernames = []
                 invalid_uids = []
                 for uid in group['users']:
                     user = globals.bot.get_user(int(uid))
                     if user is not None:
-                        usernames.append(user.mention)
+                        mentions.append(user.mention)
+                        usernames.append(user.display_name)
                     else:
                         invalid_uids.append(uid)
                 try:
-                    return await msg.reply(f'**{group_name}**\n' + '\n'.join(usernames) + '\n' + '\n'.join(invalid_uids))
+                    return await msg.reply(f'**{group_name}**\n' + '\n'.join(mentions) + '\n' + '\n'.join(invalid_uids))
                 except discord.HTTPException:
                     out_file = io.StringIO()
                     for username in usernames:
