@@ -1,4 +1,4 @@
-import random
+import io
 
 import discord
 import pymongo.collection
@@ -50,7 +50,14 @@ class RenameCommand(Command):
                         usernames.append(user.mention)
                     else:
                         invalid_uids.append(uid)
-                return await msg.reply(f'**{group_name}**\n' + '\n'.join(usernames) + '\n' + '\n'.join(invalid_uids))
+                try:
+                    return await msg.reply(f'**{group_name}**\n' + '\n'.join(usernames) + '\n' + '\n'.join(invalid_uids))
+                except discord.HTTPException:
+                    out_file = io.StringIO()
+                    for username in usernames:
+                        out_file.write(f'{username}\n')
+                    out_file.seek(0)
+                    return await msg.channel.send(f'**{group_name}**\n', file=discord.File(out_file, filename=f'{group_name}.txt'))
             elif args[1] == 'add':
                 group_name = args[2]
                 group = groups_coll.find_one({'name': group_name})
