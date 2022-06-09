@@ -4,8 +4,7 @@ from discord_connection import DiscordConnection
 
 def run_bot(config_file):
     bot = DiscordConnection(config_file)
-    bot.loop.run_until_complete(bot.login(bot.conf.get(bot.conf.keys.DISCORD_TOKEN, bypass_protected=True)))
-    bot.loop.run_until_complete(bot.connect())
+    bot.run(bot.conf.get(bot.conf.keys.DISCORD_TOKEN, bypass_protected=True))
 
 
 if __name__ == '__main__':

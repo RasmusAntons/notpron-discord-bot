@@ -17,7 +17,7 @@ class DiscordConnection(discord.Client):
                         FontCommand, RvCommand, TranslateCommand, UnderageCommand,
                         HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand,
                         ExifCommand, RollCommand, ConfigCommand, ArchiveCommand, MarkovAddChannelCommand,
-                        ImitateCommand, RemindmeCommand, WhoSaidItCommand, WordnikCommand, ProfileCommand,
+                        ImitateCommand, WhoSaidItCommand, WordnikCommand, ProfileCommand,
                         EightballCommand, RenameCommand]
 
     ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, BotReactionListener, DmRelayListener,
@@ -26,6 +26,7 @@ class DiscordConnection(discord.Client):
     def __init__(self, config_file):
         intents = discord.Intents.default()
         intents.members = True
+        intents.message_content = True
         super().__init__(intents=intents)
         globals.bot = self
         self.conf = Config(config_file)
@@ -53,6 +54,9 @@ class DiscordConnection(discord.Client):
         self.ENABLED_COMMANDS.sort(key=lambda e: e.name)
         for entity in self.ENABLED_COMMANDS + self.ENABLED_LISTENERS:
             entity()
+
+    async def setup_hook(self):
+        self.loop.create_task(self.api_server.coro)
 
     async def on_ready(self):
         if not self.initialised:

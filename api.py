@@ -12,7 +12,6 @@ class ApiServer:
     def __init__(self):
         self.coro = asyncio.start_server(self.handle_request, 'localhost',
                                          globals.bot.conf.get(globals.bot.conf.keys.API_PORT))
-        globals.bot.loop.create_task(self.coro)
         """
         'type': 'puzzle_submission',
         'name': puzzle_submission.name,
