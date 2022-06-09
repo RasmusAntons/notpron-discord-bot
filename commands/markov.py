@@ -53,6 +53,6 @@ class ImitateCommand(Command):
             if text is None:
                 await msg.reply(f'I don\' know {msg.mentions[0].display_name} well enough.')
                 return
-            await msg.channel.trigger_typing()
-            await asyncio.sleep(0.04 * len(text))
-            await msg.channel.send(escape_mentions(text))
+            async with msg.channel.typing():
+                await asyncio.sleep(0.04 * len(text))
+                await msg.channel.send(escape_mentions(text))

@@ -74,7 +74,7 @@ class HighlightCommand(Command, MessageListener):
                 continue
             ch = await globals.bot.get_dm_channel(member)
             embed = discord.Embed()
-            embed.set_author(name=f'{msg.author.display_name}', icon_url=f'{msg.author.avatar_url_as(size=32)}')
+            embed.set_author(name=f'{msg.author.display_name}', icon_url=f'{msg.author.display_avatar.url.replace("?size=1024", "?size=32")}')
             link = f'\n[link]({msg.jump_url})'
             if len(msg.content) > (1024 - len(link)):
                 text = f'{msg.content[:(1021 - len(link))]}...{link}'
