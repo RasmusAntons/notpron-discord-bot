@@ -5,6 +5,7 @@ import traceback
 import discord
 import pymongo
 import dateutil.parser
+import sys
 import pytimeparse.timeparse
 
 from commands.command import Command, Category
@@ -21,13 +22,13 @@ class RemindmeCommand(Command, ReactionListener, ReadyListener):
     aliases = ['reminder']
     arg_range = (1, 99)
     arg_desc = '<in|at|list|cancel> time [message...]'
-    bg_event = asyncio.Event()
 
     def __init__(self):
         super(RemindmeCommand, self).__init__()
         coll = globals.bot.db['reminders']
         coll.create_index('uid')
         coll.create_index([('ts', pymongo.ASCENDING)])
+        self.bg_event = None if sys.version_info < (3, 10, 0) else asyncio.Event()
 
     async def execute(self, args, msg):
         coll = globals.bot.db['reminders']
@@ -101,6 +102,8 @@ class RemindmeCommand(Command, ReactionListener, ReadyListener):
                 await self.bg_event.wait()
 
     async def on_ready(self):
+        if sys.version_info < (3, 10, 0):
+            self.bg_event = asyncio.Event(loop=globals.bot.loop)
         globals.bot.loop.create_task(self.background_task())
 
     async def on_reaction_add(self, reaction, user):
