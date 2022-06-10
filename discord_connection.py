@@ -18,7 +18,7 @@ class DiscordConnection(discord.Client):
                         HighlightCommand, EvalCommand, PurgeCommand, CovidCommand, CurrencyCommand, MagiceyeCommand,
                         ExifCommand, RollCommand, ConfigCommand, ArchiveCommand, MarkovAddChannelCommand,
                         ImitateCommand, WhoSaidItCommand, WordnikCommand, ProfileCommand,
-                        EightballCommand, RenameCommand]
+                        EightballCommand, RenameCommand, RemindmeCommand]
 
     ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, BotReactionListener, DmRelayListener,
                          MarkovListener]

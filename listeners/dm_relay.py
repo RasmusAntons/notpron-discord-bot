@@ -16,7 +16,8 @@ class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListene
 
     def create_embed(self, msg):
         embed = discord.Embed(colour=globals.conf.get(globals.conf.keys.EMBED_COLOUR))
-        embed.set_author(name=f'{msg.author.display_name}', icon_url=f'{msg.author.avatar_url_as(size=32)}')
+        embed.set_author(name=f'{msg.author.display_name}',
+                         icon_url=f'{msg.author.display_avatar.url.replace("?size=1024", "?size=32")}')
         embed.description = msg.content
         image_set = False
         for attachment in msg.attachments:

@@ -48,12 +48,12 @@ class ExifCommand(Command):
             if all_tags:
                 metadata = et.get_metadata('exif_tmp')
             else:
-                metadata = et.get_tags(important_tags, 'exif_tmp')
+                metadata = et.get_tags('exif_tmp', important_tags)
 
         os.remove('exif_tmp')
 
         text = [f'**{escape_discord(attachment.filename)}**', '```']
-        for key, value in metadata.items():
+        for key, value in metadata[0].items():
             key = key.split(':')[-1]
             if key in ('SourceFile', 'FileName', 'Directory', 'FilePermissions'):
                 continue
