@@ -1,0 +1,23 @@
+# discord: pip install -U git+https://github.com/Rapptz/discord.py#egg=discord.py[voice]
+pyaml
+pymongo # on debian: ==3.12.3
+sqlitedict
+numpy
+pillow
+emoji
+quantities
+googlemaps
+pandas
+millify
+matplotlib
+forex-python
+asteval
+pyexiftool
+google_images_search
+pytimeparse
+googletrans>=4.0.0rc1
+pycountry
+pyowm
+wordnik-py3
+aiohttp
+python-dateutil

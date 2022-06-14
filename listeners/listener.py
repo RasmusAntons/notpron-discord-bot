@@ -46,10 +46,6 @@ class RawReactionListener(Listener):
 
 
 class MessageEditListener(Listener):
-    def __init__(self):
-        super(MessageEditListener, self).__init__()
-        globals.bot.message_edit_listeners.add(self)
-
     @abstractmethod
     async def on_message_edit(self, message, cached_message=None):
         pass
