@@ -1,37 +1,31 @@
-from cogs.command import Command, Category
-from google_images_search import GoogleImagesSearch
-import random
-import globals
-import pymongo
 import datetime
+import random
+
+from discord.ext import commands
+from google_images_search import GoogleImagesSearch
+import pymongo
+
+import globals
 
 
-class ImagineCommand(Command):
-    name = 'imagine'
-    category = Category.UTILITY
-    arg_range = (1, 99)
-    description = 'get an image for your query'
-    arg_desc = '<query...>'
-    state = {}
-
+class ImagineCog(commands.Cog, name='Imagine', description='get an image for your query'):
     def __init__(self):
-        super(ImagineCommand, self).__init__()
-        coll = globals.bot.db['imagine']
-        coll.create_index([('query', pymongo.ASCENDING), ('safe', pymongo.ASCENDING)], unique=True)
+        self.coll = globals.bot.db['imagine']
+        self.coll.create_index([('query', pymongo.ASCENDING), ('safe', pymongo.ASCENDING)], unique=True)
 
-    async def execute(self, args, msg):
-        query = ' '.join(args)
+    @commands.hybrid_command(name='imagine', description='get an image for your query')
+    async def imagine(self, ctx: commands.Context, query: str) -> None:
         suffix = globals.conf.get(globals.conf.keys.IMAGINE_SUFFIX)
         if suffix:
             query = f'{query} {suffix}'
         search_params = {
             'q': query,
-            'safe': 'off' if msg.channel.is_nsfw() else 'medium',
+            'safe': 'off' if ctx.channel.is_nsfw() else 'medium',
             'num': 10
         }
-        async with msg.channel.typing():
-            coll = globals.bot.db['imagine']
-            results = coll.find_one({'query': search_params['q'], 'safe': search_params['safe']})
+
+        async def _imagine():
+            results = self.coll.find_one({'query': search_params['q'], 'safe': search_params['safe']})
             if results is None or results['date'] + datetime.timedelta(days=7) < datetime.datetime.utcnow():
                 image_api_key = globals.conf.get(globals.conf.keys.IMAGE_API_KEY, bypass_protected=True)
                 image_search_cx = globals.conf.get(globals.conf.keys.IMAGE_SEARCH_CX, bypass_protected=True)
@@ -46,10 +40,17 @@ class ImagineCommand(Command):
                 )
                 results = {'query': search_params['q'], 'safe': search_params['safe'], 'urls': urls, 'state': 0,
                            'date': datetime.datetime.utcnow()}
-                coll.replace_one({'query': search_params['q'], 'safe': search_params['safe']}, results, upsert=True)
+                self.coll.replace_one({'query': search_params['q'], 'safe': search_params['safe']}, results,
+                                      upsert=True)
+                next_state = (results['state'] + 1) % len(results['urls'])
+                self.coll.update_one(results, {'$set': {'state': next_state}})
             if len(results['urls']) == 0:
                 excuses = ['I cannot imagine that', 'I don\'t even know what that is']
-                return await msg.channel.send(f'{msg.author.mention} {random.choice(excuses)}')
-            await msg.channel.send(results['urls'][results['state']])
-        next_state = (results['state'] + 1) % len(results['urls'])
-        coll.update_one(results, {'$set': {'state': next_state}})
+                return await ctx.reply(random.choice(excuses))
+            await ctx.reply(results['urls'][results['state']])
+        if ctx.interaction:
+            await ctx.interaction.response.defer()
+            await _imagine()
+        else:
+            async with ctx.channel.typing():
+                await _imagine()

@@ -1,67 +1,73 @@
-from cogs.command import Command, Category
-from listeners import MessageListener
 import json
+import re
+
 import discord
-from utils import get_member, inline_code
-import globals
-from pymongo.errors import DuplicateKeyError
-from bson.objectid import ObjectId
+from discord import app_commands
+from discord.ext import commands
 import pymongo
+from pymongo.errors import DuplicateKeyError
+
+import globals
+from utils import inline_code
 
 
-class HighlightCommand(Command, MessageListener):
-    name = 'highlight'
-    category = Category.UTILITY
-    aliases = ['hl']
-    arg_range = (1, 99)
-    description = 'manage notifications for words or phrases'
-    arg_desc = 'add <regular expression...> | list | remove <highlight_id>'
-
+class HighlightCog(commands.Cog, name='Highlight', description='manage notifications for words or phrases'):
     def __init__(self):
-        super(HighlightCommand, self).__init__()
-        coll = globals.bot.db['highlights']
-        coll.create_index('uid')
-        coll.create_index([('uid', pymongo.ASCENDING), ('pattern', pymongo.ASCENDING)], unique=True)
+        self.coll = globals.bot.db['highlights']
+        self.coll.create_index('uid')
+        self.coll.create_index([('uid', pymongo.ASCENDING), ('pattern', pymongo.ASCENDING)], unique=True)
 
-    async def execute(self, args, msg):
-        coll = globals.bot.db['highlights']
-        if len(args) >= 2 and args[0] == 'add':
-            new_hl = ' '.join(args[1:])
-            try:
-                insert_result = coll.insert_one({'uid': msg.author.id, 'pattern': new_hl})
-                valid = coll.find_one({'_id': insert_result.inserted_id, '$where': f'try {{new RegExp(this.pattern)}} catch(e) {{return false}} return true'})
-                if valid is None:
-                    coll.delete_one({'_id': insert_result.inserted_id})
-                    raise RuntimeError('Not valid JavaScript regex.')
-            except DuplicateKeyError:
-                raise RuntimeError(f'That highlight already exists.')
-            await msg.reply(f'added highlight {inline_code(new_hl)}')
-            return True
-        elif len(args) == 1 and args[0] == 'list':
-            user_hl = coll.find({'uid': msg.author.id})
-            embed = discord.Embed(colour=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
-            text = []
-            for i, hl in enumerate(user_hl):
-                text.append(f'{inline_code(hl["pattern"])} ({hl["_id"]})')
-            if len(text) == 0:
-                text.append(f'None')
-            embed.add_field(name='Highlights', value='\n'.join(text), inline=False)
-            await msg.reply(embed=embed)
-            return True
-        elif len(args) == 2 and args[0] in ('remove', 'delete'):
-            delete_result = coll.delete_one({'_id': ObjectId(args[1]), 'uid': msg.author.id})
-            if delete_result.deleted_count == 1:
-                await msg.reply(f'Removed highlight {args[1]}.')
-            else:
-                await msg.reply(f'Cannot find highlight {args[1]}.')
-            return True
-        return False
+    @commands.hybrid_group(name='highlight', aliases=('hl',), description='manage notifications for words or phrases')
+    async def highlight_grp(self, ctx):
+        return None
 
+    @highlight_grp.command(name='add', description='add a highlight')
+    async def add(self, ctx: commands.Context, pattern: str) -> None:
+        try:
+            insert_result = self.coll.insert_one({'uid': ctx.author.id, 'pattern': pattern})
+            clause = f'try {{new RegExp(this.pattern)}} catch(e) {{return false}} return true'
+            valid = self.coll.find_one({'_id': insert_result.inserted_id, '$where': clause})
+            if valid is None:
+                self.coll.delete_one({'_id': insert_result.inserted_id})
+                raise RuntimeError('Not valid JavaScript regex.')
+        except DuplicateKeyError:
+            raise RuntimeError(f'That highlight already exists.')
+        await ctx.reply(f'added highlight {inline_code(pattern)}')
+
+    @highlight_grp.command(name='list', description='list highlights')
+    async def list(self, ctx: commands.Context) -> None:
+        user_hl = self.coll.find({'uid': ctx.author.id})
+        embed = discord.Embed(colour=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
+        text = []
+        for hl in user_hl:
+            text.append(inline_code(hl["pattern"]))
+        if len(text) == 0:
+            text.append(f'None')
+        embed.add_field(name='Highlights', value='\n'.join(text), inline=False)
+        await ctx.reply(embed=embed)
+
+    @highlight_grp.command(name='remove')
+    async def remove(self, ctx: commands.Context, pattern: str):
+        delete_result = self.coll.delete_one({'uid': ctx.author.id, 'pattern': pattern})
+        if delete_result.deleted_count == 1:
+            await ctx.reply(f'Removed highlight {inline_code(pattern)}.')
+        else:
+            await ctx.reply(f'Cannot find highlight {inline_code(pattern)}.')
+
+    @remove.autocomplete('pattern')
+    async def key_autocomplete(self, interaction: discord.Interaction, pattern: str) -> None:
+        if pattern:
+            pat = re.compile(re.escape(pattern), re.I)
+            res = self.coll.find({'uid': interaction.user.id, 'pattern': {'$regex': pat}}, limit=25)
+        else:
+            res = self.coll.find({'uid': interaction.user.id}, limit=25)
+        return [app_commands.Choice(name=hl['pattern'], value=hl['pattern']) for hl in res]
+
+    @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.author.bot:
             return
-        coll = globals.bot.db['highlights']
-        matches = coll.find({'$where': f'new RegExp(this.pattern).test({json.dumps(msg.content)})'})
+        matches = self.coll.find({'$where': f'new RegExp(this.pattern).test({json.dumps(msg.content)})'})
         notified = set()
         for match in matches:
             try:
@@ -74,7 +80,8 @@ class HighlightCommand(Command, MessageListener):
                 continue
             ch = await globals.bot.get_dm_channel(member)
             embed = discord.Embed()
-            embed.set_author(name=f'{msg.author.display_name}', icon_url=f'{msg.author.display_avatar.url.replace("?size=1024", "?size=32")}')
+            embed.set_author(name=f'{msg.author.display_name}',
+                             icon_url=f'{msg.author.display_avatar.url.replace("?size=1024", "?size=32")}')
             link = f'\n[link]({msg.jump_url})'
             if len(msg.content) > (1024 - len(link)):
                 text = f'{msg.content[:(1021 - len(link))]}...{link}'

@@ -8,71 +8,110 @@ import dateutil.parser
 import sys
 import pytimeparse.timeparse
 
-from cogs.command import Command, Category
-from listeners import ReactionListener, ReadyListener
+from discord.ext import commands
 from bson.objectid import ObjectId
 from utils import inline_code
 import globals
 
 
-class RemindmeCommand(Command, ReactionListener, ReadyListener):
-    name = 'remindme'
-    category = Category.UTILITY
-    description = 'set a reminder'
-    aliases = ['reminder']
-    arg_range = (1, 99)
-    arg_desc = '<in|at|list|cancel> time [message...]'
+class ReminderModal(discord.ui.Modal, title='Cancel Reminder'):
+    def __init__(self, coll, options, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.coll = coll
+        self.code.options = options
 
+    code = discord.ui.Select(
+        options=[],
+        placeholder='select reminder to cancel'
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        object_id = self.code.values[0]
+        delete_result = self.coll.delete_one({'_id': ObjectId(object_id), 'uid': interaction.user.id})
+        if delete_result.deleted_count == 1:
+            await interaction.response.send_message(f'Cancelled reminder {object_id}.')
+        else:
+            await interaction.response.send_message(f'Cannot find reminder {object_id}.')
+
+
+class RemindmeCog(commands.Cog, name='Remindme', description='set a reminder'):
     def __init__(self):
-        super(RemindmeCommand, self).__init__()
-        coll = globals.bot.db['reminders']
-        coll.create_index('uid')
-        coll.create_index([('ts', pymongo.ASCENDING)])
+        self.coll = globals.bot.db['reminders']
+        self.coll.create_index('uid')
+        self.coll.create_index([('ts', pymongo.ASCENDING)])
         self.bg_event = None if sys.version_info < (3, 10, 0) else asyncio.Event()
 
-    async def execute(self, args, msg):
-        coll = globals.bot.db['reminders']
-        if len(args) >= 2 and args[0] in ('in', 'at'):
-            if args[0] == 'in':
-                relative_time = pytimeparse.timeparse.timeparse(args[1])
-                if relative_time is None:
-                    await msg.reply('Invalid time format.')
-                    return True
-                ts = datetime.datetime.now().replace(microsecond=0) + datetime.timedelta(seconds=relative_time)
-            else:
-                try:
-                    ts = dateutil.parser.parse(args[1])
-                    ts = ts.replace(tzinfo=ts.tzinfo or datetime.timezone.utc)
-                except (ValueError, OverflowError) as e:
-                    await msg.reply('Invalid time format.')
-                    return True
-            message = ' '.join(args[2:]) if len(args) > 2 else None
-            coll.insert_one({'uid': msg.author.id, 'ts': ts, 'message': message})
-            self.bg_event.set()
-            await msg.reply(f'Set a reminder for <t:{int(ts.timestamp())}>.')
-            return True
-        elif args[0] == 'list':
-            embed = discord.Embed(colour=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
-            text = []
-            user_reminders = coll.find({'uid': msg.author.id})
+    @commands.hybrid_group(name='remindme', description='set a reminder')
+    async def remindme_grp(self, ctx):
+        return None
+
+    async def _remindme(self, ctx: commands.Context, ts: datetime.datetime, text: str):
+        self.coll.insert_one({'uid': ctx.author.id, 'ts': ts, 'message': text})
+        self.bg_event.set()
+        await ctx.reply(f'Set a reminder for <t:{int(ts.timestamp())}>.')
+
+    @remindme_grp.command(name='in', description='set a reminder in a certain time')
+    async def remindme_in(self, ctx: commands.Context, relative_time: str, text: str) -> None:
+        relative_time = pytimeparse.timeparse.timeparse(relative_time)
+        if relative_time is None:
+            raise RuntimeError('Invalid time format.')
+        ts = datetime.datetime.now().replace(microsecond=0) + datetime.timedelta(seconds=relative_time)
+        await self._remindme(ctx, ts, text)
+
+    @remindme_grp.command(name='at', description='set a reminder at a certain time')
+    async def remindme_at(self, ctx: commands.Context, absolute_time: str, text: str) -> None:
+        try:
+            ts = dateutil.parser.parse(absolute_time)
+            ts = ts.replace(tzinfo=ts.tzinfo or datetime.timezone.utc)
+        except (ValueError, OverflowError) as e:
+            raise RuntimeError('Invalid time format')
+        await self._remindme(ctx, ts, text)
+
+    @remindme_grp.command(name='list', description='list reminders')
+    async def list(self, ctx: commands.Context) -> None:
+        embed = discord.Embed(colour=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
+        text = []
+        user_reminders = self.coll.find({'uid': ctx.author.id})
+        for user_reminder in user_reminders:
+            ts: datetime.datetime = user_reminder['ts'].astimezone(datetime.timezone.utc)
+            escaped_message = inline_code(user_reminder['message'][:25]) if user_reminder['message'] else 'None'
+            text.append(f'<t:{int(ts.timestamp())}> {escaped_message} ({user_reminder["_id"]})')
+        if len(text) == 0:
+            text.append('None')
+        embed.add_field(name='Reminders', value='\n'.join(text), inline=False)
+        await ctx.reply(embed=embed)
+
+    @remindme_grp.command(name='cancel', description='cancel a reminder')
+    async def cancel(self, ctx: commands.Context, object_id: str = None):
+        if object_id is None:
+            if ctx.interaction is None:
+                raise RuntimeError('uses slash command or specify reminder id')
+            options = []
+            user_reminders = self.coll.find({'uid': ctx.author.id})
             for user_reminder in user_reminders:
-                ts: datetime.datetime
-                ts = user_reminder['ts'].astimezone(datetime.timezone.utc).replace(microsecond=0)
-                escaped_message = inline_code(user_reminder['message']) if user_reminder['message'] else 'None'
-                text.append(f'{inline_code(ts.isoformat())} {escaped_message} ({user_reminder["_id"]})')
-            if len(text) == 0:
-                text.append('None')
-            embed.add_field(name='Reminders', value='\n'.join(text), inline=False)
-            await msg.reply(embed=embed)
-            return True
-        elif len(args) == 2 and args[0] in ('cancel', 'remove', 'delete'):
-            delete_result = coll.delete_one({'_id': ObjectId(args[1]), 'uid': msg.author.id})
-            if delete_result.deleted_count == 1:
-                await msg.reply(f'Removed reminder {args[1]}.')
-            else:
-                await msg.reply(f'Cannot find reminder {args[1]}.')
-            return True
-        return False
+                if len(options) == 25:
+                    break
+                ts: datetime.datetime = user_reminder['ts'].astimezone(datetime.timezone.utc)
+                options.append(discord.SelectOption(label=ts.isoformat(),
+                                                    description=user_reminder['message'][:100],
+                                                    value=str(user_reminder['_id'])))
+            options = options[:25]
+            if not options:
+                raise RuntimeError('no reminders to cancel')
+            await ctx.interaction.response.send_modal(ReminderModal(coll=self.coll, options=options, timeout=None))
+            return
+        delete_result = self.coll.delete_one({'_id': ObjectId(object_id), 'uid': ctx.author.id})
+        if delete_result.deleted_count == 1:
+            await ctx.reply(f'Cancelled reminder {object_id}.')
+        else:
+            await ctx.reply(f'Cannot find reminder {object_id}.')
+        return True
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if sys.version_info < (3, 10, 0):
+            self.bg_event = asyncio.Event(loop=globals.bot.loop)
+        globals.bot.loop.create_task(self.background_task())
 
     async def background_task(self):
         coll = globals.bot.db['reminders']
@@ -100,14 +139,3 @@ class RemindmeCommand(Command, ReactionListener, ReadyListener):
                         await asyncio.wait_for(self.bg_event.wait(), timeout=seconds_left)
             else:
                 await self.bg_event.wait()
-
-    async def on_ready(self):
-        if sys.version_info < (3, 10, 0):
-            self.bg_event = asyncio.Event(loop=globals.bot.loop)
-        globals.bot.loop.create_task(self.background_task())
-
-    async def on_reaction_add(self, reaction, user):
-        pass
-
-    async def on_reaction_remove(self, reaction, user):
-        pass

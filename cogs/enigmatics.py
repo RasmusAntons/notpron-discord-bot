@@ -1,23 +1,20 @@
 import discord
-from cogs.command import Command, Category
 import globals
 import aiohttp
+from discord.ext import commands
 
 
-class ProfileCommand(Command):
-    name = 'profile'
-    category = Category.UTILITY
-    arg_range = (0, 1)
-    description = 'Show enigmatics.org profile'
-    arg_desc = '[@user]'
+class EnigmaticsCog(commands.Cog, name='Enigmatics', description='enigmatics commands'):
+    guild_ids = [363692038002180097]
 
-    async def execute(self, args, msg):
-        target_user = msg.mentions[0] if len(msg.mentions) > 0 else msg.author
+    @commands.hybrid_command(name='profile', description='show enigmatics.org profile')
+    async def colour(self, ctx: commands.Context, user: discord.Member = None) -> None:
+        target_user = user or ctx.author
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(sock_connect=3, sock_read=10)) as client:
             enigmatics_url = globals.conf.get(globals.conf.keys.ENIGMATICS_URL)
             async with client.get(f'{enigmatics_url}/profile_json/{target_user.id}') as res:
                 if res.status != 200:
-                    await msg.reply('That discord user is not linked to an enigmatics.org account')
+                    await ctx.reply('That discord user is not linked to an enigmatics.org account')
                     return
                 profile = await res.json()
         description = []
@@ -46,4 +43,4 @@ class ProfileCommand(Command):
             weeklies = '\n'.join([f'{name}: {points}' for name, points in profile['weeklies'].items()])
             total = sum(points for points in profile['weeklies'].values())
             embed.add_field(name=f'{total} weeklies points', value=weeklies, inline=False)
-        await msg.reply(embed=embed)
+        await ctx.reply(embed=embed)

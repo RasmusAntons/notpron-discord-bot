@@ -1,6 +1,8 @@
 import random
-from cogs.command import Command, Category
 
+from discord.ext import commands
+
+from utils import escape_discord
 
 responses = {
     'positive': [
@@ -31,14 +33,11 @@ responses = {
 }
 
 
-class EightballCommand(Command):
-    name = '8ball'
-    category = Category.UTILITY
-    arg_range = (0, 99)
-    arg_desc = '[question...]'
-    description = 'Answer a yes or no question'
-
-    async def execute(self, args, msg):
+class EightballCog(commands.Cog, name='Eightball', description='answer a yes or no question'):
+    @commands.hybrid_command(name='8ball', aliases=('eightball',), description='answer a yes or no question')
+    async def eightball(self, ctx: commands.Context, question: str) -> None:
         category = random.choice(list(responses.values()))
         response = random.choice(category)
-        await msg.reply(response)
+        if ctx.interaction:
+            response = f'> {escape_discord(question)}\n{response}'
+        await ctx.reply(response)

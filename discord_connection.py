@@ -15,10 +15,11 @@ from utils import *
 
 
 class DiscordConnection(commands.Bot):
-    ENABLED_COGS = [ColourCog, ConfigCog, NotpronCog, ArchiveCog, PurgeCog, ConvertCog, CovidCog]
+    ENABLED_COGS = [ColourCog, ConfigCog, NotpronCog, ArchiveCog, PurgeCog, ConvertCog, CovidCog, EightballCog, EvalCog,
+                    ExifCog, FontCog, HighlightCog, ImagineCog, MagiceyeCog, MarkovCog, EnigmaticsCog, RemindmeCog,
+                    RenameCog]
 
-    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, BotReactionListener, DmRelayListener,
-                         MarkovListener]
+    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, BotReactionListener, DmRelayListener]
 
     def __init__(self, config_file):
         intents = discord.Intents.default()
@@ -52,7 +53,11 @@ class DiscordConnection(commands.Bot):
     async def setup_hook(self):
         self.loop.create_task(self.api_server.coro)
         for cog in self.ENABLED_COGS:
-            await self.add_cog(cog(), guilds=[discord.Object(id=416666891055005706)])
+            cog_instance = cog()
+            await self.add_cog(cog_instance, guilds=[discord.Object(id=416666891055005706)])
+            if hasattr(cog_instance, 'app_commands'):
+                for app_command in cog_instance.app_commands:
+                    self.tree.add_command(app_command)
         self.tree.copy_global_to(guild=discord.Object(id=416666891055005706))
         await self.tree.sync(guild=discord.Object(id=416666891055005706))
         self.add_check(self.check, call_once=True)
@@ -97,7 +102,10 @@ class DiscordConnection(commands.Bot):
             return
         while hasattr(error, 'original'):
             error = getattr(error, 'original')
-        await ctx.reply(error)
+        try:
+            await ctx.reply(error)
+        except discord.NotFound:
+            pass
         await self.report_error(exc=error, method=f'{ctx.cog.__class__.__name__}:{ctx.command}', args=ctx.args[2:])
 
     async def check_ratelimit(self, ctx: commands.Context):
@@ -120,7 +128,9 @@ class DiscordConnection(commands.Bot):
             return True
 
     async def check(self, ctx: commands.Context):
-        if not self.conf.list_contains(self.conf.keys.CHANNELS, ctx.channel.id) or ctx.author.id == self.user.id:
+        if not self.conf.list_contains(self.conf.keys.CHANNELS, ctx.channel.id):
+            if ctx.interaction is not None:
+                await ctx.reply('commands are not enabled in this channel', ephemeral=True)
             return False
         if ctx.command.qualified_name != 'help' and not await self.check_ratelimit(ctx):
             msg = 'Ratelimit exceeded! :robot: Please avoid using too many bot commands in the improper ' \

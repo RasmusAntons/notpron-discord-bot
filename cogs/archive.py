@@ -1,3 +1,4 @@
+import time
 import discord
 from discord.ext import commands
 
@@ -61,7 +62,7 @@ class ArchiveCog(commands.Cog, name='Archive', description='archive channels'):
         count = 0
         t_last_update = time.time()
         async for message in channel.history(limit=limit, before=before, after=after):
-            coll.insert_one(ArchiveListener.message_to_dict(message))
+            coll.insert_one(ArchiveCog.message_to_dict(message))
             count += 1
             if t_last_update + 10 < time.time():
                 t_last_update = time.time()
@@ -95,6 +96,6 @@ class ArchiveCog(commands.Cog, name='Archive', description='archive channels'):
             'pinned': message.pinned,
             'type': message.type.name,
             'embeds': [embed.to_dict() for embed in message.embeds],
-            'attachments': [ArchiveListener.attachment_to_dict(attachment) for attachment in message.attachments],
+            'attachments': [ArchiveCog.attachment_to_dict(attachment) for attachment in message.attachments],
             'url': message.jump_url
         }

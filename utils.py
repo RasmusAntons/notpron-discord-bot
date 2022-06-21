@@ -10,7 +10,7 @@ def to_code_block(text, lang=''):
     return f'```{lang}\n{text}```'
 
 
-def inline_code(text):
+def inline_code(text, max_len=None):
     while '``' in text:
         text = text.replace('``', '`​`')
     return f'``{text}``'
