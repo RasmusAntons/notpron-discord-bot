@@ -15,7 +15,7 @@ asteval
 pyexiftool
 google_images_search
 pytimeparse
-googletrans>=4.0.0rc1
+translators
 pycountry
 pyowm
 wordnik-py3

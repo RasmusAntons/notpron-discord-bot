@@ -2,14 +2,11 @@ import io
 import re
 
 import discord
-import pymongo.collection
+from discord import app_commands
+from discord.ext import commands
 
 import config
 import globals
-from discord.ext import commands
-from discord import app_commands
-
-arg_desc = 'group create <group_name> | group list | group show <group_name> | group add <group_name> [mentions...] | rename <group_name> [new names (| separated)...] | revert <group_name>'
 
 
 class RenameCog(commands.Cog, name='Rename', description='mass rename nerds'):

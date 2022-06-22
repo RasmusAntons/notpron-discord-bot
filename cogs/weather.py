@@ -1,27 +1,23 @@
-from cogs.command import Command, Category
-import discord
-import pyowm
 import datetime
+
+import discord
+from discord.ext import commands
+import pyowm
 import pyowm.commons.exceptions
+
 import globals
 
 
-class WeatherCommand(Command):
-    name = 'weather'
-    category = Category.UTILITY
-    arg_range = (1, 99)
-    description = 'get the current weather at a location'
-    arg_desc = '<location>'
-
-    async def execute(self, args, msg):
-        query = ''.join(args)
+class WeatherCog(commands.Cog, name='Weather', description='get the current weather at a location'):
+    @commands.hybrid_command(name='weather', description='get the current weather at a location')
+    async def weather(self, ctx: commands.Context, location: str) -> None:
         try:
-            await msg.channel.send(
-                embed=get_weather_msg(query,
+            await ctx.reply(
+                embed=get_weather_msg(location,
                                       globals.conf.get(globals.conf.keys.OWM_API_KEY, bypass_protected=True),
                                       globals.conf.get(globals.conf.keys.EMBED_COLOUR)))
         except pyowm.commons.exceptions.NotFoundError:
-            await msg.channel.send(f'{msg.author.mention} I don\'t know that place')
+            raise RuntimeError(f'I don\'t know that place')
 
 
 def degrees_to_cardinal(d):
@@ -53,7 +49,8 @@ def get_weather_msg(query, owm_key, embed_colour):
     lat = f'{obs.location.lat:.3f}'.rstrip('0')
     lon = f'{obs.location.lon:.3f}'.rstrip('0')
     url = f'<https://www.google.com/maps/@{lat},{lon},12z>'
-    embed.add_field(name=f'{temp_c}°C ({temp_f}°F)', value='\n'.join([status, wind, humidity, sun_info, url]), inline=False)
+    embed.add_field(name=f'{temp_c}°C ({temp_f}°F)', value='\n'.join([status, wind, humidity, sun_info, url]),
+                    inline=False)
     local_time = datetime.datetime.utcfromtimestamp(obs.rec_time + weather.utc_offset).strftime('%b %d %H:%M')
     embed.set_footer(text=f'Local time: {local_time}')
     return embed

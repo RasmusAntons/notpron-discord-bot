@@ -17,9 +17,9 @@ from utils import *
 class DiscordConnection(commands.Bot):
     ENABLED_COGS = [ColourCog, ConfigCog, NotpronCog, ArchiveCog, PurgeCog, ConvertCog, CovidCog, EightballCog, EvalCog,
                     ExifCog, FontCog, HighlightCog, ImagineCog, MagiceyeCog, MarkovCog, EnigmaticsCog, RemindmeCog,
-                    RenameCog]
+                    RenameCog, RolesCog, RollCog, RrCog, RvCog, TranslateCog, WeatherCog]
 
-    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, DefaultRoleListener, BotReactionListener, DmRelayListener]
+    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, BotReactionListener, DmRelayListener]
 
     def __init__(self, config_file):
         intents = discord.Intents.default()
@@ -100,10 +100,11 @@ class DiscordConnection(commands.Bot):
             return
         if isinstance(error, (commands.CommandNotFound, commands.errors.CheckFailure)):
             return
-        while hasattr(error, 'original'):
+        while hasattr(error, 'original') and getattr(error, 'original'):
             error = getattr(error, 'original')
         try:
-            await ctx.reply(error)
+            msg = str(error) or error.__class__.__name__
+            await ctx.reply(msg)
         except discord.NotFound:
             pass
         await self.report_error(exc=error, method=f'{ctx.cog.__class__.__name__}:{ctx.command}', args=ctx.args[2:])
@@ -154,12 +155,12 @@ class DiscordConnection(commands.Bot):
             ch = await get_channel(payload.channel_id)
             message = await ch.fetch_message(payload.message_id)
             reaction = None
-            for reaction in message.reactions:
-                if (type(reaction.emoji) == str and reaction.emoji == payload.emoji.name) or (
-                        isinstance(reaction.emoji, discord.Emoji) and reaction.emoji.id == payload.emoji.id):
-                    reaction = reaction
+            for other in message.reactions:
+                if (type(other.emoji) == str and other.emoji == payload.emoji.name) or (
+                        isinstance(other.emoji, discord.Emoji) and other.emoji.id == payload.emoji.id):
+                    reaction = other
                     break
-            user = await get_user(payload.user_id)
+            user = ch.guild.get_member(payload.user_id) or await ch.guild.fetch_member(payload.user_id)
             for cog in self.cogs.values():
                 cog_listeners = dict(cog.get_listeners())
                 if 'on_reaction_add' in cog_listeners:
@@ -171,15 +172,16 @@ class DiscordConnection(commands.Bot):
             ch = await get_channel(payload.channel_id)
             message = await ch.fetch_message(payload.message_id)
             reaction = None
-            for reaction in message.reactions:
-                if (type(reaction.emoji) == str and reaction.emoji == payload.emoji.name) or (
-                        isinstance(reaction.emoji, discord.Emoji) and reaction.emoji.id == payload.emoji.id):
-                    reaction = reaction
+            for other in message.reactions:
+                if (type(other.emoji) == str and other.emoji == payload.emoji.name) or (
+                        isinstance(other.emoji, discord.Emoji) and other.emoji.id == payload.emoji.id):
+                    reaction = other
                     break
             if reaction is None:
                 data = {'count': 0, 'me': False, 'emoji': payload.emoji}
+                emoji = payload.emoji.name if payload.emoji.id is None else payload.emoji
                 reaction = discord.Reaction(message=message, data=data, emoji=emoji)
-            user = await get_user(payload.user_id)
+            user = ch.guild.get_member(payload.user_id) or await ch.guild.fetch_member(payload.user_id)
             for cog in self.cogs.values():
                 cog_listeners = dict(cog.get_listeners())
                 if 'on_reaction_remove' in cog_listeners:

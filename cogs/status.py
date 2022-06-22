@@ -1,9 +1,11 @@
-from listeners import ReadyListener
 import discord
+from discord.ext import commands
+
 import globals
 
 
-class StatusListener(ReadyListener):
+class StatusCog(commands.Cog, name='Status', description='set status when logging in'):
+    @commands.Cog.listener()
     async def on_ready(self):
         listening = globals.conf.get(globals.conf.keys.LISTENING)
         if listening is not None:
@@ -11,4 +13,4 @@ class StatusListener(ReadyListener):
                 await globals.bot.change_presence(
                     activity=discord.Activity(type=discord.ActivityType.listening, name=listening))
             else:
-                await globals.change_presence(activity=None)
+                await globals.bot.change_presence(activity=None)

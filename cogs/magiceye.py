@@ -1,16 +1,16 @@
-import discord
-from PIL import Image
-import numpy as np
-import math
-import urllib.request
 import io
-from discord.ext import commands
-from discord.app_commands import context_menu
-from urllib.parse import urlparse
+import math
 import os
+from urllib.parse import urlparse
+import urllib.request
+
+from PIL import Image
+import discord
+from discord.app_commands import context_menu
+from discord.ext import commands
+import numpy as np
 
 import globals
-from utils import escape_discord
 
 
 def _magiceye(url):
@@ -42,7 +42,7 @@ class MagiceyeCog(commands.Cog, name='Magiceye', description='solve magiceye ima
         self.app_commands = [self.context_magiceye]
 
     @commands.hybrid_command(name='magiceye', description='solve magiceye image')
-    async def colour(self, ctx: commands.Context, file: discord.Attachment) -> None:
+    async def magiceye(self, ctx: commands.Context, file: discord.Attachment) -> None:
         if ctx.interaction:
             await ctx.interaction.response.defer()
             out_file = _magiceye(file.url)
