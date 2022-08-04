@@ -9,6 +9,7 @@ import pymongo
 import api
 from cogs import *
 from config import Config
+import globals
 from listeners import *
 from mongodb_markov import MongodbMarkov
 from utils import *
@@ -26,7 +27,7 @@ class DiscordConnection(commands.Bot):
         intents = discord.Intents.default()
         intents.members = True
         intents.message_content = True
-        super().__init__(intents=intents, command_prefix='+')
+        super().__init__(intents=intents, command_prefix=globals.conf.get(globals.conf.keys.PREFIX))
         globals.bot = self
         self.conf = Config(config_file)
         self._db_client = pymongo.MongoClient(
