@@ -75,7 +75,7 @@ class DiscordConnection(commands.Bot):
             print('Reconnected.')
 
     async def report_error(self, exc=None, method='unknown', args=None):
-        if exc is not None:
+        if exc is not None and sys.version_info >= (3, 10):
             tb = ''.join(traceback.format_exception(exc))
         else:
             tb = traceback.format_exc()
