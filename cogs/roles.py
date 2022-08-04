@@ -39,6 +39,8 @@ class RolesCog(commands.Cog, name='Roles', description='display a 6-digit hex co
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, member: discord.Member):
+        if member.id == globals.bot.user.id:
+            return
         channel = reaction.message.channel
         if channel.id == globals.conf.get(globals.conf.keys.ROLE_CHANNEL):
             print('in role channel')
@@ -66,6 +68,8 @@ class RolesCog(commands.Cog, name='Roles', description='display a 6-digit hex co
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction: discord.Reaction, member: discord.Member):
+        if member.id == globals.bot.user.id:
+            return
         channel = reaction.message.channel
         if channel.id == globals.conf.get(globals.conf.keys.ROLE_CHANNEL):
             if reaction.is_custom_emoji():

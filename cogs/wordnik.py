@@ -1,7 +1,6 @@
-import requests
 import wordnik.swagger
 import wordnik.WordApi
-from cogs.command import Command, Category
+from discord.ext import commands
 import globals
 import discord
 import pandas as pd
@@ -12,80 +11,40 @@ import urllib
 import utils
 
 
-class WordnikCommand(Command):
-    name = 'wordnik'
-    category = Category.UTILITY
-    aliases = ['define']
-    arg_range = (1, 99)
-    description = 'define a word'
-    arg_desc = '(define <query...> [limit=<n>])|(frequency <query...> [start=<n>] [end=<n>])'
-
-    async def send_usage(self):
-        pass
-
-    async def execute(self, args, msg):
+class WordnikCog(commands.Cog, name='Wordnik', description='wordnik'):
+    @commands.hybrid_command(name='define', description='define a word')
+    async def define(self, ctx: commands.Context, word: str, limit: int = 1) -> None:
         api_key = globals.conf.get(globals.conf.keys.WORDNIK_API_KEY, bypass_protected=True)
         wordnik_client = wordnik.swagger.ApiClient(api_key, 'https://api.wordnik.com/v4')
         word_api = wordnik.WordApi.WordApi(wordnik_client)
-        for subcmd in ['define']:
-            if msg.content.split(' ')[0][1:] == subcmd:
-                args.insert(0, subcmd)
-        if args[0] == 'define':
-            query = []
-            limit = 1
-            for arg in args[1:]:
-                if arg.startswith('limit='):
-                    limit = int(arg[6:])
-                else:
-                    query.append(arg)
-            query = ' '.join(query)
-            if not query:
-                return False
-            return await self.define(word_api, msg, query, limit)
-        elif args[0] == 'frequency':
-            query = []
-            start = 1800
-            end = 2022
-            for arg in args[1:]:
-                if arg.startswith('start='):
-                    start = int(arg[6:])
-                elif arg.startswith('end='):
-                    end = int(arg[4:])
-                else:
-                    query.append(arg)
-            query = ' '.join(query)
-            if not query:
-                return False
-            await self.frequency(word_api, msg, query, start=start, end=end)
-        else:
-            return False
-        return True
-
-    async def define(self, word_api, msg, query, limit=1):
         dictionaries = 'all'
         try:
-            definitions = word_api.getDefinitions(query, limit=limit + 5, sourceDictionaries=dictionaries)
+            definitions = word_api.getDefinitions(word, limit=(limit + 5), sourceDictionaries=dictionaries)
             definitions = list(filter(lambda d: d.text, definitions))[:limit]
         except urllib.error.HTTPError:
             definitions = None
         if definitions:
-            embed = discord.Embed(description=utils.escape_discord(query),
+            embed = discord.Embed(description=utils.escape_discord(word),
                                   color=globals.conf.get(globals.conf.keys.EMBED_COLOUR))
             for definition in definitions:
                 text = utils.escape_discord(definition.text)
                 text = text.replace('<xref>', '*').replace('</xref>', '*').replace('<em>', '**').replace('</em>', '**')
                 embed.add_field(name=definition.partOfSpeech, value=text, inline=False)
-            await msg.reply(embed=embed)
+            await ctx.reply(embed=embed)
         else:
-            await msg.reply('no definition found')
+            await ctx.reply('no definition found')
 
-    async def frequency(self, word_api, msg, query, start=1800, end=2022):
+    @commands.hybrid_command(name='wordfrequency', description='show usage of a word in history')
+    async def wordfrequency(self, ctx: commands.Context, word: str, start: int = 1800, end: int = 2022) -> None:
+        api_key = globals.conf.get(globals.conf.keys.WORDNIK_API_KEY, bypass_protected=True)
+        wordnik_client = wordnik.swagger.ApiClient(api_key, 'https://api.wordnik.com/v4')
+        word_api = wordnik.WordApi.WordApi(wordnik_client)
         try:
-            frequency = word_api.getWordFrequency(query, startYear=start, endYear=end)
+            frequency = word_api.getWordFrequency(word, startYear=start, endYear=end)
         except urllib.error.HTTPError:
-            return await msg.reply('word not found')
+            return await ctx.reply('word not found')
         df = pd.DataFrame(((point.year, point.count) for point in frequency.frequency), columns=['year', 'count'])
-        embed = discord.Embed(description=utils.escape_discord(query),
+        embed = discord.Embed(description=utils.escape_discord(word),
                               color=globals.conf.get(globals.conf.keys.EMBED_COLOUR))
         p = df.plot(x='year', y='count', kind='line', grid=True, figsize=(7.5, 4.1), color='#a6ce86', legend=False)
         p.set_facecolor('#2f3136')
@@ -104,4 +63,4 @@ class WordnikCommand(Command):
         out_file.seek(0)
         file = discord.File(out_file, filename=f'frequency.png')
         embed.set_image(url=f'attachment://frequency.png')
-        await msg.reply(file=file, embed=embed)
+        await ctx.reply(file=file, embed=embed)

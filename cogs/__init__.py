@@ -7,13 +7,11 @@ from .eightball import EightballCog
 from .roll import RollCog
 from .rr import RrCog
 from .rv import RvCog
-# from .solver import SolverCommand
-# from .thread import ThreadCommand
 from .translate import TranslateCog
 from .weather import WeatherCog
-# from .word_game import GuessingGameCommand
-# from .whosaidit import WhoSaidItCommand
-# from .wordnik import WordnikCommand
+from .word_game import WordgameCog
+from .whosaidit import WhosaiditCog
+from .wordnik import WordnikCog
 from .enigmatics import EnigmaticsCog
 from .eval import EvalCog
 from .exif import ExifCog

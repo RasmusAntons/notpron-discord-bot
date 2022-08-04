@@ -17,7 +17,8 @@ from utils import *
 class DiscordConnection(commands.Bot):
     ENABLED_COGS = [ColourCog, ConfigCog, NotpronCog, ArchiveCog, PurgeCog, ConvertCog, CovidCog, EightballCog, EvalCog,
                     ExifCog, FontCog, HighlightCog, ImagineCog, MagiceyeCog, MarkovCog, EnigmaticsCog, RemindmeCog,
-                    RenameCog, RolesCog, RollCog, RrCog, RvCog, TranslateCog, WeatherCog]
+                    RenameCog, RolesCog, RollCog, RrCog, RvCog, TranslateCog, WeatherCog, WhosaiditCog, WordgameCog,
+                    WordnikCog]
 
     ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, BotReactionListener, DmRelayListener]
 
@@ -58,8 +59,9 @@ class DiscordConnection(commands.Bot):
             if hasattr(cog_instance, 'app_commands'):
                 for app_command in cog_instance.app_commands:
                     self.tree.add_command(app_command)
-        self.tree.copy_global_to(guild=discord.Object(id=416666891055005706))
-        await self.tree.sync(guild=discord.Object(id=416666891055005706))
+        # self.tree.copy_global_to(guild=discord.Object(id=416666891055005706))
+        # await self.tree.sync(guild=discord.Object(id=416666891055005706))
+        await self.tree.sync()
         self.add_check(self.check, call_once=True)
         # print(self.get_cog('ColourCommand').get_commands())
 
