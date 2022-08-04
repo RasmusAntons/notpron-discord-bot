@@ -38,7 +38,7 @@ class ExifCog(commands.Cog, name='Exif', description='show file file metadata'):
     @commands.hybrid_command(name='exif', description='show file file metadata')
     async def exif(self, ctx: commands.Context, file: discord.Attachment) -> None:
         res = _exif(file.url)
-        res_file = discord.File(io.StringIO(res), f'{name}.exif.txt')
+        res_file = discord.File(io.StringIO(res), f'{file.filename}.exif.txt')
         await ctx.reply(f'**{escape_discord(file.filename)}**', file=res_file)
 
     @staticmethod
