@@ -37,9 +37,9 @@ class ExifCog(commands.Cog, name='Exif', description='show file file metadata'):
 
     @commands.hybrid_command(name='exif', description='show file file metadata')
     async def exif(self, ctx: commands.Context, file: discord.Attachment) -> None:
-        attrs = _exif(file.url)
-        res = discord.File(io.StringIO('\n'.join(attrs)), f'{file.filename}.exif.txt')
-        await ctx.reply(f'**{escape_discord(file.filename)}**', file=res)
+        res = _exif(file.url)
+        res_file = discord.File(io.StringIO(res), f'{name}.exif.txt')
+        await ctx.reply(f'**{escape_discord(file.filename)}**', file=res_file)
 
     @staticmethod
     @context_menu(name='exif')
