@@ -70,11 +70,25 @@ class WhosaiditCog(commands.Cog, name='Whosaidit', description='who said it'):
             user = ctx.author
         if user.id != ctx.author.id and not config.is_mod(ctx.author):
             await ctx.reply('you can only add yourself', ephemeral=True)
+            return
         try:
             self.coll_enabled.insert_one({'uid': user.id})
             await ctx.reply(f'added {user.mention} to the game')
         except pymongo.errors.DuplicateKeyError:
             await ctx.reply(f'that user is already in the game')
+
+    @whosaidit_grp.command(name='removeuser', description='remove user from the game')
+    async def adduser(self, ctx: commands.Context, user: discord.User = None):
+        if user is None:
+            user = ctx.author
+        if user.id != ctx.author.id and not config.is_mod(ctx.author):
+            await ctx.reply('you can only remove yourself', ephemeral=True)
+            return
+        res = self.coll_enabled.delete_one({'uid': user.id})
+        if res.deleted_count:
+            await ctx.reply(f'removed {user.mention} from the game')
+        else:
+            await ctx.reply(f'that user is not in the game')
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
