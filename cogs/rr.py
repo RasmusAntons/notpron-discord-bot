@@ -46,7 +46,7 @@ class RrCog(commands.Cog, name='Rr', description='play a round of russian roulet
                     f'*click* - empty chamber. {ctx.author.display_name} will live another day. Who\'s '
                     f'next? Misses since last death: {stats["streak"]}'
                 )
-        await self.current_users.remove(ctx.author.id)
+        self.current_users.remove(ctx.author.id)
 
     @commands.hybrid_command(name='rrstats', description='see russian roulette stats')
     async def rrstats(self, ctx: commands.Context) -> None:
