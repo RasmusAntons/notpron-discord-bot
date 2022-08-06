@@ -14,9 +14,13 @@ class RrCog(commands.Cog, name='Rr', description='play a round of russian roulet
         self.coll = globals.bot.db['russian_roulette']
         if not self.coll.find_one({}):
             self.coll.insert_one({'streak': 0, 'max_streak': 0, 'uid': None, 'date': None, 'misses': 0, 'deaths': 0})
+        self.current_users = set()
 
     @commands.hybrid_command(name='rr', description='play a round of russian roulette')
     async def rr(self, ctx: commands.Context) -> None:
+        if ctx.author.id in self.current_users:
+            await ctx.reply('wait for the previous rr to finish', ephemeral=True)
+        self.current_users.add(ctx.author.id)
         await ctx.reply(
             f'*{ctx.author.display_name} loads one bullet into the revolver and slowly pulls the trigger...*'
         )
@@ -42,6 +46,7 @@ class RrCog(commands.Cog, name='Rr', description='play a round of russian roulet
                     f'*click* - empty chamber. {ctx.author.display_name} will live another day. Who\'s '
                     f'next? Misses since last death: {stats["streak"]}'
                 )
+        await self.current_users.remove(ctx.author.id)
 
     @commands.hybrid_command(name='rrstats', description='see russian roulette stats')
     async def rrstats(self, ctx: commands.Context) -> None:
