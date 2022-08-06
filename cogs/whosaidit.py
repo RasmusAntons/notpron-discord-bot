@@ -68,7 +68,7 @@ class WhosaiditCog(commands.Cog, name='Whosaidit', description='who said it'):
     async def adduser(self, ctx: commands.Context, user: discord.User = None):
         if user is None:
             user = ctx.author
-        if user.id != ctx.author.id and not config.is_mod(ctx.author):
+        if user.id != ctx.author.id and not await config.is_mod(ctx.author):
             await ctx.reply('you can only add yourself', ephemeral=True)
             return
         try:
@@ -81,7 +81,7 @@ class WhosaiditCog(commands.Cog, name='Whosaidit', description='who said it'):
     async def adduser(self, ctx: commands.Context, user: discord.User = None):
         if user is None:
             user = ctx.author
-        if user.id != ctx.author.id and not config.is_mod(ctx.author):
+        if user.id != ctx.author.id and not await config.is_mod(ctx.author):
             await ctx.reply('you can only remove yourself', ephemeral=True)
             return
         res = self.coll_enabled.delete_one({'uid': user.id})
