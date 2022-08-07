@@ -54,7 +54,7 @@ class NotpronCog(discord.ext.commands.Cog, name='Notpron',
 
     @discord.ext.commands.hybrid_command(name='antihint', description='get the antihint for a level')
     @commands.check(check)
-    async def hint(self, ctx: commands.Context, level: str) -> None:
+    async def antihint(self, ctx: commands.Context, level: str) -> None:
         await self._hint(ctx, level, antihint=True)
 
     @discord.ext.commands.hybrid_command(name='thread', description='get a link to the forum thread to a level')
