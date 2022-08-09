@@ -52,7 +52,7 @@ class RemindmeCog(commands.Cog, name='Remindme', description='set a reminder'):
         await ctx.reply(f'Set a reminder for <t:{int(ts.timestamp())}>.')
 
     @remindme_grp.command(name='in', description='set a reminder in a certain time')
-    async def remindme_in(self, ctx: commands.Context, relative_time: str, text: str) -> None:
+    async def remindme_in(self, ctx: commands.Context, relative_time: str, text: str = None) -> None:
         relative_time = pytimeparse.timeparse.timeparse(relative_time)
         if relative_time is None:
             raise RuntimeError('Invalid time format.')
@@ -60,7 +60,7 @@ class RemindmeCog(commands.Cog, name='Remindme', description='set a reminder'):
         await self._remindme(ctx, ts, text)
 
     @remindme_grp.command(name='at', description='set a reminder at a certain time')
-    async def remindme_at(self, ctx: commands.Context, absolute_time: str, text: str) -> None:
+    async def remindme_at(self, ctx: commands.Context, absolute_time: str, text: str = None) -> None:
         try:
             ts = dateutil.parser.parse(absolute_time)
             ts = ts.replace(tzinfo=ts.tzinfo or datetime.timezone.utc)
