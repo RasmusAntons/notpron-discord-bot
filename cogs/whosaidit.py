@@ -39,8 +39,8 @@ class WhosaiditCog(commands.Cog, name='Whosaidit', description='who said it'):
     async def start(self, ctx: commands.Context) -> None:
         enabled_users = [user['uid'] for user in self.coll_enabled.find()]
         selection_uids = random.sample(enabled_users, min(len(enabled_users), 10))
-        selection_users = sorted([globals.bot.get_user(uid) or globals.bot.fetch_user(uid) for uid in selection_uids],
-                                 key=lambda u: u.display_name)
+        selection_users = [globals.bot.get_user(uid) or await globals.bot.fetch_user(uid) for uid in selection_uids]
+        selection_users = sorted(selection_users, key=lambda u: u.display_name)
         target_user = random.choice(selection_users)
         game_msg = await ctx.reply(embed=self.format_msg(selection_users, []))
         game_state = {'selection': selection_users, 'target': target_user, 'clues': [], 'guesses': {}, 'ended': False}
