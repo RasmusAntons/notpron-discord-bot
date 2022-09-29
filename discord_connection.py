@@ -37,6 +37,7 @@ class DiscordConnection(commands.Bot):
         self.conf.load_db()
         globals.conf = self.conf
         self.markov = MongodbMarkov(db_client=self._db_client, db_name=self.db.name)
+        self.markov_office = MongodbMarkov(db_client=self._db_client, db_name='office_markov')
         self.api_server = api.ApiServer()
         # self.commands = {}
         self.commands_flat = []
