@@ -51,6 +51,22 @@ class MarkovCog(commands.Cog, name='Markov', description='text generation using 
                 await asyncio.sleep(delay)
                 await ctx.reply(escape_mentions(text))
 
+    @commands.hybrid_command(name='theofficequote', desctiptions='generate the office quote')
+    async def theofficequote(self, ctx: commands.Context, prompt: str):
+        if ctx.interaction:
+            await ctx.interaction.response.defer()
+        texts = list(globals.bot.markov_office.generate_multiple_from_least_common(prompt, limit=np.random.geometric(0.5)))
+        if None in texts:
+            raise RuntimeError(f'I don\' know {character or "the office"} well enough.')
+        text = '\n'.join(texts)[:2000]
+        delay = 0.04 * len(text)
+        if ctx.interaction:
+            await ctx.interaction.followup.send(text)
+        else:
+            async with ctx.channel.typing():
+                await asyncio.sleep(delay)
+                await ctx.reply(escape_mentions(text))
+
     @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.author.bot:
