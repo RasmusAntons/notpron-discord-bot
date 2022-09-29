@@ -66,20 +66,15 @@ class WhosaiditCog(commands.Cog, name='Whosaidit', description='who said it'):
 
     @whosaidit_grp.command(name='theoffice', description='start a game with the office characters')
     async def start(self, ctx: commands.Context) -> None:
-        characters = {'Dealer', 'Man 1', 'Seth Mayers', 'Pam', 'Woman 1', 'Darryl', 'Woman 2', 'All', 'Senator Lipton',
-                      'Man', 'Clark', 'Woman 3', 'Robert California', 'Creed', 'Hank', 'Phyllis', 'Camera', 'Stripper',
-                      'Malcolm', 'Carol Stills', 'Stanley', 'Ravi', 'Nellie Bertram', 'Val', 'Brandon', 'Bob', 'Warren',
-                      'Dwight', 'Holly', 'Everyone', 'Todd Packer', 'Michael', 'Hunter', 'Jordan', 'Robert', 'Billy',
-                      'Jan', 'Receptionist', 'Dakota', 'Woman over speakerphone', 'Ryan',
-                      'Pam as “ninth-biggest client”', 'Jakey', 'Ed', 'Nellie', 'Minister', 'Oscar', 'Meredith', 'Jo',
-                      'David Brent', 'Others', 'Andy', 'Photographer', 'Roy', 'Gabe', 'Zeke', 'Mose', 'Joan', 'Hide',
-                      'Moderator', 'Angela', 'Usher', 'Rachel', 'Kendall', 'Billy’s Girlfriend',
-                      'Vance Refrigeration guy', 'Woman 4', 'Pam as “fourth-biggest client”', 'Realtor', 'Erin',
-                      'Man 3', 'Nurse', 'Fred Henry', 'Woman', 'Woman from Buffalo', 'Warren Buffett', 'David',
-                      'Casey Dean', 'Kelly', 'Pete', 'Charles', 'Kevin', 'Jada', 'Fred', 'Jim', 'Katy', 'Bill Hader',
-                      'Toby', 'Finger Lakes Guy', 'Troy', 'Bob Vance', 'Crowd', 'Co-workers', 'Man 2', 'Merv', 'Holy',
-                      'Jake', 'Carol', 'Rolph', 'AJ', 'Karen', 'Sasha', 'Meredith’s Vet', 'David Wallace', 'Calvin',
-                      'Both', 'Man from Buffalo', 'Nick', 'Buyer', 'Merv Bronte', 'Guy', 'Someone'}
+        characters = {'Pam', 'Darryl', 'Senator Lipton', 'Clark', 'Robert California', 'Creed', 'Hank', 'Phyllis',
+                      'Stripper', 'Malcolm', 'Carol Stills', 'Stanley', 'Ravi', 'Nellie Bertram', 'Val', 'Brandon',
+                      'Dwight', 'Holly', 'Todd Packer', 'Michael', 'Hunter', 'Jordan', 'Robert', 'Billy', 'Jan',
+                      'Dakota', 'Ryan', 'Jakey', 'Ed', 'Nellie', 'Oscar', 'Meredith', 'Jo', 'David Brent', 'Andy',
+                      'Roy', 'Gabe', 'Zeke', 'Mose', 'Joan', 'Hide', 'Angela', 'Rachel', 'Kendall', 'Erin',
+                      'Fred Henry', 'David', 'Casey Dean', 'Kelly', 'Pete', 'Charles', 'Kevin', 'Jada', 'Fred',
+                      'Jim', 'Katy', 'Bill Hader', 'Toby', 'Finger Lakes Guy', 'Troy', 'Bob Vance', 'Merv', 'Holy',
+                      'Jake', 'Carol', 'Rolph', 'AJ', 'Karen', 'Sasha', 'David Wallace', 'Calvin', 'Nick',
+                      'Merv Bronte'}
         Character = namedtuple('Character', ['display_name', 'id'])
         selection_names = random.sample(characters, min(len(characters), 10))
         selection_chars = [Character(display_name=name, id=name.lower()) for name in selection_names]
