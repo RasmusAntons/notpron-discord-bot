@@ -1,5 +1,6 @@
 import asyncio
 import random
+import re
 from collections import namedtuple
 
 import discord
@@ -77,7 +78,7 @@ class WhosaiditCog(commands.Cog, name='Whosaidit', description='who said it'):
                       'Merv Bronte'}
         Character = namedtuple('Character', ['display_name', 'id'])
         selection_names = random.sample(characters, min(len(characters), 10))
-        selection_chars = [Character(display_name=name, id=name.lower()) for name in selection_names]
+        selection_chars = [Character(display_name=name, id=re.sub(r'[^a-zA-Z]', '', name.lower())) for name in selection_names]
         selection_chars = sorted(selection_chars, key=lambda u: u.display_name)
         target_char = random.choice(selection_chars)
         game_msg = await ctx.reply(embed=self.format_msg(selection_chars, []))

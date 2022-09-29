@@ -1,6 +1,7 @@
 import asyncio
 from html.parser import HTMLParser
 import aiohttp
+import re
 
 from mongodb_markov import MongodbMarkov
 
@@ -64,7 +65,7 @@ async def parse_all():
                     parser.feed(text)
                     for character, quote in parser.quotes:
                         characters.add(character)
-                        markov.insert_text(quote, tag=character.lower())
+                        markov.insert_text(quote, tag=re.sub(r'[^a-zA-Z]', '', character.lower()))
                 print(f'{url=}')
     print(f'{characters=}')
 
