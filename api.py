@@ -124,9 +124,10 @@ class ApiServer:
         title = title.replace('`', '')
         description = f'`{title}` by {mention}'
         embed = discord.Embed(title='ɴᴇᴡ ᴡᴇᴇᴋʟʏ ᴘᴜᴢᴢʟᴇ', description=description,
-                              color=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR))
+                              color=globals.bot.conf.get(globals.bot.conf.keys.EMBED_COLOUR),
+                              url='https://weeklies.enigmatics.org/')
         embed.set_thumbnail(url=icon)
-        embed.set_footer(text='To learn how to turn these notifications off, look at the message above.')
+        # embed.set_footer(text='To learn how to turn these notifications off, look at the message above.')
         # await ch_announce.purge(limit=1, check=lambda m: m.author == globals.bot.user)
         msg = await ch_announce.send('@everyone', embed=embed)
         if ch_announce.is_news():

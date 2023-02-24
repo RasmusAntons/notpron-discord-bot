@@ -7,10 +7,10 @@ import globals
 def to_code_block(text, lang=''):
     while '```' in text:
         text = text.replace('```', '`\u200c`\u200c`')
-    return f'```{lang}{text}```'
+    return f'```{lang}\n{text}```'
 
 
-def inline_code(text):
+def inline_code(text, max_len=None):
     while '``' in text:
         text = text.replace('``', '`​`')
     return f'``{text}``'
@@ -49,7 +49,7 @@ async def get_member(user):
         return None
 
 
-async def get_channel(chid):
+async def get_channel(chid: int) -> discord.TextChannel:
     try:
         return globals.bot.get_channel(chid) or await globals.bot.fetch_channel(chid)
     except discord.errors.NotFound:

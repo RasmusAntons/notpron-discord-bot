@@ -1,9 +1,11 @@
-import yaml
-from .key_models import *
 import sys
+
+import yaml
+
+import globals
 from .conf_keys import Key
 from .helper_functions import *
-import globals
+from .key_models import *
 
 
 class Config:
@@ -110,13 +112,13 @@ class Config:
         value_dict = self.get(key, bypass_protected=True)
         if value_dict is None:
             return default
-        return value_dict.get(sub_key, default)
+        return value_dict.get(str(sub_key), default)
 
     def dict_set(self, key, sub_key, value):
         assert type(sub_key) == key.value.key_type.value
         assert type(value) == key.value.value_type.value
         value_dict = self.get(key, {})
-        value_dict[sub_key] = value
+        value_dict[str(sub_key)] = value
         self.set(key, value_dict)
 
     def dict_unset(self, key, sub_key):
@@ -124,7 +126,7 @@ class Config:
         value_dict = self.get(key, {})
         if sub_key not in value_dict:
             return False
-        del value_dict[sub_key]
+        del value_dict[str(sub_key)]
         self.set(key, value_dict)
         return True
 
