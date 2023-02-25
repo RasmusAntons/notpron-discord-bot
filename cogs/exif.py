@@ -3,7 +3,7 @@ import os
 import urllib.request
 
 import discord
-from discord.app_commands import context_menu
+from discord import app_commands
 from discord.ext import commands
 import exiftool
 from urllib.parse import urlparse
@@ -33,7 +33,8 @@ def _exif(url):
 
 class ExifCog(commands.Cog, name='Exif', description='show file file metadata'):
     def __init__(self):
-        self.app_commands = [self.context_exif]
+        self.ctx_menu = app_commands.ContextMenu(name='exif', callback=self.context_exif)
+        self.app_commands = [] # self.ctx_menu]
 
     @commands.hybrid_command(name='exif', description='show file file metadata')
     async def exif(self, ctx: commands.Context, file: discord.Attachment) -> None:
@@ -41,9 +42,7 @@ class ExifCog(commands.Cog, name='Exif', description='show file file metadata'):
         res_file = discord.File(io.StringIO(res), f'{file.filename}.exif.txt')
         await ctx.reply(f'**{escape_discord(file.filename)}**', file=res_file)
 
-    @staticmethod
-    @context_menu(name='exif')
-    async def context_exif(interaction: discord.Interaction, message: discord.Message):
+    async def context_exif(self, interaction: discord.Interaction, message: discord.Message):
         url = None
         name = None
         if message.attachments:

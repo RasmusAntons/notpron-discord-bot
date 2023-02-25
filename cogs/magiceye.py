@@ -6,7 +6,7 @@ import urllib.request
 
 from PIL import Image
 import discord
-from discord.app_commands import context_menu
+from discord import app_commands
 from discord.ext import commands
 import numpy as np
 
@@ -39,7 +39,8 @@ def _magiceye(url):
 
 class MagiceyeCog(commands.Cog, name='Magiceye', description='solve magiceye image'):
     def __init__(self):
-        self.app_commands = [self.context_magiceye]
+        self.ctx_menu = app_commands.ContextMenu(name='magiceye', callback=self.context_magiceye)
+        self.app_commands = [] # self.ctx_menu]
 
     @commands.hybrid_command(name='magiceye', description='solve magiceye image')
     async def magiceye(self, ctx: commands.Context, file: discord.Attachment) -> None:
@@ -51,9 +52,7 @@ class MagiceyeCog(commands.Cog, name='Magiceye', description='solve magiceye ima
                 out_file = _magiceye(file.url)
         await ctx.reply(file=discord.File(out_file, filename=f'{file.filename}.png', spoiler=True))
 
-    @staticmethod
-    @context_menu(name='magiceye')
-    async def context_magiceye(interaction: discord.Interaction, message: discord.Message):
+    async def context_magiceye(self, interaction: discord.Interaction, message: discord.Message):
         url = None
         name = None
         if message.attachments:

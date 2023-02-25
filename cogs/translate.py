@@ -17,7 +17,8 @@ class TranslateCog(commands.Cog, name='Translate', description='translate text')
     }
 
     def __init__(self):
-        self.app_commands = [self.context_translate]
+        self.ctx_menu = app_commands.ContextMenu(name='translate', callback=self.context_translate)
+        self.app_commands = [self.ctx_menu]
 
     @staticmethod
     def _translate(text: str, source: str = None, dest: str = 'en'):
@@ -50,9 +51,7 @@ class TranslateCog(commands.Cog, name='Translate', description='translate text')
         embed = self._translate(text, source, dest)
         await ctx.reply('result', embed=embed)
 
-    @staticmethod
-    @app_commands.context_menu(name='translate')
-    async def context_translate(interaction: discord.Interaction, message: discord.Message):
+    async def context_translate(self, interaction: discord.Interaction, message: discord.Message):
         await interaction.response.defer()
         try:
             embed = TranslateCog._translate(message.clean_content)

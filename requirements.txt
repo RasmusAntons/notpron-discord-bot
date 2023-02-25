@@ -14,6 +14,6 @@ forex_python==1.8
 asteval==0.9.29
 Google-Images-Search==1.4.6
 pytimeparse==1.1.8
-googletrans-py==4.0.0
+translators==5.5.6
 pycountry==22.3.5
 pyowm==3.3.0

@@ -6,10 +6,11 @@ services:
       - "8147:8147"
     links:
       - mongo
-    # volumes:
+    volumes:
+      - ./config.yaml:/app/config.yaml
     #   - .:/app
   mongo:
     image: mongo:5
     volumes:
       - ./data:/data/db
-      - ./mongodump:/dump  # mongorestore -d enigmatics /dump/enigmatics
+      # - ./mongodump:/dump  # mongorestore -d enigmatics /dump/enigmatics
