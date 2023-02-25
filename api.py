@@ -10,7 +10,7 @@ from utils import get_guild, escape_discord
 
 class ApiServer:
     def __init__(self):
-        self.coro = asyncio.start_server(self.handle_request, 'localhost',
+        self.coro = asyncio.start_server(self.handle_request, '0.0.0.0',
                                          globals.bot.conf.get(globals.bot.conf.keys.API_PORT))
         """
         'type': 'puzzle_submission',

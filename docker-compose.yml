@@ -1,16 +1,23 @@
 version: "3.8"
 services:
   bot:
+    restart: always
     build: .
-    ports:
-      - "8147:8147"
+    # ports:
+    #  - "8147:8147"
     links:
       - mongo
     volumes:
       - ./config.yaml:/app/config.yaml
     #   - .:/app
   mongo:
+    restart: always
     image: mongo:5
     volumes:
       - ./data:/data/db
       # - ./mongodump:/dump  # mongorestore -d enigmatics /dump/enigmatics
+
+networks:
+  enigmatics:
+    name: enigmatics
+    external: true
