@@ -42,11 +42,11 @@ class ImagineCog(commands.Cog, name='Imagine', description='get an image for you
                            'date': datetime.datetime.utcnow()}
                 self.coll.replace_one({'query': search_params['q'], 'safe': search_params['safe']}, results,
                                       upsert=True)
-                next_state = (results['state'] + 1) % len(results['urls'])
-                self.coll.update_one(results, {'$set': {'state': next_state}})
             if len(results['urls']) == 0:
                 excuses = ['I cannot imagine that', 'I don\'t even know what that is']
                 return await ctx.reply(random.choice(excuses))
+            next_state = (results['state'] + 1) % len(results['urls'])
+            self.coll.update_one(results, {'$set': {'state': next_state}})
             await ctx.reply(results['urls'][results['state']])
         if ctx.interaction:
             await ctx.interaction.response.defer()
