@@ -1,0 +1,9 @@
+[submodule "mongodb_markov"]
+	path = mongodb_markov
+	url = https://github.com/RasmusAntons/mongodb-markov.git
+[submodule "libs/mongodb-markov"]
+	path = libs/mongodb-markov
+	url = https://github.com/RasmusAntons/mongodb-markov.git
+[submodule "libs/covid-19"]
+	path = libs/covid-19
+	url = https://github.com/RasmusAntons/covid-19.git

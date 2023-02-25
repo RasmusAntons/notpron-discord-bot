@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  bot:
+    build: .
+    ports:
+      - "8147:8147"
+    links:
+      - mongo
+    # volumes:
+    #   - .:/app
+  mongo:
+    image: mongo:5
+    volumes:
+      - ./data:/data/db
+      - ./mongodump:/dump  # mongorestore -d enigmatics /dump/enigmatics
