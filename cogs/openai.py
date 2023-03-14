@@ -95,7 +95,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
     async def ai(self, ctx: commands.Context, query: str) -> None:
         if ctx.interaction:
             await ctx.interaction.response.defer()
-            prefix = f'> {discord.utils.escape_mentions(query)}\n'
+            prefix = f'> {discord.utils.escape_mentions(query)}\n\n'
             res = prefix + await self.respond_chat(query=query, username=ctx.author.display_name)
         else:
             async with ctx.channel.typing():
