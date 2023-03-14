@@ -72,6 +72,8 @@ class MarkovCog(commands.Cog, name='Markov', description='text generation using 
         if msg.author.bot:
             return
         if globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
+            if await globals.bot.get_cog('ai').is_ai_message(msg):
+                return
             if globals.bot.user.mentioned_in(msg):
                 if '@everyone' not in msg.content and '@here' not in msg.content:
                     member = msg.channel.guild.get_member(globals.bot.user.id) or \
@@ -82,7 +84,6 @@ class MarkovCog(commands.Cog, name='Markov', description='text generation using 
                         async with msg.channel.typing():
                             await asyncio.sleep(0.04 * len(text))
                             await msg.channel.send(escape_mentions(text))
-        if globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
             if (random.random() * 1000) < globals.conf.get(globals.conf.keys.MARKOV_CHANCE):
                 member = msg.channel.guild.get_member(globals.bot.user.id) or \
                          await msg.channel.guild.fetch_member(globals.bot.user.id)

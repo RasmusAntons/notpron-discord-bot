@@ -25,3 +25,4 @@ from .purge import PurgeCog
 from .remindme import RemindmeCog
 from .rename import RenameCog
 from .roles import RolesCog
+from .openai import OpenAICog

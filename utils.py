@@ -54,3 +54,10 @@ async def get_channel(chid: int) -> discord.TextChannel:
         return globals.bot.get_channel(chid) or await globals.bot.fetch_channel(chid)
     except discord.errors.NotFound:
         return None
+
+
+async def get_message_from_ref(message_ref: discord.MessageReference):
+    if message_ref.cached_message:
+        return message_ref.cached_message
+    channel = globals.bot.get_channel(message_ref.channel_id) or await globals.bot.fetch_channel(message_ref.channel_id)
+    return await channel.fetch_message(message_ref.message_id)

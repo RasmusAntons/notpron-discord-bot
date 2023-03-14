@@ -45,3 +45,5 @@ class Key(enum.Enum):
     GMAPS_API_KEY = ConfigKey('gmaps_api_key', ConfigDatatype.STRING, protected=True, help_text='Api key for google maps geocoding.')
     OWM_API_KEY = ConfigKey('owm_api_key', ConfigDatatype.STRING, protected=True, help_text='API key for openweathermap.org.')
     WORDNIK_API_KEY = ConfigKey('wordnik_api_key', ConfigDatatype.STRING, protected=True, help_text='API key for wordnik.com')
+    OPENAI_ORGANIZATION = ConfigKey('openai_organization', ConfigDatatype.STRING, help_text='Organization ID for openai.com')
+    OPENAI_API_KEY = ConfigKey('openai_api_key', ConfigDatatype.STRING, protected=True, help_text='API key for openai.com')
