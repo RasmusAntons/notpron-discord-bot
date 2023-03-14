@@ -16,6 +16,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         if message.interaction is None:
             return False
         return message.interaction.name == 'ai'
+
     async def respond_chat(self, query: str = None, message: discord.Message = None, username='User'):
         now = datetime.datetime.now()
         current_date = now.strftime('%A, %B %-d %Y')
@@ -81,6 +82,14 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         )
         return response.choices[0].message.content
 
+    async def generate_image(self, query: str = None):
+        openai.organization = globals.conf.get(globals.conf.keys.OPENAI_ORGANIZATION, bypass_protected=True)
+        openai.api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
+        response = openai.Image.create(
+            prompt=query,
+            size='1024x1024'
+        )
+        return response.data[0].url
 
     @commands.hybrid_command(name='ai', description='get actually useful responses')
     async def ai(self, ctx: commands.Context, query: str) -> None:
@@ -91,6 +100,16 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         else:
             async with ctx.channel.typing():
                 res = await self.respond_chat(query=query, username=ctx.author.display_name)
+        await ctx.reply(res)
+
+    @commands.hybrid_command(name='imagine-ai', description='get an image for your query')
+    async def imagine_ai(self, ctx: commands.Context, query: str) -> None:
+        if ctx.interaction:
+            await ctx.interaction.response.defer()
+            res = await self.generate_image(query=query)
+        else:
+            async with ctx.channel.typing():
+                res = await self.generate_image(query=query)
         await ctx.reply(res)
 
     @commands.Cog.listener()
