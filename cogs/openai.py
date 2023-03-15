@@ -8,7 +8,36 @@ import globals
 import utils
 
 
+RATELIMIT_MINUTES = 60 * 6
+RATELIMIT_BURST = 20
+RATELIMIT_BURST_OVERRIDE = {
+    'image': 5
+}
+
+
 class OpenAICog(commands.Cog, name='ai', description='get an image for your query'):
+
+    def __init__(self):
+        self.coll = globals.bot.db['ai_ratelimit']
+        self.coll.create_index('uid', unique=True)
+
+    def check_ratelimit(self, uid, tag=''):
+        user_info = self.coll.find_one({'uid': uid})
+        if user_info and len(user_info.get(f'ts_{tag}', [])) >= RATELIMIT_BURST_OVERRIDE.get(tag, RATELIMIT_BURST):
+            ts = user_info.get(f'ts_{tag}')
+            time_left = datetime.timedelta(minutes=RATELIMIT_MINUTES) - (datetime.datetime.now() - ts[0])
+            if time_left > datetime.timedelta():
+                raise Exception(f'Ratelimit exceeded, try again in {time_left}')
+
+    def insert_ratelimit(self, uid, tag=''):
+        user_info = self.coll.find_one({'uid': uid})
+        if user_info is None:
+            user_info = {'uid': uid}
+        ts = user_info.get(f'ts_{tag}', [])
+        ts.append(datetime.datetime.now())
+        ts = ts[:RATELIMIT_BURST]
+        user_info[f'ts_{tag}'] = ts
+        self.coll.replace_one({'uid': uid}, user_info, upsert=True)
 
     async def is_ai_message(self, message: discord.Message):
         while message.reference is not None:
@@ -93,6 +122,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
 
     @commands.hybrid_command(name='ai', description='get actually useful responses')
     async def ai(self, ctx: commands.Context, query: str) -> None:
+        self.check_ratelimit(ctx.author.id, tag='chat')
         if ctx.interaction:
             await ctx.interaction.response.defer()
             prefix = f'> {discord.utils.escape_mentions(query)}\n\n'
@@ -100,16 +130,19 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         else:
             async with ctx.channel.typing():
                 res = await self.respond_chat(query=query, username=ctx.author.display_name)
+        self.insert_ratelimit(ctx.author.id, tag='chat')
         await ctx.reply(res)
 
     @commands.hybrid_command(name='imagine-ai', description='get an image for your query')
     async def imagine_ai(self, ctx: commands.Context, query: str) -> None:
+        self.check_ratelimit(ctx.author.id, tag='image')
         if ctx.interaction:
             await ctx.interaction.response.defer()
             res = await self.generate_image(query=query)
         else:
             async with ctx.channel.typing():
                 res = await self.generate_image(query=query)
+        self.insert_ratelimit(ctx.author.id, tag='image')
         await ctx.reply(res)
 
     @commands.Cog.listener()
@@ -117,6 +150,8 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         if msg.author.bot:
             return
         if await self.is_ai_message(msg):
+            self.check_ratelimit(msg.author.id)
             async with msg.channel.typing():
                 response = await self.respond_chat(message=msg, username=msg.author.display_name)
                 await msg.reply(response)
+            self.insert_ratelimit(msg.author.id)
