@@ -1,43 +1,47 @@
 import datetime
+import logging
 
 import discord
 import openai
 from discord.ext import commands
+import pymongo
 
 import globals
 import utils
 
 
-RATELIMIT_MINUTES = 60 * 6
-RATELIMIT_BURST = 20
-RATELIMIT_BURST_OVERRIDE = {
-    'image': 5
-}
-
-
 class OpenAICog(commands.Cog, name='ai', description='get an image for your query'):
 
     def __init__(self):
+        self.ratelimit_burst_conf_keys = {
+            'chat': globals.conf.keys.OPENAI_RATELIMIT_BURST_CHAT,
+            'image': globals.conf.keys.OPENAI_RATELIMIT_BURST_IMAGES
+        }
         self.coll = globals.bot.db['ai_ratelimit']
-        self.coll.create_index('uid', unique=True)
+        self.coll.drop_indexes()  # todo: remove once server is updated
+        self.coll.create_index([('uid', pymongo.ASCENDING), ('tag', pymongo.ASCENDING)], unique=True)
 
-    def check_ratelimit(self, uid, tag=''):
-        user_info = self.coll.find_one({'uid': uid})
-        if user_info and len(user_info.get(f'ts_{tag}', [])) >= RATELIMIT_BURST_OVERRIDE.get(tag, RATELIMIT_BURST):
-            ts = user_info.get(f'ts_{tag}')
-            time_left = datetime.timedelta(minutes=RATELIMIT_MINUTES) - (datetime.datetime.now() - ts[0])
+    def check_ratelimit(self, uid, tag):
+        user_info = self.coll.find_one({'uid': uid, 'tag': tag})
+        ratelimit_burst = globals.conf.get(self.ratelimit_burst_conf_keys.get(tag))
+        ratelimit_minutes = globals.conf.get(globals.conf.keys.OPENAI_RATELIMIT_MINUTES)
+        if user_info and ratelimit_burst and len(user_info.get('ts', [])) >= ratelimit_burst:
+            ts = user_info.get('ts')
+            time_left = datetime.timedelta(minutes=ratelimit_minutes) - (datetime.datetime.now() - ts[0])
+            time_left -= datetime.timedelta(microseconds=time_left.microseconds)
             if time_left > datetime.timedelta():
                 raise Exception(f'Ratelimit exceeded, try again in {time_left}')
 
-    def insert_ratelimit(self, uid, tag=''):
-        user_info = self.coll.find_one({'uid': uid})
+    def insert_ratelimit(self, uid, tag):
+        user_info = self.coll.find_one({'uid': uid, 'tag': tag})
         if user_info is None:
-            user_info = {'uid': uid}
-        ts = user_info.get(f'ts_{tag}', [])
+            user_info = {'uid': uid, 'tag': tag}
+        ts = user_info.get('ts', [])
         ts.append(datetime.datetime.now())
-        ts = ts[:RATELIMIT_BURST]
-        user_info[f'ts_{tag}'] = ts
-        self.coll.replace_one({'uid': uid}, user_info, upsert=True)
+        ratelimit_burst = globals.conf.get(self.ratelimit_burst_conf_keys.get(tag))
+        ts = ts[-ratelimit_burst:]
+        user_info['ts'] = ts
+        self.coll.replace_one({'uid': uid, 'tag': tag}, user_info, upsert=True)
 
     async def is_ai_message(self, message: discord.Message):
         while message.reference is not None:
@@ -82,6 +86,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
             '```',
             # '',
             # 'Examples:',
+            '',
             'Current Chat:',
         ]
         current_chat = [
@@ -125,8 +130,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         self.check_ratelimit(ctx.author.id, tag='chat')
         if ctx.interaction:
             await ctx.interaction.response.defer()
-            prefix = f'> {discord.utils.escape_mentions(query)}\n\n'
-            res = prefix + await self.respond_chat(query=query, username=ctx.author.display_name)
+            res = await self.respond_chat(query=query, username=ctx.author.display_name)
         else:
             async with ctx.channel.typing():
                 res = await self.respond_chat(query=query, username=ctx.author.display_name)
@@ -150,8 +154,12 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         if msg.author.bot:
             return
         if await self.is_ai_message(msg):
-            self.check_ratelimit(msg.author.id)
-            async with msg.channel.typing():
-                response = await self.respond_chat(message=msg, username=msg.author.display_name)
-                await msg.reply(response)
-            self.insert_ratelimit(msg.author.id)
+            try:
+                self.check_ratelimit(msg.author.id, tag='chat')
+                async with msg.channel.typing():
+                    response = await self.respond_chat(message=msg, username=msg.author.display_name)
+                    await msg.reply(response)
+                self.insert_ratelimit(msg.author.id, tag='chat')
+            except Exception as e:
+                await msg.reply(str(e) or e.__class__.__name__)
+                await globals.bot.report_error(exc=e, method=f'{self.__class__.__name__}:on_message')

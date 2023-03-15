@@ -40,6 +40,10 @@ class Key(enum.Enum):
     WEEKLY_SOLVER_ROLE = ConfigKey('weekly_solver_role', ConfigDatatype.INT, help_text='Role id of weekly-solver role.')
     WEEKLIES_CHANNEL_ADMIN_ROLE = ConfigKey('weeklies_channel_admin_role', ConfigDatatype.INT, help_text='Role id of weeklies-channel-admin role.')
 
+    OPENAI_RATELIMIT_MINUTES = ConfigKey('openai_ratelimit_minutes', ConfigDatatype.INT, help_text='Time window for openai ratelimit.', default=360)
+    OPENAI_RATELIMIT_BURST_CHAT = ConfigKey('openai_ratelimit_burst_chat', ConfigDatatype.INT, help_text='Number of openai chat requests during time window.', default=20)
+    OPENAI_RATELIMIT_BURST_IMAGES = ConfigKey('openai_ratelimit_burst_images', ConfigDatatype.INT, help_text='Number of openai image requests during time window.', default=5)
+
     IMAGE_API_KEY = ConfigKey('image_api_key', ConfigDatatype.STRING, protected=True, help_text='Api key for google image search.')
     IMAGE_SEARCH_CX = ConfigKey('image_search_cx', ConfigDatatype.STRING, protected=True, help_text='Google custom search engine.')
     GMAPS_API_KEY = ConfigKey('gmaps_api_key', ConfigDatatype.STRING, protected=True, help_text='Api key for google maps geocoding.')
