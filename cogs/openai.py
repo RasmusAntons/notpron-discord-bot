@@ -51,6 +51,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
                 banner_data = await resp.read()
             guild = globals.bot.get_guild(globals.conf.get(globals.conf.keys.GUILD))
             await guild.edit(banner=banner_data)
+            self.banner_coll.replace_one({'type': 'ts'}, {'type': 'ts', 'ts': datetime.datetime.now()}, upsert=True)
         except Exception as e:
             await globals.bot.report_error(exc=e, method=f'{self.__class__.__name__}:daily_banner')
 
