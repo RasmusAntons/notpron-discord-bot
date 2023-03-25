@@ -43,6 +43,7 @@ class Key(enum.Enum):
     OPENAI_RATELIMIT_MINUTES = ConfigKey('openai_ratelimit_minutes', ConfigDatatype.INT, help_text='Time window for openai ratelimit.', default=360)
     OPENAI_RATELIMIT_BURST_CHAT = ConfigKey('openai_ratelimit_burst_chat', ConfigDatatype.INT, help_text='Number of openai chat requests during time window.', default=20)
     OPENAI_RATELIMIT_BURST_IMAGES = ConfigKey('openai_ratelimit_burst_images', ConfigDatatype.INT, help_text='Number of openai image requests during time window.', default=5)
+    OPENAI_DAILY_BANNER_HOUR = ConfigKey('openai_daily_banner_hour', ConfigDatatype.INT, help_text='Hour in UTC to change daily banner (None = disabled)')
 
     IMAGE_API_KEY = ConfigKey('image_api_key', ConfigDatatype.STRING, protected=True, help_text='Api key for google image search.')
     IMAGE_SEARCH_CX = ConfigKey('image_search_cx', ConfigDatatype.STRING, protected=True, help_text='Google custom search engine.')

@@ -1,9 +1,12 @@
 import datetime
+import io
 import logging
+import sys
 
+import aiohttp
 import discord
 import openai
-from discord.ext import commands
+from discord.ext import commands, tasks
 import pymongo
 
 import globals
@@ -20,6 +23,42 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         self.coll = globals.bot.db['ai_ratelimit']
         self.coll.drop_indexes()  # todo: remove once server is updated
         self.coll.create_index([('uid', pymongo.ASCENDING), ('tag', pymongo.ASCENDING)], unique=True)
+        self.banner_coll = globals.bot.db['ai_banner']
+        self.daily_banner.start()
+
+    def cog_unload(self):
+        self.daily_banner.cancel()
+
+    @tasks.loop(seconds=60)
+    async def daily_banner(self):
+        try:
+            banner_hour = globals.conf.get(globals.conf.keys.OPENAI_DAILY_BANNER_HOUR)
+            hour = datetime.datetime.now().hour
+            if banner_hour != hour:
+                return
+            last_banner = self.banner_coll.find_one({'type': 'ts'})
+            if last_banner is not None:
+                if datetime.datetime.now() - last_banner.get('ts') < datetime.timedelta(hours=1):
+                    return
+            openai.organization = globals.conf.get(globals.conf.keys.OPENAI_ORGANIZATION, bypass_protected=True)
+            openai.api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
+            response = await openai.Image.acreate(
+                prompt=f'Generate a banner image for the enigmatics discord server. Any text should be vertically centered. Please include the following themes: Web puzzles, edgy colors and symbols, anime girls..',
+                size='1024x1024'
+            )
+            async with aiohttp.request('GET', response.data[0].url) as resp:
+                assert resp.status == 200
+                banner_data = await resp.read()
+            guild = globals.bot.get_guild(globals.conf.get(globals.conf.keys.GUILD))
+            await guild.edit(banner=banner_data)
+        except Exception as e:
+            await globals.bot.report_error(exc=e, method=f'{self.__class__.__name__}:daily_banner')
+
+
+    @daily_banner.before_loop
+    async def before_daily_banner(self):
+        await globals.bot.wait_until_ready()
+
 
     def check_ratelimit(self, uid, tag):
         user_info = self.coll.find_one({'uid': uid, 'tag': tag})
