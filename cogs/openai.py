@@ -95,7 +95,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         if query is not None:
             current_chat.insert(0, f'{username}: ' + query)
         message_ptr = message
-        while message_ptr is not None:
+        while message_ptr is not None and sum(map(len, current_chat)) + len(message_ptr.content) < 2000:
             prefix = 'Chat bot: ' if message_ptr.author.id == globals.bot.user.id else f'{username}: '
             current_chat.insert(0, prefix + message_ptr.content)
             if message_ptr.reference:
@@ -108,7 +108,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         ]
         openai.organization = globals.conf.get(globals.conf.keys.OPENAI_ORGANIZATION, bypass_protected=True)
         openai.api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
-        response = openai.ChatCompletion.create(
+        response = await openai.ChatCompletion.acreate(
             model='gpt-3.5-turbo',
             messages=messages,
             max_tokens=250,
@@ -119,7 +119,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
     async def generate_image(self, query: str = None):
         openai.organization = globals.conf.get(globals.conf.keys.OPENAI_ORGANIZATION, bypass_protected=True)
         openai.api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
-        response = openai.Image.create(
+        response = await openai.Image.acreate(
             prompt=query,
             size='1024x1024'
         )
