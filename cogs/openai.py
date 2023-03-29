@@ -135,7 +135,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         if query is not None:
             current_chat.insert(0, f'{username}: ' + query)
         message_ptr = message
-        while message_ptr is not None and sum(map(len, current_chat.split(' '))) + len(message_ptr.content.split(' ')) < 1500:
+        while message_ptr is not None and sum(map(len, ' '.join(current_chat).split(' '))) + len(message_ptr.content.split(' ')) < 1500:
             prefix = 'Chat bot: ' if message_ptr.author.id == globals.bot.user.id else f'{username}: '
             current_chat.insert(0, prefix + message_ptr.content)
             if message_ptr.reference:
