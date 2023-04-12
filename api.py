@@ -28,7 +28,9 @@ class ApiServer:
                                 'p': {'chid': int, 'title': str, 'uid': int, 'name': str, 'icon': str, 'week': int,
                                       'solved': list}},
             'puzzle_submission': {'f': self.send_puzzle_submission,
-                                  'p': {'name': str, 'short_name': str, 'description': str, 'submitter': str}}
+                                  'p': {'name': str, 'short_name': str, 'description': str, 'submitter': str}},
+            'puzzle_edit_suggestion': {'f': self.send_puzzle_edit_suggestion,
+                                       'p': {'name': str, 'suggestion_id': str, 'suggestion': str, 'submitter': str}},
         }
 
     async def handle_request(self, reader, writer):
@@ -170,4 +172,16 @@ class ApiServer:
         embed.add_field(name='Name', value=escape_discord(name), inline=False)
         if description:
             embed.add_field(name='Description', value=escape_discord(description), inline=False)
+        await ch.send(f'@everyone', embed=embed)
+
+    async def send_puzzle_edit_suggestion(self, name, suggestion_id, suggestion, submitter):
+        chid = globals.conf.get(globals.conf.keys.CONTROL_CHANNEL)
+        if chid is None:
+            raise RuntimeError('No control channel configured')
+        ch = globals.bot.get_channel(chid)
+        embed = discord.Embed(title=f'New puzzle edit suggestion from {submitter}',
+                              description=f'[link](https://enigmatics.org/puzzles/edit_suggestion/{suggestion_id})')
+        embed.add_field(name='Name', value=escape_discord(name), inline=False)
+        if description:
+            embed.add_field(name='Suggestion', value=escape_discord(suggestion), inline=False)
         await ch.send(f'@everyone', embed=embed)
