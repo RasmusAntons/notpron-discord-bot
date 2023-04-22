@@ -163,7 +163,7 @@ class ApiServer:
                 traceback.print_exc()
 
     async def send_puzzle_submission(self, name, short_name, description, submitter):
-        chid = globals.conf.get(globals.conf.keys.CONTROL_CHANNEL)
+        chid = globals.conf.get(globals.conf.keys.MOD_CHANNEL)
         if chid is None:
             raise RuntimeError('No control channel configured')
         ch = globals.bot.get_channel(chid)
@@ -175,13 +175,13 @@ class ApiServer:
         await ch.send(f'@everyone', embed=embed)
 
     async def send_puzzle_edit_suggestion(self, name, suggestion_id, suggestion, submitter):
-        chid = globals.conf.get(globals.conf.keys.CONTROL_CHANNEL)
+        chid = globals.conf.get(globals.conf.keys.MOD_CHANNEL)
         if chid is None:
             raise RuntimeError('No control channel configured')
         ch = globals.bot.get_channel(chid)
         embed = discord.Embed(title=f'New puzzle edit suggestion from {submitter}',
                               description=f'[link](https://enigmatics.org/puzzles/edit_suggestion/{suggestion_id})')
         embed.add_field(name='Name', value=escape_discord(name), inline=False)
-        if description:
+        if suggestion:
             embed.add_field(name='Suggestion', value=escape_discord(suggestion), inline=False)
         await ch.send(f'@everyone', embed=embed)

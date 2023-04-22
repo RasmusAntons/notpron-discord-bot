@@ -17,6 +17,7 @@ class Key(enum.Enum):
     GUILD = ConfigKey('guild', ConfigDatatype.INT, help_text='Id of the main guild this bot belongs to.')
     ANNOUNCEMENT_CHANNEL = ConfigKey('announcement_channel', ConfigDatatype.INT, help_text='Id of channel to send announcements to.')
     CONTROL_CHANNEL = ConfigKey('control_channel', ConfigDatatype.INT, help_text='Id of channel for log messages etc.')
+    MOD_CHANNEL = ConfigKey('mod_channel', ConfigDatatype.INT, help_text='Id of channel for mod messages.')
     CHANNELS = ConfigListKey('channels', ConfigDatatype.INT, help_text='Ids of channels the bot is active in.')
     RATELIMITS = ConfigDictKey('ratelimits', ConfigDatatype.INT, ConfigDatatype.INT, help_text='Ratelimits in seconds per channel id.')
     MARKOV_CHANNELS = ConfigListKey('markov_channels', ConfigDatatype.INT, help_text='Ids of channels used for markov chain generation.')
