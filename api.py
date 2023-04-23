@@ -5,6 +5,7 @@ import traceback
 import discord.utils
 
 import globals
+import utils
 from utils import get_guild, escape_discord
 
 
@@ -21,6 +22,7 @@ class ApiServer:
         """
         self.functions = {
             'raw': {'f': self.send_raw, 'p': {'chid': int, 'message': str}},
+            'react_message': {'f': self.react_message, 'p': {'chid': int, 'mid': int, 'emoji': str}},
             'update_roles': {'f': self.update_roles, 'p': {'uid': int, 'gid': int, 'add': list, 'remove': list}},
             'weekly_solve': {'f': self.send_weekly_solve, 'p': {'chid': int, 'uid': int, 'name': str, 'week': int}},
             'event_solve': {'f': self.send_halloween_solve, 'p': {'chid': int, 'uid': int, 'name': str}},
@@ -48,29 +50,31 @@ class ApiServer:
             await writer.drain()
             writer.close()
             return
-        res = 'ok'
+        res = {'status': 'ok'}
         if req_type in self.functions:
             function = self.functions[req_type]['f']
             params = self.functions[req_type]['p']
             for param, expected_type in params.items():
                 provided = req.get(param)
                 if provided is None:
-                    res = f'missing parameter {param}'
+                    res = {'error': f'missing parameter {param}'}
                     break
                 elif type(provided) != expected_type:
-                    res = f'wrong type for {param}: expected {expected_type}, got {type(provided)}'
+                    res = {'error': f'wrong type for {param}: expected {expected_type}, got {type(provided)}'}
                     break
             else:
                 if req.get("async"):
                     globals.bot.loop.create_task(function(*(req.get(param) for param in params)))
                 else:
                     try:
-                        await function(*(req.get(param) for param in params))
+                        function_res = await function(*(req.get(param) for param in params))
+                        if function_res is not None:
+                            res |= function_res
                     except Exception as e:
                         traceback.print_exc()
-                        res = str(e)
+                        res = {'error': str(e)}
         else:
-            res = 'invalid request type'
+            res = {'error': 'invalid request type'}
         writer.write(json.dumps(res).encode('utf-8'))
         await writer.drain()
         writer.close()
@@ -78,6 +82,11 @@ class ApiServer:
     async def send_raw(self, channel, message):
         ch = globals.bot.get_channel(channel)
         await ch.send(message)
+
+    async def react_message(self, chid: int, mid: int, emoji: str):
+        channel = await utils.get_channel(chid)
+        message = await channel.fetch_message(mid)
+        await message.add_reaction(emoji)
 
     async def update_roles(self, uid, gid, add, remove):
         guild = await get_guild(gid)
@@ -172,7 +181,8 @@ class ApiServer:
         embed.add_field(name='Name', value=escape_discord(name), inline=False)
         if description:
             embed.add_field(name='Description', value=escape_discord(description), inline=False)
-        await ch.send(f'@everyone', embed=embed)
+        msg = await ch.send(f'@everyone', embed=embed)
+        return {'chid': msg.channel.id, 'mid': msg.id}
 
     async def send_puzzle_edit_suggestion(self, name, suggestion_id, suggestion, submitter):
         chid = globals.conf.get(globals.conf.keys.MOD_CHANNEL)
@@ -184,4 +194,5 @@ class ApiServer:
         embed.add_field(name='Name', value=escape_discord(name), inline=False)
         if suggestion:
             embed.add_field(name='Suggestion', value=escape_discord(suggestion), inline=False)
-        await ch.send(f'@everyone', embed=embed)
+        msg = await ch.send(f'@everyone', embed=embed)
+        return {'chid': msg.channel.id, 'mid': msg.id}
