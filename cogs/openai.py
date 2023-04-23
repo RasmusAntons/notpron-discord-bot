@@ -187,7 +187,12 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
             async with ctx.channel.typing():
                 res = await self.generate_image(query=query)
         self.insert_ratelimit(ctx.author.id, tag='image')
-        await ctx.reply(res)
+        out_file = io.BytesIO()
+        async with aiohttp.request('GET', res) as resp:
+            assert resp.status == 200
+            out_file.write(await resp.read())
+        out_file.seek(0)
+        await ctx.reply(file=discord.File(out_file, filename='imagine_ai.png'))
 
     @commands.Cog.listener()
     async def on_message(self, msg: discord.Message):
