@@ -30,7 +30,7 @@ class TranslateCog(commands.Cog, name='Translate', description='translate text')
         else:
             r = translators.translate_text(text, to_language=dest, is_detail_result=True, translator='google')
         r_src = r['data'][2]
-        r_dst = r['data'][0][2]
+        r_dst = r['data'][1][4][2]  # or r['data'][0][6][2]?
         r_text = ' '.join([x[0] for x in r['data'][1][0][0][5]])
 
         real_src = pycountry.languages.get(alpha_2=TranslateCog.subst_pycountry.get(r_src, r_src))
