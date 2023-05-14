@@ -26,9 +26,9 @@ class TranslateCog(commands.Cog, name='Translate', description='translate text')
             source = TranslateCog.subst_google.get(source.lower(), source.lower())
         dest = TranslateCog.subst_google.get(dest.lower(), dest.lower())
         if source:
-            r = translators.google(text, from_language=source, to_language=dest, is_detail_result=True)
+            r = translators.translate_text(text, from_language=source, to_language=dest, is_detail_result=True, translator='google')
         else:
-            r = translators.google(text, to_language=dest, is_detail_result=True)
+            r = translators.translate_text(text, to_language=dest, is_detail_result=True, translator='google')
         r_src = r[1][3]
         r_dst = r[1][1]
         r_text = ' '.join([x[0] for x in r[1][0][0][5]])

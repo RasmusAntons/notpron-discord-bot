@@ -5,8 +5,8 @@ aiohttp==3.8.4
 emoji==2.2.0
 PyExifTool==0.5.5
 wordnik-py3==2.1.2
-numpy==1.24.2
-Pillow==9.4.0
+numpy==1.24.3
+Pillow==9.5.0
 quantities==0.14.1
 millify==0.1.1
 matplotlib==3.7.1
@@ -14,7 +14,7 @@ forex_python==1.8
 asteval==0.9.29
 Google-Images-Search==1.4.6
 pytimeparse==1.1.8
-translators==5.6.3
+translators==5.7.1
 pycountry==22.3.5
 pyowm==3.3.0
-openai==0.27.2
+openai==0.27.6
