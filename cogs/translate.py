@@ -49,7 +49,7 @@ class TranslateCog(commands.Cog, name='Translate', description='translate text')
     async def translate(self, ctx: commands.Context, text: str, source: str = None, dest: str = 'en') -> None:
         await ctx.defer()
         embed = self._translate(text, source, dest)
-        await ctx.reply('result', embed=embed)
+        await ctx.reply(embed=embed)
 
     async def context_translate(self, interaction: discord.Interaction, message: discord.Message):
         await interaction.response.defer()
