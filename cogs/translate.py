@@ -29,9 +29,9 @@ class TranslateCog(commands.Cog, name='Translate', description='translate text')
             r = translators.translate_text(text, from_language=source, to_language=dest, is_detail_result=True, translator='google')
         else:
             r = translators.translate_text(text, to_language=dest, is_detail_result=True, translator='google')
-        r_src = r['data'][2] if len(r['data']) > 2 else None
+        r_src = r['data'][2] if len(r['data']) > 2 else 'unknown'
         r_dst = r['data'][1][4][2]  # or r['data'][0][6][2]?
-        r_text = ' '.join([x[0] for x in r['data'][1][0][0][5]])
+        r_text = ' '.join([x[0] for x in r['data'][1][0][0][5]]) if len(r['data'][1][0][0]) > 5 else ''
 
         real_src = pycountry.languages.get(alpha_2=TranslateCog.subst_pycountry.get(r_src, r_src))
         src_str = f'{real_src.name} ({real_src.alpha_2})' if real_src else f'{r_src}'
