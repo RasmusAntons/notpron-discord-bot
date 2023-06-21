@@ -27,7 +27,7 @@ class ApiServer:
             'weekly_solve': {'f': self.send_weekly_solve, 'p': {'chid': int, 'uid': int, 'name': str, 'week': int}},
             'event_solve': {'f': self.send_halloween_solve, 'p': {'chid': int, 'uid': int, 'name': str}},
             'weekly_announce': {'f': self.send_weekly_announce,
-                                'p': {'chid': int, 'title': str, 'uid': int, 'name': str, 'icon': str, 'week': int,
+                                'p': {'chid': int, 'title': str, 'uids': list, 'names': list, 'icon': str, 'week': int,
                                       'solved': list}},
             'puzzle_submission': {'f': self.send_puzzle_submission,
                                   'p': {'name': str, 'short_name': str, 'description': str, 'submitter': str}},
@@ -128,10 +128,13 @@ class ApiServer:
         mention = await self._get_mention(ch, uid, same_server=True, default=name)
         await ch.send(f'Congratulations {mention} for completing the Halloween event! :jack_o_lantern: :ghost:')
 
-    async def send_weekly_announce(self, chid, title, uid, name, icon, week, solved):
+    async def send_weekly_announce(self, chid, title, uids, names, icon, week, solved):
         ch_announce = globals.bot.get_channel(chid)
         guild = ch_announce.guild
-        mention = await self._get_mention(ch_announce, uid, same_server=True, default=name)
+        mentions = []
+        for i in range(min(len(uids), len(names))):
+            mentions.append(await self._get_mention(ch_announce, uids[i], same_server=True, default=names[i]))
+        mention = ','.join(mentions)
         title = title.replace('`', '')
         description = f'`{title}` by {mention}'
         embed = discord.Embed(title='ɴᴇᴡ ᴡᴇᴇᴋʟʏ ᴘᴜᴢᴢʟᴇ', description=description,
