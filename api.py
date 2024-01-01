@@ -134,7 +134,7 @@ class ApiServer:
         mentions = []
         for i in range(min(len(uids), len(names))):
             mentions.append(await self._get_mention(ch_announce, uids[i], same_server=True, default=names[i]))
-        mention = ','.join(mentions)
+        mention = ', '.join(mentions)
         title = title.replace('`', '')
         description = f'`{title}` by {mention}'
         embed = discord.Embed(title='ɴᴇᴡ ᴡᴇᴇᴋʟʏ ᴘᴜᴢᴢʟᴇ', description=description,
@@ -147,6 +147,8 @@ class ApiServer:
         if ch_announce.is_news():
             await msg.publish()
         channel_admin_rid = globals.conf.get(globals.conf.keys.WEEKLIES_CHANNEL_ADMIN_ROLE)
+        if channel_admin_rid is None:
+            return
         channel_admin_role = discord.utils.get(guild.roles, id=channel_admin_rid)
         own_member = guild.get_member(globals.bot.user.id) or await guild.fetch_member(globals.bot.user.id)
         weekly_solver_rid = globals.conf.get(globals.conf.keys.WEEKLY_SOLVER_ROLE)
