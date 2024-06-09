@@ -43,3 +43,17 @@ def check_mod(msg='permission denied'):
             return False
         return True
     return commands.check(_is_mod)
+
+
+async def is_trusted_user(user):
+    mod_roles = globals.bot.conf.get(globals.conf.keys.TRUSTED_USER_ROLES)
+    if isinstance(user, discord.Member):
+        member = user
+    else:
+        member = await get_member(user)
+    if member is None:
+        return False
+    for role in member.roles:
+        if role.id in mod_roles:
+            return True
+    return False

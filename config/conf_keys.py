@@ -33,6 +33,7 @@ class Key(enum.Enum):
 
     MOD_ROLES = ConfigListKey('mod_roles', ConfigDatatype.INT, help_text='Ids of moderator roles.')
     ADMIN_USERS = ConfigListKey('admin_users', ConfigDatatype.INT, help_text='Ids of admin users.')
+    TRUSTED_USER_ROLES = ConfigListKey('trusted_user_roles', ConfigDatatype.INT, help_text='Ids of moderator roles.')
     ROLE_CHANNEL = ConfigKey('role_channel', ConfigDatatype.INT, help_text='Id of channel with role assignment reactions.')
     ASSIGN_ROLES = ConfigDictKey('assign_roles', ConfigDatatype.STRING, ConfigDatatype.INT, help_text='Emoji (id as string or string representation) and their respective roles.')
     EXCLUSIVE_ROLES = ConfigListKey('exclusive_roles', ConfigDatatype.INT, help_text='Ids of mutually exclusive roles.')
@@ -40,6 +41,7 @@ class Key(enum.Enum):
     WEEKLIES_CHANNELS = ConfigDictKey('weeklies_channels', ConfigDatatype.STRING, ConfigDatatype.INT, help_text='Ids of weekly discussion channels')
     WEEKLY_SOLVER_ROLE = ConfigKey('weekly_solver_role', ConfigDatatype.INT, help_text='Role id of weekly-solver role.')
     WEEKLIES_CHANNEL_ADMIN_ROLE = ConfigKey('weeklies_channel_admin_role', ConfigDatatype.INT, help_text='Role id of weeklies-channel-admin role.')
+    QUARANTINE_ROLE = ConfigKey('quarantine_role', ConfigDatatype.INT, help_text='Role id of quarantine role.')
 
     OPENAI_RATELIMIT_MINUTES = ConfigKey('openai_ratelimit_minutes', ConfigDatatype.INT, help_text='Time window for openai ratelimit.', default=360)
     OPENAI_RATELIMIT_BURST_CHAT = ConfigKey('openai_ratelimit_burst_chat', ConfigDatatype.INT, help_text='Number of openai chat requests during time window.', default=20)

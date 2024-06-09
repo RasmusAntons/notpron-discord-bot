@@ -19,7 +19,7 @@ class DiscordConnection(commands.Bot):
     ENABLED_COGS = [ColourCog, ConfigCog, NotpronCog, ArchiveCog, PurgeCog, ConvertCog, CovidCog, EightballCog, EvalCog,
                     ExifCog, FontCog, HighlightCog, ImagineCog, MagiceyeCog, MarkovCog, EnigmaticsCog, RemindmeCog,
                     RenameCog, RolesCog, RollCog, RrCog, RvCog, TranslateCog, WeatherCog, WhosaiditCog, WordgameCog,
-                    WordnikCog, OpenAICog, GuiserCog, SayCog]
+                    WordnikCog, OpenAICog, GuiserCog, SayCog, SoftbanCog]
 
     ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, BotReactionListener, DmRelayListener]
 
