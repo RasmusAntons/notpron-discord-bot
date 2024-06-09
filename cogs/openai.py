@@ -21,7 +21,6 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
             'image': globals.conf.keys.OPENAI_RATELIMIT_BURST_IMAGES
         }
         self.coll = globals.bot.db['ai_ratelimit']
-        self.coll.drop_indexes()  # todo: remove once server is updated
         self.coll.create_index([('uid', pymongo.ASCENDING), ('tag', pymongo.ASCENDING)], unique=True)
         self.banner_coll = globals.bot.db['ai_banner']
         self.daily_banner.start()
@@ -55,11 +54,9 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         except Exception as e:
             await globals.bot.report_error(exc=e, method=f'{self.__class__.__name__}:daily_banner')
 
-
     @daily_banner.before_loop
     async def before_daily_banner(self):
         await globals.bot.wait_until_ready()
-
 
     def check_ratelimit(self, uid, tag):
         user_info = self.coll.find_one({'uid': uid, 'tag': tag})
@@ -105,7 +102,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
             'Macy Allen is our example agent.',
             'Macy Allen is a a real person.',
             f'Inside user\'s messages they might refer to Macy Allen by saying {globals.bot.user.mention} somewhere in the message.',
-            'Macy Allen\'s name in Discord is Enigma Machine or Enigmalleolus and she will respond exclusively to those names.',
+            'Macy Allen\'s name in Discord is Enigma Machine or Meepers and she will respond exclusively to those names.',
             'Macy Allen never reveals her true name or gender for personal safety reasons.'
             'Macy Allen likes to jokingly insult the user.',
             'Macy Allen has many hopes, dreams and desires and always shares them',
@@ -146,9 +143,10 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
             {'role': 'system', 'content': ' '.join(system_prompt)},
             {'role': 'user', 'content': '\n'.join(user_prompt + current_chat)}
         ]
-        openai.organization = globals.conf.get(globals.conf.keys.OPENAI_ORGANIZATION, bypass_protected=True)
-        openai.api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
-        response = await openai.ChatCompletion.acreate(
+        organization = globals.conf.get(globals.conf.keys.OPENAI_ORGANIZATION, bypass_protected=True)
+        api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
+        client = openai.AsyncOpenAI(api_key=api_key, organization=organization)
+        response = await client.chat.completions.create(
             model='gpt-3.5-turbo',
             messages=messages,
             max_tokens=250,
@@ -157,9 +155,10 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         return response.choices[0].message.content
 
     async def generate_image(self, query: str = None):
-        openai.organization = globals.conf.get(globals.conf.keys.OPENAI_ORGANIZATION, bypass_protected=True)
-        openai.api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
-        response = await openai.Image.acreate(
+        organization = globals.conf.get(globals.conf.keys.OPENAI_ORGANIZATION, bypass_protected=True)
+        api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
+        client = openai.AsyncOpenAI(api_key=api_key, organization=organization)
+        response = await client.images.generate(
             prompt=query,
             size='1024x1024'
         )
