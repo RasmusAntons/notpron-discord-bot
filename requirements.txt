@@ -1,6 +1,6 @@
 PyYAML==6.0.1
 discord[voice]==2.3.2
-pymongo==4.7.2
+pymongo==4.7.3
 aiohttp==3.9.5
 emoji==2.12.1
 PyExifTool==0.5.6
@@ -15,6 +15,6 @@ asteval==0.9.33
 Google-Images-Search==1.4.6
 pytimeparse==1.1.8
 translators==5.9.2
-pycountry==23.12.11
+pycountry==24.6.1
 pyowm==3.3.0
-openai==1.30.5
+openai==1.33.0
