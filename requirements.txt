@@ -1,3 +1,4 @@
+setuptools==70.1.1
 PyYAML==6.0.1
 discord[voice]==2.3.2
 pymongo==4.8.0
@@ -11,7 +12,7 @@ millify==0.1.1
 matplotlib==3.9.0
 forex-python==1.8
 asteval==0.9.33
-Google-Images-Search==1.4.6
+Google-Images-Search @ git+https://github.com/Paillat-dev/Google-Images-Search@1eebf0f94b9565b91aa2e070eb7c9fd78420ec8c
 pytimeparse==1.1.8
 translators==5.9.2
 pycountry==24.6.1

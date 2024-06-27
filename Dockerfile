@@ -1,6 +1,6 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
-RUN apt-get update -qq && apt-get install -y -qq libimage-exiftool-perl
+RUN apt-get update -qq && apt-get install -y -qq libimage-exiftool-perl git
 
 WORKDIR /app
 ENV PIP_ROOT_USER_ACTION=ignore
