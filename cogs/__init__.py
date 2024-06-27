@@ -29,3 +29,4 @@ from .openai import OpenAICog
 from .guiser import GuiserCog
 from .say import SayCog
 from .softban import SoftbanCog
+from .counting import CountingCog
