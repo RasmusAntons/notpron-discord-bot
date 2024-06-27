@@ -56,6 +56,6 @@ class SoftbanCog(commands.Cog, name='Softban', description='quarantine users'):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        if self._find_ban(member.id):
+        if self.coll.find_one({'uid': member.id}) is not None:
             quarantine_role = discord.utils.get(member.guild.roles, id=globals.bot.conf.get(globals.bot.conf.keys.QUARANTINE_ROLE))
             await member.add_roles(quarantine_role, reason=f'softban by {interaction.user.name}')
