@@ -20,7 +20,10 @@ class CountingCog(commands.Cog):
         if state is not None:
             progress = state.get('progress')
             content = msg.content
-            valid = progress is not None and content.isnumeric() and int(content) == progress + 1 and state.get('last_uid') != msg.author.id
+            try:
+                valid = progress is not None and content.isnumeric() and int(content) == progress + 1 and state.get('last_uid') != msg.author.id
+            except ValueError:
+                valid = False
         elif msg.content.isnumeric() and int(msg.content) == 1:
             valid = True
         if valid:
