@@ -12,6 +12,8 @@ class CountingCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg: discord.Message):
+        if msg.interaction:
+            return
         state = self.coll.find_one({'chid': msg.channel.id})
         valid = False
         progress = 0
