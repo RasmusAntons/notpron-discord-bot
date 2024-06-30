@@ -28,4 +28,7 @@ class CountingCog(commands.Cog):
             self.coll.delete_one({'chid': msg.channel.id})
             await msg.add_reaction('❌')
             if progress >= 3:
-                await msg.reply('# nopers <:angrymeepers2:1255963929184567306>')
+                if msg.author.id == globals.bot.user.id:
+                    await msg.reply('# aw fuck')
+                else:
+                    await msg.reply('# nopers <:angrymeepers2:1255963929184567306>')
