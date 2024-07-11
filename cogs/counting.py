@@ -44,7 +44,7 @@ class CountingCog(commands.Cog):
         elif state is not None:
             self.coll.delete_one({'chid': msg.channel.id})
             started_by = state.get('started_by', msg.author.id) if state is not None else msg.author.id
-            self.coll_highscores.replace_one({}, {'message': msg.jump_url, 'uid': msg.author.id, 'score': progress + 1, 'started_by': started_by, 'broken_by': msg.author.id}, upsert=True)
+            self.coll_highscores.replace_one({}, {'message': msg.jump_url, 'uid': msg.author.id, 'score': progress, 'started_by': started_by, 'broken_by': msg.author.id}, upsert=True)
             await msg.add_reaction('❌')
             if progress >= 3:
                 if msg.author.id == globals.bot.user.id:
