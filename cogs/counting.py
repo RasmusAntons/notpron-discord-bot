@@ -21,6 +21,10 @@ class CountingCog(commands.Cog):
     async def on_ready(self):
         self.unsilence.start()
 
+    def _is_counting_channel(self, channel):
+        counting_channel = globals.conf.get(globals.conf.keys.COUNTING_CHANNEL)
+        return counting_channel is not None and counting_channel == channel.id
+
     async def _on_failure(self, state, member, channel, progress, msg=None, deleted=None):
         highscore = self.coll_highscores.find_one({})
         self.coll.delete_one({'chid': channel.id})
@@ -41,8 +45,7 @@ class CountingCog(commands.Cog):
                     await channel.send('# aw fuck')
             else:
                 reply_msg = f'# <:angrymeepers2:1255963929184567306> {progress} streak broken by {member.mention}'
-                counting_channel = globals.conf.get(globals.conf.keys.COUNTING_CHANNEL)
-                if counting_channel is not None and counting_channel == channel.id:
+                if self._is_counting_channel(channel):
                     silenced_role_id = globals.conf.get(globals.conf.keys.SILENCED_ROLE)
                     if silenced_role_id is not None:
                         silenced_role = member.guild.get_role(silenced_role_id)
@@ -78,7 +81,7 @@ class CountingCog(commands.Cog):
             progress = state.get('progress')
             content = msg.content
             try:
-                valid = progress is not None and content.isnumeric() and int(content) == progress + 1#  and state.get('last_uid') != msg.author.id
+                valid = progress is not None and content.isnumeric() and int(content) == progress + 1 and state.get('last_uid') != msg.author.id
             except ValueError:
                 valid = False
         elif msg.content.isnumeric() and int(msg.content) == 1:
@@ -88,7 +91,7 @@ class CountingCog(commands.Cog):
             self.coll.replace_one({'chid': msg.channel.id}, {'chid': msg.channel.id, 'last_uid': msg.author.id, 'progress': progress + 1, 'started_by': started_by}, upsert=True)
             self.coll_messages.insert_one({'mid': msg.id, 'gid': msg.guild.id, 'chid': msg.channel.id, 'uid': msg.author.id, 'progress': progress + 1})
             await msg.add_reaction('✅')
-        elif msg.author.id == globals.bot.user.id:
+        elif msg.author.id == globals.bot.user.id and self._is_counting_channel(msg.channel):
             await msg.add_reaction('🤷')
         elif state is not None:
             await self._on_failure(state=state, member=msg.author, channel=msg.channel, progress=progress, msg=msg)
