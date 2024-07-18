@@ -72,7 +72,7 @@ class CountingCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg: discord.Message):
-        if msg.interaction:
+        if msg.interaction or isinstance(msg.channel, discord.channel.DMChannel):
             return
         state = self.coll.find_one({'chid': msg.channel.id})
         valid = False
