@@ -62,7 +62,7 @@ class EnigmaticsCog(commands.Cog, name='Enigmatics', description='enigmatics com
                     await interaction.response.send_message('That discord user is not linked to an enigmatics.org account', ephemeral=True)
                     return
                 season_progress = await res.json()
-        solved_weeks = season_progress.get("solved_weeks")
+        solved_weeks = list(map(str, season_progress.get("solved_weeks")))
         weeklies_channels = globals.conf.get(globals.conf.keys.WEEKLIES_CHANNELS)
         if weeklies_channels is None:
             await interaction.response.send_message('Weeklies channels not configured', ephemeral=True)
