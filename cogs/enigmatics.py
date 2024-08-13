@@ -1,7 +1,12 @@
+import logging
+
 import discord
+
+import config
 import globals
 import aiohttp
 from discord.ext import commands
+from discord import app_commands
 
 
 class EnigmaticsCog(commands.Cog, name='Enigmatics', description='enigmatics commands'):
@@ -44,3 +49,38 @@ class EnigmaticsCog(commands.Cog, name='Enigmatics', description='enigmatics com
             total = sum(points for points in profile['weeklies'].values())
             embed.add_field(name=f'{total} weeklies points', value=weeklies, inline=False)
         await ctx.reply(embed=embed)
+
+    @app_commands.command(name='sync_weekly_channels', description='sync weekly channel access')
+    async def sync_weekly_channels(self, interaction: discord.Interaction, member: discord.Member) -> None:
+        if not await config.is_trusted_user(interaction.user):
+            await interaction.response.send_message('permission denied', ephemeral=True)
+            return
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(sock_connect=3, sock_read=10)) as client:
+            weeklies_url = globals.conf.get(globals.conf.keys.ENIGMATICS_URL).replace('://', '://weeklies.')
+            async with client.get(f'{weeklies_url}/season_progress_json/{member.id}') as res:
+                if res.status != 200:
+                    await interaction.response.send_message('That discord user is not linked to an enigmatics.org account', ephemeral=True)
+                    return
+                season_progress = await res.json()
+        solved_weeks = season_progress.get("solved_weeks")
+        weeklies_channels = globals.conf.get(globals.conf.keys.WEEKLIES_CHANNELS)
+        if weeklies_channels is None:
+            await interaction.response.send_message('Weeklies channels not configured', ephemeral=True)
+        added_channels = []
+        removed_channels = []
+        for key, chid in weeklies_channels.items():
+            channel = member.guild.get_channel(chid)
+            if channel is None:
+                continue
+            if key in solved_weeks and not channel.permissions_for(member).read_messages:
+                await channel.set_permissions(member, read_messages=True)
+                added_channels.append(channel.mention)
+            elif channel.permissions_for(member).read_messages:
+                await channel.set_permissions(member, read_messages=False)
+                removed_channels.append(channel.mention)
+        msg = ['Synced weekly channels:']
+        if added_channels:
+            msg.append(f'Added {member.mention} to {", ".join(added_channels)}.')
+        if removed_channels:
+            msg.append(f'Removed {member.mention} from {", ".join(removed_channels)}.')
+        await interaction.response.send_message('\n'.join(msg))
