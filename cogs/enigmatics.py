@@ -75,7 +75,7 @@ class EnigmaticsCog(commands.Cog, name='Enigmatics', description='enigmatics com
             if key in solved_weeks and not channel.permissions_for(member).read_messages:
                 await channel.set_permissions(member, read_messages=True)
                 added_channels.append(channel.mention)
-            elif channel.permissions_for(member).read_messages:
+            elif key not in solved_weeks and channel.permissions_for(member).read_messages:
                 await channel.set_permissions(member, read_messages=False)
                 removed_channels.append(channel.mention)
         msg = ['Synced weekly channels:']
