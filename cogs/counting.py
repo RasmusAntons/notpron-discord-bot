@@ -105,7 +105,7 @@ class CountingCog(commands.Cog):
             self.coll.replace_one({'chid': msg.channel.id}, {'chid': msg.channel.id, 'last_uid': msg.author.id, 'progress': progress + 1, 'started_by': started_by}, upsert=True)
             self.coll_messages.insert_one({'mid': msg.id, 'gid': msg.guild.id, 'chid': msg.channel.id, 'uid': msg.author.id, 'progress': progress + 1})
             await msg.add_reaction('✅')
-        elif state is not None and msg.author.id == globals.bot.user.id and self._is_counting_channel(msg.channel):
+        elif state is not None and (msg.author.id == globals.bot.user.id or msg.is_system()) and self._is_counting_channel(msg.channel):
             await msg.add_reaction('🤷')
         elif state is not None:
             await self._on_failure(state=state, member=msg.author, channel=msg.channel, progress=progress, msg=msg)
