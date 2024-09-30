@@ -63,7 +63,7 @@ class CountingCog(commands.Cog):
                     if silenced_role_id is not None:
                         silenced_role = member.guild.get_role(silenced_role_id)
                         if silenced_role is not None:
-                            silence_duration = progress ** (2/3)
+                            silence_duration = (3/2) * progress ** (2/3)
                             reply_msg += f' who has been silenced for {silence_duration:.2f} hours'
                             await member.add_roles(silenced_role)
                             self.coll_silenced.insert_one(
