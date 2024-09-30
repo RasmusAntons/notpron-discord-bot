@@ -1,4 +1,5 @@
 import time
+import traceback
 
 import discord
 from discord import app_commands
@@ -20,6 +21,18 @@ class CountingCog(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.unsilence.start()
+
+    @app_commands.command(name='silenced', description='list silenced users')
+    async def silenced(self, interaction: discord.Interaction):
+        lines = []
+        for silenced in self.coll_silenced.find({}):
+            ts = silenced.get('ts')
+            member = await interaction.guild.fetch_member(silenced.get('uid'))
+            if member is None:
+                continue
+            lines.append(f'{member.mention} will be unsilenced <t:{int(ts)}:R>')
+        msg = f'silenced users:\n{"\n".join(lines)}' if lines else 'no silenced users'
+        await interaction.response.send_message(msg)
 
     def _is_counting_channel(self, channel):
         counting_channel = globals.conf.get(globals.conf.keys.COUNTING_CHANNEL)
@@ -50,10 +63,11 @@ class CountingCog(commands.Cog):
                     if silenced_role_id is not None:
                         silenced_role = member.guild.get_role(silenced_role_id)
                         if silenced_role is not None:
-                            reply_msg += f' who has been silenced for {progress * 10} minutes'
+                            silence_duration = progress ** (2/3)
+                            reply_msg += f' who has been silenced for {silence_duration:.2f} hours'
                             await member.add_roles(silenced_role)
                             self.coll_silenced.insert_one(
-                                {'uid': member.id, 'ts': int(time.time()) + progress * 10 * 60,
+                                {'uid': member.id, 'ts': int(time.time()) + silence_duration * 60 * 60,
                                  'gid': member.guild.id})
                         else:
                             logging.error('silenced_role is None')
@@ -91,7 +105,7 @@ class CountingCog(commands.Cog):
             self.coll.replace_one({'chid': msg.channel.id}, {'chid': msg.channel.id, 'last_uid': msg.author.id, 'progress': progress + 1, 'started_by': started_by}, upsert=True)
             self.coll_messages.insert_one({'mid': msg.id, 'gid': msg.guild.id, 'chid': msg.channel.id, 'uid': msg.author.id, 'progress': progress + 1})
             await msg.add_reaction('✅')
-        elif msg.author.id == globals.bot.user.id and self._is_counting_channel(msg.channel):
+        elif state is not None and msg.author.id == globals.bot.user.id and self._is_counting_channel(msg.channel):
             await msg.add_reaction('🤷')
         elif state is not None:
             await self._on_failure(state=state, member=msg.author, channel=msg.channel, progress=progress, msg=msg)
@@ -109,24 +123,38 @@ class CountingCog(commands.Cog):
         member = await guild.fetch_member(current_msg_info.get('uid'))
         await self._on_failure(member=member, channel=channel, state=state, progress=state.get('progress'), deleted=current_msg_info.get('progress'))
 
+    @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        if self.coll_silenced.find_one({'uid': member.id}) is not None:
+            silenced_role_id = globals.conf.get(globals.conf.keys.SILENCED_ROLE)
+            if silenced_role_id is None:
+                return
+            silenced_role = member.guild.get_role(silenced_role_id)
+            if silenced_role is None:
+                return
+            await member.add_roles(silenced_role, reason=f'{member.name} is still silenced')
+
     @tasks.loop(seconds=60)
     async def unsilence(self):
         while (silenced := self.coll_silenced.find_one_and_delete({'ts': {'$lte': time.time()}})) is not None:
-            logging.error(f'unsilencing <@{silenced.get("uid")}>')
-            guild = globals.bot.get_guild(silenced.get('gid'))
-            if guild is None:
-                logging.error('guild is None')
-                continue
-            member = await guild.fetch_member(silenced.get('uid'))
-            if member is None:
-                logging.error('member is None')
-                continue
-            silenced_role_id = globals.conf.get(globals.conf.keys.SILENCED_ROLE)
-            if silenced_role_id is None:
-                logging.error('silenced_role_id is None')
-                continue
-            silenced_role = member.guild.get_role(silenced_role_id)
-            if silenced_role is None:
-                logging.error('silenced_role is None')
-                continue
-            await member.remove_roles(silenced_role)
+            try:
+                logging.error(f'unsilencing <@{silenced.get("uid")}>')
+                guild = globals.bot.get_guild(silenced.get('gid'))
+                if guild is None:
+                    logging.error('guild is None')
+                    continue
+                member = await guild.fetch_member(silenced.get('uid'))
+                if member is None:
+                    logging.error('member is None')
+                    continue
+                silenced_role_id = globals.conf.get(globals.conf.keys.SILENCED_ROLE)
+                if silenced_role_id is None:
+                    logging.error('silenced_role_id is None')
+                    continue
+                silenced_role = member.guild.get_role(silenced_role_id)
+                if silenced_role is None:
+                    logging.error('silenced_role is None')
+                    continue
+                await member.remove_roles(silenced_role)
+            except Exception:
+                traceback.print_exc()
