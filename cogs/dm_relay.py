@@ -1,12 +1,14 @@
-from listeners import MessageListener, MessageEditListener, MessageDeleteListener
+import logging
+
 import discord
 import discord.errors
 import globals
 from utils import get_channel, get_user
 import datetime
+from discord.ext import commands
 
 
-class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListener):
+class DmRelayListener(commands.Cog):
     image_types = ('image/jpeg', 'image/png', 'image/gif')
 
     def __init__(self):
@@ -28,11 +30,12 @@ class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListene
                 embed.add_field(name='Attachment', value=f'[{attachment.filename}]({attachment.url})')
         return embed
 
+    @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.author.id == globals.bot.user.id:
             return
         dm_relay_channel_id = globals.conf.get(globals.conf.keys.DM_RELAY_CHANNEL)
-        if type(msg.channel) == discord.DMChannel:
+        if isinstance(msg.channel, discord.DMChannel):
             coll = globals.bot.db['db_relay']
             if dm_relay_channel_id:
                 ch = await get_channel(dm_relay_channel_id)
@@ -52,11 +55,12 @@ class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListene
                 response = await ch.send(msg.content, files=files)
                 coll.insert_one({'dm_message': response.id, 'relayed_message': msg.id,  'uid': user.id})
 
+    @commands.Cog.listener()
     async def on_message_edit(self, message, cached_message=None):
         if message.author.id == globals.bot.user.id:
             return
         dm_relay_channel_id = globals.conf.get(globals.conf.keys.DM_RELAY_CHANNEL)
-        if type(message.channel) == discord.DMChannel:
+        if isinstance(message.channel, discord.DMChannel):
             coll = globals.bot.db['db_relay']
             relayed_pair = coll.find_one({'dm_message': message.id})
             if not relayed_pair:
@@ -78,13 +82,14 @@ class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListene
             dm_message = await ch.fetch_message(relayed_pair['dm_message'])
             await dm_message.edit(content=message.content)
 
-    async def on_message_delete(self, message_id, channel, guild, cached_message=None):
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
         coll = globals.bot.db['db_relay']
-        relayed_pair = coll.find_one({'$or': [{'dm_message': message_id}, {'relayed_message': message_id}]})
+        relayed_pair = coll.find_one({'$or': [{'dm_message': message.id}, {'relayed_message': message.id}]})
         if not relayed_pair:
             return
         coll.delete_one(relayed_pair)
-        if relayed_pair['dm_message'] == message_id:
+        if relayed_pair['dm_message'] == message.id:
             dm_relay_channel_id = globals.conf.get(globals.conf.keys.DM_RELAY_CHANNEL)
             relay_channel = await get_channel(dm_relay_channel_id)
             try:
@@ -99,7 +104,7 @@ class DmRelayListener(MessageListener, MessageEditListener, MessageDeleteListene
             embed.description = '-'
             embed.set_footer(text=f'Message deleted at {datetime.datetime.utcnow().replace(microsecond=0)}.')
             await relayed_message.edit(embed=embed)
-        elif relayed_pair['relayed_message'] == message_id:
+        elif relayed_pair['relayed_message'] == message.id:
             user = await get_user(relayed_pair['uid'])
             if not user:
                 return

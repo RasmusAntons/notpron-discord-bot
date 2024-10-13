@@ -1,4 +1,5 @@
 import io
+import logging
 import sys
 import time
 import traceback
@@ -10,7 +11,6 @@ import pymongo
 import api
 from cogs import *
 from config import Config
-from listeners import *
 from mongodb_markov import MongodbMarkov
 from utils import *
 
@@ -19,9 +19,8 @@ class DiscordConnection(commands.Bot):
     ENABLED_COGS = [ColourCog, ConfigCog, NotpronCog, ArchiveCog, PurgeCog, ConvertCog, CovidCog, EightballCog, EvalCog,
                     ExifCog, FontCog, HighlightCog, ImagineCog, MagiceyeCog, MarkovCog, EnigmaticsCog, RemindmeCog,
                     RenameCog, RolesCog, RollCog, RrCog, RvCog, TranslateCog, WeatherCog, WhosaiditCog, WordgameCog,
-                    WordnikCog, OpenAICog, GuiserCog, SayCog, SoftbanCog, CountingCog]
-
-    ENABLED_LISTENERS = [ArchiveListener, AmongUsListener, BotReactionListener, DmRelayListener]
+                    WordnikCog, OpenAICog, GuiserCog, SayCog, SoftbanCog, CountingCog, AmongUsListener, AnagramListener,
+                    DmRelayListener]
 
     def __init__(self, config_file):
         intents = discord.Intents.default()
@@ -62,8 +61,8 @@ class DiscordConnection(commands.Bot):
                 for app_command in cog_instance.app_commands:
                     self.tree.add_command(app_command)
         # self.tree.copy_global_to(guild=discord.Object(id=416666891055005706))
-        # await self.tree.sync(guild=discord.Object(id=416666891055005706))
-        await self.tree.sync()
+        await self.tree.sync(guild=discord.Object(id=416666891055005706))
+        # await self.tree.sync()
         self.add_check(self.check, call_once=True)
         # print(self.get_cog('ColourCommand').get_commands())
 

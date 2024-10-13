@@ -1,12 +1,13 @@
-from listeners import MessageListener
 import string
 import random
 import globals
+from discord.ext import commands
 
 
-class BotReactionListener(MessageListener):
+class BotReactionListener(commands.Cog):
     punct = str.maketrans(dict.fromkeys(string.punctuation))
 
+    @commands.Cog.listener()
     async def on_message(self, msg):
         if not globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
             return

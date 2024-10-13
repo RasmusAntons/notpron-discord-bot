@@ -1,10 +1,10 @@
 import re
 import globals
 import random
-from listeners import MessageListener
+from discord.ext import commands
 
 
-class AnagramListener(MessageListener):
+class AnagramListener(commands.Cog):
     def __init__(self):
         super().__init__()
         self.max_len = 0
@@ -22,6 +22,7 @@ class AnagramListener(MessageListener):
             else:
                 self.words[key] = [word]
 
+    @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.author.id == globals.bot.user.id:
             return

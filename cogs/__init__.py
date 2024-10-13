@@ -30,3 +30,6 @@ from .guiser import GuiserCog
 from .say import SayCog
 from .softban import SoftbanCog
 from .counting import CountingCog
+from .among_us import AmongUsListener
+from .anagrams import AnagramListener
+from .dm_relay import DmRelayListener

@@ -1,6 +1,6 @@
 import random
 import globals
-from listeners import MessageListener
+from discord.ext import commands
 
 
 def sus_resp(username):
@@ -21,7 +21,8 @@ def sus_resp(username):
     return text
 
 
-class AmongUsListener(MessageListener):
+class AmongUsListener(commands.Cog):
+    @commands.Cog.listener()
     async def on_message(self, msg):
         if not globals.conf.list_contains(globals.conf.keys.CHANNELS, msg.channel.id):
             return

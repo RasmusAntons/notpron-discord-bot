@@ -65,7 +65,7 @@ class HighlightCog(commands.Cog, name='Highlight', description='manage notificat
 
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if msg.author.bot:
+        if msg.author.bot or msg is None:
             return
         matches = self.coll.find({'$where': f'new RegExp(this.pattern).test({json.dumps(msg.content)})'})
         notified = set()
