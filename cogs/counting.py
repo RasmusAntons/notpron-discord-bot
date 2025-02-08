@@ -17,6 +17,8 @@ class CountingCog(commands.Cog):
         self.coll_messages.create_index('mid')
         self.coll_highscores = globals.bot.db['counting_highscores']
         self.coll_silenced = globals.bot.db['counting_silenced']
+        self.coll_punishment = globals.bot.db['counting_punishment']
+        self.coll_punishment.create_index('uid')
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -37,6 +39,15 @@ class CountingCog(commands.Cog):
     def _is_counting_channel(self, channel):
         counting_channel = globals.conf.get(globals.conf.keys.COUNTING_CHANNEL)
         return counting_channel is not None and counting_channel == channel.id
+
+    def _get_punishment(self, uid):
+        entry = self.coll_punishment.find_one({'uid': uid})
+        return entry.get('factor') if entry is not None else 1
+
+    def _update_punishment(self, uid, failure):
+        current_factor = self._get_punishment(uid)
+        new_factor = current_factor * 2 if failure else max(1, current_factor - 1)
+        self.coll_punishment.replace_one({'uid': uid}, {'factor': new_factor}, upsert=True)
 
     async def _on_failure(self, state, member, channel, progress, msg=None, deleted=None):
         highscore = self.coll_highscores.find_one({})
@@ -63,7 +74,8 @@ class CountingCog(commands.Cog):
                     if silenced_role_id is not None:
                         silenced_role = member.guild.get_role(silenced_role_id)
                         if silenced_role is not None:
-                            silence_duration = (3/2) * progress ** (2/3)
+                            punishment_factor = self._get_punishment(member.id)
+                            silence_duration = (3/2) * (progress * punishment_factor) ** (2/3)
                             reply_msg += f' who has been silenced for {silence_duration:.2f} hours'
                             await member.add_roles(silenced_role)
                             self.coll_silenced.insert_one(
@@ -83,6 +95,7 @@ class CountingCog(commands.Cog):
                     await msg.reply(reply_msg)
                 else:
                     await channel.send(reply_msg)
+                self._update_punishment(member.id, True)
 
     @commands.Cog.listener()
     async def on_message(self, msg: discord.Message):
@@ -105,6 +118,7 @@ class CountingCog(commands.Cog):
             self.coll.replace_one({'chid': msg.channel.id}, {'chid': msg.channel.id, 'last_uid': msg.author.id, 'progress': progress + 1, 'started_by': started_by}, upsert=True)
             self.coll_messages.insert_one({'mid': msg.id, 'gid': msg.guild.id, 'chid': msg.channel.id, 'uid': msg.author.id, 'progress': progress + 1})
             await msg.add_reaction('✅')
+            self._update_punishment(msg.author.id, False)
         elif state is not None and (msg.author.id == globals.bot.user.id or msg.is_system()) and self._is_counting_channel(msg.channel):
             await msg.add_reaction('🤷')
         elif state is not None:
