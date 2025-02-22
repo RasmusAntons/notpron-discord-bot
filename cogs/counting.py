@@ -92,9 +92,9 @@ class CountingCog(commands.Cog):
                     previous = 'previous ' if progress > previous_score else ''
                     reply_msg += f'\n{previous}record: {previous_score} (started by <@{previous_started_uid}>, broken by <@{previous_broken_uid}>)'
                 if msg is not None:
-                    await msg.reply(reply_msg)
+                    await msg.reply(reply_msg, allowed_mentions=discord.AllowedMentions.none())
                 else:
-                    await channel.send(reply_msg)
+                    await channel.send(reply_msg, allowed_mentions=discord.AllowedMentions.none())
                 self._update_punishment(member.id, True)
 
     @commands.Cog.listener()
