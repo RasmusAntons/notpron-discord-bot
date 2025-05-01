@@ -120,6 +120,7 @@ class RenameCog(commands.Cog, name='Rename', description='mass rename nerds'):
         group = self.groups_coll.find_one({'name': group_name})
         if group is None:
             raise RuntimeError('That group does not exist')
+        await ctx.defer()
         new_name_choices = names.split('|') if names is not None else ['']
         count = 0
         invalid_uids = []
