@@ -26,6 +26,12 @@ class RenameCog(commands.Cog, name='Rename', description='mass rename nerds'):
         self.groups_coll.insert_one({'name': name, 'users': []})
         return await ctx.reply(f'created group {name}')
 
+    @rename_grp.command(name='deletegroup', description='delete a renaming group')
+    @config.check_bot_admin()
+    async def deletegroup(self, ctx: commands.Context, group: str) -> None:
+        self.groups_coll.delete_one({'name': group})
+        return await ctx.reply(f'deleted group {group}')
+
     @rename_grp.command(name='listgroups', description='list renaming groups')
     @config.check_bot_admin()
     async def listgroups(self, ctx: commands.Context) -> None:
@@ -57,25 +63,30 @@ class RenameCog(commands.Cog, name='Rename', description='mass rename nerds'):
 
     @rename_grp.command(name='addto', description='add users to renaming group')
     @config.check_bot_admin()
-    async def addto(self, ctx: commands.Context, group: str, user: discord.User, user01: discord.User = None,
-                    user02: discord.User = None, user03: discord.User = None, user04: discord.User = None,
-                    user05: discord.User = None, user06: discord.User = None, user07: discord.User = None,
-                    user08: discord.User = None, user09: discord.User = None, user10: discord.User = None,
-                    user11: discord.User = None, user12: discord.User = None, user13: discord.User = None,
-                    user14: discord.User = None, user15: discord.User = None, user16: discord.User = None,
-                    user17: discord.User = None, user18: discord.User = None, user19: discord.User = None,
-                    user20: discord.User = None, user21: discord.User = None, user22: discord.User = None,
-                    user23: discord.User = None) -> None:
+    async def addto(self, ctx: commands.Context, group: str, role: discord.Role = None, user: discord.User = None,
+                    user01: discord.User = None, user02: discord.User = None, user03: discord.User = None,
+                    user04: discord.User = None, user05: discord.User = None, user06: discord.User = None,
+                    user07: discord.User = None, user08: discord.User = None, user09: discord.User = None,
+                    user10: discord.User = None, user11: discord.User = None, user12: discord.User = None,
+                    user13: discord.User = None, user14: discord.User = None, user15: discord.User = None,
+                    user16: discord.User = None, user17: discord.User = None, user18: discord.User = None,
+                    user19: discord.User = None, user20: discord.User = None, user21: discord.User = None,
+                    user22: discord.User = None) -> None:
         group_obj = self.groups_coll.find_one({'name': group})
         if group_obj is None:
             raise RuntimeError('That group does not exist')
         update_count = 0
         users = [user, user01, user02, user03, user04, user05, user06, user07, user08, user09, user10, user11, user12,
-                 user13, user14, user15, user16, user17, user18, user19, user20, user21, user22, user23]
+                 user13, user14, user15, user16, user17, user18, user19, user20, user21, user22]
         for user in users:
             if user and str(user.id) not in group_obj['users']:
                 group_obj['users'].append(str(user.id))
                 update_count += 1
+        if role is not None:
+            for member in role.members:
+                if str(member.id) not in group_obj['users']:
+                    group_obj['users'].append(str(member.id))
+                    update_count += 1
         if update_count:
             self.groups_coll.update_one({'name': group}, {'$set': {'users': group_obj['users']}})
         return await ctx.reply(f'added {update_count} users to group {group}')
@@ -162,6 +173,7 @@ class RenameCog(commands.Cog, name='Rename', description='mass rename nerds'):
     @removefrom.autocomplete('group')
     @renamegroup.autocomplete('group')
     @revertgroup.autocomplete('group')
+    @deletegroup.autocomplete('group')
     async def group_autocomplete(self, interaction: discord.Interaction, group: str) -> None:
         if group:
             pat = re.compile(re.escape(group), re.I)
