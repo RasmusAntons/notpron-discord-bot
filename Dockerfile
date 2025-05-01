@@ -1,6 +1,6 @@
 FROM python:3.13-slim
 
-RUN apt-get update -qq && apt-get install -y -qq libimage-exiftool-perl git
+RUN apt-get update -qq && apt-get install -y -qq libimage-exiftool-perl git nodejs
 
 WORKDIR /app
 ENV PIP_ROOT_USER_ACTION=ignore
