@@ -147,7 +147,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
         api_key = globals.conf.get(globals.conf.keys.OPENAI_API_KEY, bypass_protected=True)
         client = openai.AsyncOpenAI(api_key=api_key, organization=organization)
         response = await client.chat.completions.create(
-            model='gpt-3.5-turbo',
+            model='gpt-4o-mini',
             messages=messages,
             max_tokens=250,
             temperature=0.5
