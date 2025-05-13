@@ -1,3 +1,4 @@
+from pydoc_data.topics import topics
 import time
 import traceback
 
@@ -8,6 +9,7 @@ from discord.ext import tasks
 
 import globals
 import logging
+import utils
 
 class CountingCog(commands.Cog):
     def __init__(self):
@@ -23,6 +25,7 @@ class CountingCog(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.unsilence.start()
+        await self._update_channel_topic()
 
     @app_commands.command(name='silenced', description='list silenced users')
     async def silenced(self, interaction: discord.Interaction):
@@ -49,14 +52,31 @@ class CountingCog(commands.Cog):
         new_factor = current_factor * 2 if failure else max(1, current_factor - 1)
         self.coll_punishment.replace_one({'uid': uid}, {'factor': new_factor}, upsert=True)
 
+    async def _update_channel_topic(self):
+        counting_channel_id = globals.conf.get(globals.conf.keys.COUNTING_CHANNEL)
+        highscore = self.coll_highscores.find_one({})
+        logging.error(f'{highscore=}')
+        if counting_channel_id is None or highscore is None:
+            return
+        counting_channel = await utils.get_channel(counting_channel_id)
+        if counting_channel is None:
+            return
+        previous_score = highscore.get('score')
+        previous_started_uid = highscore.get('started_by')
+        previous_broken_uid = highscore.get('broken_by')
+        topic = f'record: {previous_score} (started by <@{previous_started_uid}>, broken by <@{previous_broken_uid}>)'
+        await counting_channel.edit(topic=topic)
+
     async def _on_failure(self, state, member, channel, progress, msg=None, deleted=None):
         highscore = self.coll_highscores.find_one({})
         self.coll.delete_one({'chid': channel.id})
         self.coll_messages.delete_many({})
         started_by = state.get('started_by', member.id) if state is not None else member.id
+        update_topic = False
         if highscore is None or highscore.get('score') < progress:
             self.coll_highscores.replace_one({}, {'uid': member.id, 'score': progress,
                                                   'started_by': started_by, 'broken_by': member.id}, upsert=True)
+            update_topic = True
         if msg is not None:
             await msg.add_reaction('❌')
         if deleted is not None:
@@ -77,10 +97,15 @@ class CountingCog(commands.Cog):
                             punishment_factor = self._get_punishment(member.id)
                             silence_duration = (3/2) * (progress * punishment_factor) ** (2/3)
                             reply_msg += f' who has been silenced for {silence_duration:.2f} hours'
-                            await member.add_roles(silenced_role)
-                            self.coll_silenced.insert_one(
-                                {'uid': member.id, 'ts': int(time.time()) + silence_duration * 60 * 60,
-                                 'gid': member.guild.id})
+                            try:
+                                await member.add_roles(silenced_role)
+                                self.coll_silenced.insert_one({
+                                    'uid': member.id,
+                                    'ts': int(time.time()) + silence_duration * 60 * 60,
+                                    'gid': member.guild.id}
+                                )
+                            except discord.Forbidden:
+                                logging.error('missing permission to assign silenced role')
                         else:
                             logging.error('silenced_role is None')
                     else:
@@ -96,6 +121,8 @@ class CountingCog(commands.Cog):
                 else:
                     await channel.send(reply_msg, allowed_mentions=discord.AllowedMentions.none())
                 self._update_punishment(member.id, True)
+        if update_topic:
+            await self._update_channel_topic()
 
     @commands.Cog.listener()
     async def on_message(self, msg: discord.Message):
