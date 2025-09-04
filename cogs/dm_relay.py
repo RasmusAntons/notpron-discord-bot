@@ -57,22 +57,24 @@ class DmRelayListener(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, message, cached_message=None):
-        if message.author.id == globals.bot.user.id:
+        if cached_message is None:
+            cached_message = await message.channel.fetch_message(message.id)
+        if cached_message.author.id == globals.bot.user.id:
             return
         dm_relay_channel_id = globals.conf.get(globals.conf.keys.DM_RELAY_CHANNEL)
-        if isinstance(message.channel, discord.DMChannel):
+        if isinstance(cached_message.channel, discord.DMChannel):
             coll = globals.bot.db['db_relay']
-            relayed_pair = coll.find_one({'dm_message': message.id})
+            relayed_pair = coll.find_one({'dm_message': cached_message.id})
             if not relayed_pair:
                 return
             relay_channel = await get_channel(dm_relay_channel_id)
             relayed_message = await relay_channel.fetch_message(relayed_pair['relayed_message'])
             if not relayed_message:
                 return
-            await relayed_message.edit(embed=self.create_embed(message))
-        elif message.channel.id == dm_relay_channel_id:
+            await relayed_message.edit(embed=self.create_embed(cached_message))
+        elif cached_message.channel.id == dm_relay_channel_id:
             coll = globals.bot.db['db_relay']
-            relayed_pair = coll.find_one({'relayed_message': message.id})
+            relayed_pair = coll.find_one({'relayed_message': cached_message.id})
             if not relayed_pair:
                 return
             user = await get_user(relayed_pair['uid'])
@@ -80,7 +82,7 @@ class DmRelayListener(commands.Cog):
                 return
             ch = await globals.bot.get_dm_channel(user)
             dm_message = await ch.fetch_message(relayed_pair['dm_message'])
-            await dm_message.edit(content=message.content)
+            await dm_message.edit(content=cached_message.content)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):

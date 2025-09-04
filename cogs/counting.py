@@ -55,7 +55,6 @@ class CountingCog(commands.Cog):
     async def _update_channel_topic(self):
         counting_channel_id = globals.conf.get(globals.conf.keys.COUNTING_CHANNEL)
         highscore = self.coll_highscores.find_one({})
-        logging.error(f'{highscore=}')
         if counting_channel_id is None or highscore is None:
             return
         counting_channel = await utils.get_channel(counting_channel_id)
@@ -126,7 +125,7 @@ class CountingCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg: discord.Message):
-        if msg.interaction or isinstance(msg.channel, discord.channel.DMChannel):
+        if msg.interaction_metadata or isinstance(msg.channel, discord.channel.DMChannel):
             return
         state = self.coll.find_one({'chid': msg.channel.id})
         valid = False

@@ -1,7 +1,6 @@
 import datetime
 import io
 import logging
-import sys
 
 import aiohttp
 import discord
@@ -83,7 +82,7 @@ class OpenAICog(commands.Cog, name='ai', description='get an image for your quer
     async def is_ai_message(self, message: discord.Message):
         while message.reference is not None:
             message = await utils.get_message_from_ref(message.reference)
-        if message.interaction is None:
+        if message.interaction_metadata is None or message.interaction_metadata.type.value != 2:
             return False
         return message.interaction.name == 'ai'
 
