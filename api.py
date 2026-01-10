@@ -129,7 +129,9 @@ class ApiServer:
         await ch.send(f'Congratulations {mention} for completing the Halloween event! :jack_o_lantern: :ghost:')
 
     async def send_weekly_announce(self, chid, title, uids, names, icon, week, solved):
-        ch_announce = globals.bot.get_channel(chid)
+        ch_announce = globals.bot.get_channel(int(chid)) or await globals.bot.fetch_channel(int(chid))
+        if ch_announce is None:
+            raise Exception(f'channel not found: {chid}')
         guild = ch_announce.guild
         mentions = []
         for i in range(min(len(uids), len(names))):
