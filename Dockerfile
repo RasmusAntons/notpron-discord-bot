@@ -4,6 +4,7 @@ RUN apt-get update -qq && apt-get install -y -qq libimage-exiftool-perl git node
 
 WORKDIR /app
 ENV PIP_ROOT_USER_ACTION=ignore
+ENV translators_default_region=EN
 
 COPY requirements.txt /app/requirements.txt
 COPY libs /app/libs
