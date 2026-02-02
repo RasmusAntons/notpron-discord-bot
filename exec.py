@@ -1,14 +1,19 @@
 import argparse
 from config import Config
 import discord
-from scripts.populate_hints import populate_hints
-from scripts.populate_word_game import populate_word_game
-from scripts.populate_highlights import populate_highlights
-from scripts.populate_underage import populate_underage
-from scripts.populate_rv import populate_rv
-from scripts.weekly_notify import weekly_notify
-from scripts.send_embed import send_embed
-from scripts.emoji_stat import emoji_stat
+# from scripts.populate_hints import populate_hints
+# from scripts.populate_word_game import populate_word_game
+# from scripts.populate_highlights import populate_highlights
+# from scripts.populate_underage import populate_underage
+# from scripts.populate_rv import populate_rv
+# from scripts.weekly_notify import weekly_notify
+# from scripts.send_embed import send_embed
+# from scripts.emoji_stat import emoji_stat
+# from scripts.fix_weekly_solver_v2 import fix_weekly_solver_v2
+# from scripts.fix_games_role import fix_games_role
+# from scripts.quarantine_perms import quarantine_perms
+# from scripts.brat import brat
+from scripts.weeklies_channels import create_weeklies_channels
 import pymongo
 import globals
 
@@ -35,6 +40,11 @@ class ExecDiscordConnection(discord.Client):
         # await send_embed()
         # await weekly_notify()
         # await emoji_stat()
+        # await fix_weekly_solver_v2()
+        # await fix_games_role()
+        # await quarantine_perms()
+        # await brat()
+        await create_weeklies_channels()
 
         # ch = self.get_channel(776099352962793503)
         # msg = await ch.fetch_message(883092891046645791)
@@ -46,8 +56,7 @@ class ExecDiscordConnection(discord.Client):
 
 def run_bot(config):
     bot = ExecDiscordConnection(config)
-    bot.loop.run_until_complete(bot.login(bot.conf.get(bot.conf.keys.DISCORD_TOKEN, bypass_protected=True)))
-    bot.loop.run_until_complete(bot.connect())
+    bot.run(bot.conf.get(bot.conf.keys.DISCORD_TOKEN, bypass_protected=True))
 
 
 if __name__ == '__main__':
