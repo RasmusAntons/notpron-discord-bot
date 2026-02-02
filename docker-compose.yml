@@ -1,21 +1,30 @@
-version: "3.8"
 services:
   bot:
     restart: always
     build: .
     # ports:
     #  - "8147:8147"
-    links:
-      - mongo
     volumes:
       - ./config.yaml:/app/config.yaml
     #   - .:/app
+    networks:
+      - enigmatics
+    depends_on:
+      mongo:
+        condition: service_healthy
   mongo:
     restart: always
     image: mongo:5
     volumes:
       - ./data:/data/db
       # - ./mongodump:/dump  # mongorestore -d enigmatics /dump/enigmatics
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017 --quiet
+      interval: 3s
+      timeout: 1s
+      retries: 30
+    networks:
+      - enigmatics
 
 networks:
   enigmatics:
