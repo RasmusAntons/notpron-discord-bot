@@ -30,7 +30,7 @@ def gen_thumbs(images, cols, s=(250, 250)):
         draw = ImageDraw.Draw(res)
         font = ImageFont.truetype(r'res/DejaVuSans.ttf', 24)
         text = f'{i + 1}'
-        w, h = draw.textsize(text, font=font)
+        w = draw.textlength(text, font=font)
         draw.text((x + (th.width - w) // 2, y), text, font=font, fill='lightgray')
     return res
 
