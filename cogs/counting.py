@@ -95,8 +95,8 @@ class CountingCog(commands.Cog):
                         if silenced_role is not None:
                             punishment_factor = self._get_punishment(member.id)
                             silence_duration = (3/2) * (progress * punishment_factor) ** (2/3)
-							ts = int(time.time()) + silence_duration * 60 * 60
-							reply_msg += f' who has been silenced for {silence_duration:.2f} hours (until <t:{int(ts)}:R>)'
+                            ts = int(time.time()) + silence_duration * 60 * 60
+                            reply_msg += f' who has been silenced for {silence_duration:.2f} hours (until <t:{int(ts)}:R>)'
                             try:
                                 await member.add_roles(silenced_role)
                                 self.coll_silenced.insert_one({
