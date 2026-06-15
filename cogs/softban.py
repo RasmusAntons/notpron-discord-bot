@@ -12,6 +12,16 @@ class SoftbanCog(commands.Cog, name='Softban', description='quarantine users'):
         self.coll = globals.bot.db['softban']
         self.coll.create_index('uid')
 
+    async def softban_internal(self, member, by):
+        previous_roles = [role for role in member.roles if role.is_assignable()]
+        previous_role_ids = [role.id for role in previous_roles]
+        self.coll.insert_one({'uid': member.id, 'by': by.id, 'ts': time.time(), 'roles': previous_role_ids})
+        quarantine_role = discord.utils.get(member.guild.roles, id=globals.bot.conf.get(globals.bot.conf.keys.QUARANTINE_ROLE))
+        if previous_roles:
+            await member.remove_roles(*previous_roles, reason=f'softban by {by.name}')
+        if quarantine_role:
+            await member.add_roles(quarantine_role, reason=f'softban by {by.name}')
+
     @app_commands.command(name='softban', description='quarantine user')
     async def softban(self, interaction: discord.Interaction, member: discord.Member):
         if not await config.is_trusted_user(interaction.user):
@@ -21,14 +31,7 @@ class SoftbanCog(commands.Cog, name='Softban', description='quarantine users'):
             await interaction.response.send_message('user is already softbanned, use softunban first', ephemeral=True)
             return
         await interaction.response.send_message(f'softbanning {member.mention}...', ephemeral=True)
-        previous_roles = [role for role in member.roles if role.is_assignable()]
-        previous_role_ids = [role.id for role in previous_roles]
-        self.coll.insert_one({'uid': member.id, 'by': interaction.user.id, 'ts': time.time(), 'roles': previous_role_ids})
-        quarantine_role = discord.utils.get(member.guild.roles, id=globals.bot.conf.get(globals.bot.conf.keys.QUARANTINE_ROLE))
-        if previous_roles:
-            await member.remove_roles(*previous_roles, reason=f'softban by {interaction.user.name}')
-        if quarantine_role:
-            await member.add_roles(quarantine_role, reason=f'softban by {interaction.user.name}')
+        await self.softban_internal(member, interaction.user)
         await interaction.edit_original_response(content='ok')
         mod_channel = discord.utils.get(interaction.guild.channels, id=globals.bot.conf.get(globals.bot.conf.keys.MOD_CHANNEL))
         if mod_channel:
@@ -56,6 +59,8 @@ class SoftbanCog(commands.Cog, name='Softban', description='quarantine users'):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        if self.coll.find_one({'uid': member.id}) is not None:
+        if (ban := self.coll.find_one({'uid': member.id})) is not None:
             quarantine_role = discord.utils.get(member.guild.roles, id=globals.bot.conf.get(globals.bot.conf.keys.QUARANTINE_ROLE))
-            await member.add_roles(quarantine_role, reason=f'softban by {interaction.user.name}')
+            by_id = ban.get('by')
+            by_member = member.guild.get_member(by_id) or await member.guild.fetch_member(by_id)
+            await member.add_roles(quarantine_role, reason=f'softban by {by_member.name}')

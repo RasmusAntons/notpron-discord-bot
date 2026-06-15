@@ -20,7 +20,7 @@ class DiscordConnection(commands.Bot):
                     ExifCog, FontCog, HighlightCog, ImagineCog, MagiceyeCog, MarkovCog, EnigmaticsCog, RemindmeCog,
                     RenameCog, RolesCog, RollCog, RrCog, RvCog, TranslateCog, WeatherCog, WhosaiditCog, WordgameCog,
                     WordnikCog, OpenAICog, GuiserCog, SayCog, SoftbanCog, CountingCog, AmongUsListener, AnagramListener,
-                    DmRelayListener]
+                    DmRelayListener, AutomodListener]
 
     def __init__(self, config_file):
         intents = discord.Intents.default()
