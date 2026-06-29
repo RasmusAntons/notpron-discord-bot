@@ -14,7 +14,7 @@ class AutomodListener(commands.Cog):
         if not isinstance(msg.author, discord.Member):
             return
         multiple_attachments = len(msg.attachments) > 1
-        new_member = msg.author.joined_at is not None and msg.author.joined_at > (datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=3))
+        new_member = msg.author.joined_at is not None and msg.author.joined_at > (datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=7))
         past_messages = self.coll_members.find_one({'uid': msg.author.id})
         if past_messages is None:
             self.coll_members.insert_one({'uid': msg.author.id})
