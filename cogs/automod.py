@@ -11,7 +11,7 @@ class AutomodListener(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg: discord.Message):
-        if msg.type not in [MessageType.default, MessageType.reply]:
+        if msg.type not in [discord.MessageType.default, discord.MessageType.reply]:
             return
         if not isinstance(msg.author, discord.Member):
             return
