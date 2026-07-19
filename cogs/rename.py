@@ -161,7 +161,13 @@ class RenameCog(commands.Cog, name='Rename', description='mass rename nerds'):
 
     @rename_grp.command(name='renamegroup', description='rename everyone in a group')
     @config.check_bot_admin()
-    async def renamegroup(self, ctx: commands.Context, group: str, names: str) -> None:
+    async def renamegroup(self, ctx: commands.Context, group: str, names: str = None, name_file: discord.Attachment = None) -> None:
+        if name_file:
+            text_content = await name_file.read()
+            text_content = text_content.decode('utf-8')
+            names = '|'.join(text_content.strip().split('\n'))
+        if names is None:
+            raise RuntimeError('need to supply names either as parameter or file')
         await self._rename(ctx, group, names=names)
 
     @rename_grp.command(name='revertgroup', description='revert names for everyone in a group')
